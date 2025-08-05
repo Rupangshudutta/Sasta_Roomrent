@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --warning: #FFA726;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--neutral);
+            color: var(--text);
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 300px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            margin-left: 300px;
+            padding: 20px;
+        }
+
+        .sidebar .brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 25px;
+            border-radius: 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            height: 100%;
+            border-left: 4px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card.secondary {
+            border-left-color: var(--secondary);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px 0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #d42a20;
+            border-color: #d42a20;
+        }
+
+        .table-custom {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-custom .table {
+            margin-bottom: 0;
+        }
+
+        .table-custom .table th {
+            background-color: var(--neutral);
+            border: none;
+            font-weight: 600;
+            padding: 15px;
+        }
+
+        .table-custom .table td {
+            padding: 15px;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .action-buttons .btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #e8eaed;
+            border-radius: 8px;
+            padding: 10px 15px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(238, 46, 36, 0.25);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <h4><i class="fas fa-shield-alt"></i> Sasta Room</h4>
+            <small>Admin Panel</small>
+        </div>
+
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="properties">
+                    <i class="fas fa-building"></i> Properties
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="users">
+                    <i class="fas fa-users"></i> Users
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="bookings">
+                    <i class="fas fa-calendar-check"></i> Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="payments">
+                    <i class="fas fa-credit-card"></i> Payments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="reports">
+                    <i class="fas fa-file-alt"></i> Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <nav class="navbar navbar-custom navbar-expand-lg">
+            <div class="container-fluid">
+                <h3 class="mb-0" id="page-title">Admin Dashboard</h3>
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <i class="fas fa-bell text-muted"></i>
+                        <span class="badge bg-danger rounded-pill ms-1">5</span>
+                    </div>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                            <img src="https://via.placeholder.com/40" class="rounded-circle me-2" alt="Admin">
+                            <span>Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="index.html"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section">
+            <!-- Stats Cards -->
+            <div class="row mb-4" id="statsCards">
+                <!-- Stats will be loaded here by updateAdminStats -->
+            </div>
+
+            <!-- Charts and Recent Activity -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="chart-container mb-4">
+                        <h5 class="mb-4">Revenue Analytics</h5>
+                        <canvas id="revenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="chart-container mb-4">
+                        <h5 class="mb-4">Property Types</h5>
+                        <canvas id="propertyChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="table-custom">
+                <div class="p-3 border-bottom">
+                    <h5 class="mb-0">Recent Activities</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>User</th>
+                                <th>Property</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>New Property Listed</td>
+                                <td>Rajesh Kumar</td>
+                                <td>Green Valley PG</td>
+                                <td>2024-01-15</td>
+                                <td><span class="badge bg-warning">Pending Review</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                    <button class="btn btn-sm btn-danger">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>New Booking</td>
+                                <td>Priya Sharma</td>
+                                <td>Cozy Studio</td>
+                                <td>2024-01-14</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Payment Received</td>
+                                <td>Amit Patel</td>
+                                <td>Shared Space</td>
+                                <td>2024-01-14</td>
+                                <td><span class="badge bg-success">Verified</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>User Registered</td>
+                                <td>Neha Singh</td>
+                                <td>-</td>
+                                <td>2024-01-13</td>
+                                <td><span class="badge bg-info">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View Profile</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Properties Section -->
+        <div id="properties-section" class="content-section" style="display: none;">
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Pending</option>
+                            <option>Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All Types</option>
+                            <option>PG</option>
+                            <option>Shared Room</option>
+                            <option>Single Room</option>
+                            <option>Flat</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" placeholder="Search properties...">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-custom">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">All Properties</h5>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Owner</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Rent</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3"
+                                            class="rounded me-2" width="50" height="50" alt="Property">
+                                        <div>
+                                            <h6 class="mb-0">Green Valley PG</h6>
+                                            <small class="text-muted">ID: #PG001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Rajesh Kumar</td>
+                                <td><span class="badge bg-primary">PG</span></td>
+                                <td>Koramangala, Bangalore</td>
+                                <td>₹12,500</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3"
+                                            class="rounded me-2" width="50" height="50" alt="Property">
+                                        <div>
+                                            <h6 class="mb-0">Urban Co-space</h6>
+                                            <small class="text-muted">ID: #SR001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Priya Sharma</td>
+                                <td><span class="badge bg-info">Shared</span></td>
+                                <td>Powai, Mumbai</td>
+                                <td>₹8,500</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                    <button class="btn btn-sm btn-danger">Reject</button>
+                                </td>
+                            </tr>
+                            <!-- More rows would be here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users-section" class="content-section" style="display: none;">
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All User Types</option>
+                            <option>Customers</option>
+                            <option>Room Owners</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                            <option>Blocked</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Search users...">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-custom">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">All Users</h5>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Export Users
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/40" class="rounded-circle me-2"
+                                            alt="User">
+                                        <div>
+                                            <h6 class="mb-0">Priya Sharma</h6>
+                                            <small class="text-muted">ID: #USR001</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">Customer</span></td>
+                                <td>priya@email.com</td>
+                                <td>+91 98765 43210</td>
+                                <td>2024-01-10</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-warning">Block</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/40" class="rounded-circle me-2"
+                                            alt="User">
+                                        <div>
+                                            <h6 class="mb-0">Rajesh Kumar</h6>
+                                            <small class="text-muted">ID: #USR002</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Owner</span></td>
+                                <td>rajesh@email.com</td>
+                                <td>+91 98765 43211</td>
+                                <td>2024-01-08</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-warning">Block</button>
+                                </td>
+                            </tr>
+                            <!-- More rows would be here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bookings Section -->
+        <div id="bookings-section" class="content-section" style="display: none;">
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All Status</option>
+                            <option>Confirmed</option>
+                            <option>Pending</option>
+                            <option>Cancelled</option>
+                            <option>Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" placeholder="From Date">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" placeholder="To Date">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-custom">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">All Bookings</h5>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Property</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#BK001</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/30" class="rounded-circle me-2"
+                                            alt="User">
+                                        <span>Priya Sharma</span>
+                                    </div>
+                                </td>
+                                <td>Green Valley PG</td>
+                                <td>2024-01-15</td>
+                                <td>2024-07-15</td>
+                                <td>₹75,000</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-warning">Modify</button>
+                                    <button class="btn btn-sm btn-danger">Cancel</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#BK002</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/30" class="rounded-circle me-2"
+                                            alt="User">
+                                        <span>Amit Patel</span>
+                                    </div>
+                                </td>
+                                <td>Urban Co-space</td>
+                                <td>2024-02-01</td>
+                                <td>2024-08-01</td>
+                                <td>₹51,000</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-success">Confirm</button>
+                                    <button class="btn btn-sm btn-danger">Reject</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div id="payments-section" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card success">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-success">₹12.5L</div>
+                                <div class="stat-label">Total Collected</div>
+                            </div>
+                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card warning">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-warning">₹2.3L</div>
+                                <div class="stat-label">Pending</div>
+                            </div>
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card primary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-primary">₹45K</div>
+                                <div class="stat-label">Failed</div>
+                            </div>
+                            <i class="fas fa-times-circle fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="stat-card secondary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-secondary">₹1.2L</div>
+                                <div class="stat-label">Refunded</div>
+                            </div>
+                            <i class="fas fa-undo fa-2x text-secondary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>All Status</option>
+                            <option>Success</option>
+                            <option>Pending</option>
+                            <option>Failed</option>
+                            <option>Refunded</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>Payment Method</option>
+                            <option>UPI</option>
+                            <option>Card</option>
+                            <option>Net Banking</option>
+                            <option>Wallet</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Search by transaction ID...">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-custom">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Payment Transactions</h5>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download me-2"></i>Export
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Customer</th>
+                                <th>Booking</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TXN001</td>
+                                <td>Priya Sharma</td>
+                                <td>#BK001</td>
+                                <td>₹12,500</td>
+                                <td><span class="badge bg-info">UPI</span></td>
+                                <td>2024-01-15</td>
+                                <td><span class="badge bg-success">Success</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-secondary">Receipt</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TXN002</td>
+                                <td>Amit Patel</td>
+                                <td>#BK002</td>
+                                <td>₹8,500</td>
+                                <td><span class="badge bg-warning">Card</span></td>
+                                <td>2024-01-14</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">View</button>
+                                    <button class="btn btn-sm btn-danger">Refund</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-section" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">Monthly Revenue Trend</h5>
+                        <canvas id="monthlyRevenueChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">Booking Status Distribution</h5>
+                        <canvas id="bookingStatusChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">Top Performing Cities</h5>
+                        <canvas id="cityPerformanceChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="chart-container">
+                        <h5 class="mb-4">User Growth</h5>
+                        <canvas id="userGrowthChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="stat-card primary">
+                        <div class="text-center">
+                            <i class="fas fa-file-pdf fa-3x text-primary mb-3"></i>
+                            <h5>Revenue Report</h5>
+                            <p class="text-muted">Generate detailed revenue analytics</p>
+                            <button class="btn btn-primary">Generate PDF</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="stat-card success">
+                        <div class="text-center">
+                            <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                            <h5>Property Report</h5>
+                            <p class="text-muted">Export property performance data</p>
+                            <button class="btn btn-success">Generate Excel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="stat-card warning">
+                        <div class="text-center">
+                            <i class="fas fa-file-csv fa-3x text-warning mb-3"></i>
+                            <h5>User Report</h5>
+                            <p class="text-muted">Download user activity report</p>
+                            <button class="btn btn-warning">Generate CSV</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-custom">
+                <div class="p-3 border-bottom">
+                    <h5 class="mb-0">Recent Reports</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Type</th>
+                                <th>Generated By</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Monthly Revenue - January 2024</td>
+                                <td><span class="badge bg-primary">PDF</span></td>
+                                <td>Admin</td>
+                                <td>2024-01-15</td>
+                                <td><span class="badge bg-success">Ready</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">Download</button>
+                                    <button class="btn btn-sm btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Property Performance Q4 2023</td>
+                                <td><span class="badge bg-success">Excel</span></td>
+                                <td>Admin</td>
+                                <td>2024-01-10</td>
+                                <td><span class="badge bg-warning">Processing</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-secondary" disabled>Processing...</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>User Activity Report</td>
+                                <td><span class="badge bg-warning">CSV</span></td>
+                                <td>Admin</td>
+                                <td>2024-01-08</td>
+                                <td><span class="badge bg-success">Ready</span></td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-sm btn-primary">Download</button>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="content-section" style="display: none;">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="chart-container mb-4">
+                        <h5 class="mb-4">General Settings</h5>
+                        <form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Platform Name</label>
+                                    <input type="text" class="form-control" value="Sasta Room">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Support Email</label>
+                                    <input type="email" class="form-control" value="support@sastaroom.com">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Commission Rate (%)</label>
+                                    <input type="number" class="form-control" value="10">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Currency</label>
+                                    <select class="form-select">
+                                        <option selected>INR (₹)</option>
+                                        <option>USD ($)</option>
+                                        <option>EUR (€)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Platform Description</label>
+                                <textarea class="form-control"
+                                    rows="3">Find affordable and comfortable accommodation with Sasta Room - your trusted partner for budget-friendly living spaces.</textarea>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                        <label class="form-check-label" for="emailNotifications">
+                                            Email Notifications
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="autoApproval">
+                                        <label class="form-check-label" for="autoApproval">
+                                            Auto-approve Properties
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </form>
+                    </div>
+
+                    <div class="chart-container">
+                        <h5 class="mb-4">Payment Gateway Settings</h5>
+                        <form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Razorpay Key ID</label>
+                                    <input type="text" class="form-control" placeholder="rzp_test_xxxxxxxxxx">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Razorpay Secret</label>
+                                    <input type="password" class="form-control" placeholder="••••••••••••••••">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="enableUPI" checked>
+                                        <label class="form-check-label" for="enableUPI">
+                                            Enable UPI Payments
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="enableCards" checked>
+                                        <label class="form-check-label" for="enableCards">
+                                            Enable Card Payments
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Payment Settings</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="chart-container mb-4">
+                        <h5 class="mb-4">System Status</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Database</span>
+                            <span class="badge bg-success">Online</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Payment Gateway</span>
+                            <span class="badge bg-success">Connected</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Email Service</span>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>SMS Service</span>
+                            <span class="badge bg-warning">Limited</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span>Storage</span>
+                            <span class="badge bg-info">75% Used</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h5 class="mb-4">Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-database me-2"></i>Backup Database
+                            </button>
+                            <button class="btn btn-outline-warning">
+                                <i class="fas fa-broom me-2"></i>Clear Cache
+                            </button>
+                            <button class="btn btn-outline-info">
+                                <i class="fas fa-sync me-2"></i>Sync Data
+                            </button>
+                            <button class="btn btn-outline-success">
+                                <i class="fas fa-check me-2"></i>Run Health Check
+                            </button>
+                            <button class="btn btn-outline-danger">
+                                <i class="fas fa-power-off me-2"></i>Maintenance Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/dashboard-api.js"></script>
+    <script>
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                if (this.getAttribute('href') !== 'index.html') {
+                    e.preventDefault();
+
+                    // Remove active class from all links
+                    document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+
+                    // Show corresponding section
+                    const section = this.dataset.section;
+                    if (section) {
+                        showSection(section);
+                    }
+                }
+            });
+        });
+
+        function showLoading() {
+            document.getElementById('dashboard-loading').style.display = 'block';
+        }
+        function hideLoading() {
+            document.getElementById('dashboard-loading').style.display = 'none';
+        }
+        function showErrorState(section) {
+            const container = document.getElementById(section + '-section');
+            if (container) {
+                container.innerHTML = '<div class="alert alert-danger">Failed to load data. Please try again later.</div>';
+            }
+        }
+        function showEmptyState(container, message) {
+            if (container) {
+                container.innerHTML = `<div class='alert alert-info text-center my-4'>${message}</div>`;
+            }
+        }
+
+        function updateAdminStats(users, properties, bookings, revenue) {
+            const statsContainer = document.getElementById('statsCards');
+            if (!statsContainer) return;
+            const stats = [
+                { title: 'Total Users', value: users.total || 0, icon: 'fas fa-users', color: 'primary' },
+                { title: 'Active Users', value: users.active || 0, icon: 'fas fa-user-check', color: 'success' },
+                { title: 'Total Properties', value: properties.total || 0, icon: 'fas fa-building', color: 'info' },
+                { title: 'Total Bookings', value: bookings.total || 0, icon: 'fas fa-calendar-check', color: 'warning' },
+                { title: 'Total Revenue', value: `₹${(revenue.total || 0).toLocaleString()}`, icon: 'fas fa-rupee-sign', color: 'success' },
+                { title: 'Monthly Revenue', value: `₹${(revenue.monthly || 0).toLocaleString()}`, icon: 'fas fa-calendar', color: 'primary' }
+            ];
+            statsContainer.innerHTML = stats.map(stat => `
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="stat-card ${stat.color}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number">${stat.value}</div>
+                                <div class="stat-label"><i class="${stat.icon}"></i> ${stat.title}</div>
+                            </div>
+                            <div class="text-${stat.color}">
+                                <i class="${stat.icon} fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRecentUsers(users) {
+            const container = document.getElementById('recentUsersTable');
+            if (!container) return;
+            if (!users || users.length === 0) {
+                showEmptyState(container, 'No recent users found.');
+                return;
+            }
+            container.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.first_name} ${user.last_name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateRecentProperties(properties) {
+            const container = document.getElementById('recentPropertiesTable');
+            if (!container) return;
+            if (!properties || properties.length === 0) {
+                showEmptyState(container, 'No recent properties found.');
+                return;
+            }
+            container.innerHTML = properties.map(property => `
+                <tr>
+                    <td>${property.title}</td>
+                    <td>${property.property_type}</td>
+                    <td>₹${property.rent_amount.toLocaleString()}</td>
+                    <td>${property.approval_status}</td>
+                    <td>${new Date(property.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateRecentBookings(bookings) {
+            const container = document.getElementById('recentBookingsTable');
+            if (!container) return;
+            if (!bookings || bookings.length === 0) {
+                showEmptyState(container, 'No recent bookings found.');
+                return;
+            }
+            container.innerHTML = bookings.map(booking => `
+                <tr>
+                    <td>${booking.property?.title || '-'}</td>
+                    <td>${booking.customer?.first_name || ''} ${booking.customer?.last_name || ''}</td>
+                    <td>${booking.status}</td>
+                    <td>${new Date(booking.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Add a loading spinner element in the dashboard section if not present
+        if (!document.getElementById('dashboard-loading')) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'dashboard-loading';
+            loadingDiv.style.display = 'none';
+            loadingDiv.innerHTML = '<div class="text-center my-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            document.getElementById('dashboard-section').prepend(loadingDiv);
+        }
+
+        let adminCharts = {};
+
+        async function loadAdminDashboardData() {
+            try {
+                showLoading();
+                const result = await dashboardAPI.getAdminDashboard();
+                if (result) {
+                    updateAdminStats(result.users, result.properties, result.bookings, result.revenue);
+                    updateRecentUsers(result.users.recent);
+                    updateRecentProperties(result.properties.recent);
+                    updateRecentBookings(result.bookings.recent);
+                    updateAdminCharts(result);
+                }
+            } catch (error) {
+                console.error('Error loading admin dashboard data:', error);
+                showErrorState('dashboard');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateAdminCharts(data) {
+            // Revenue Analytics Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            if (!adminCharts.revenue) {
+                adminCharts.revenue = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [{ label: 'Revenue', data: [], borderColor: '#EE2E24', backgroundColor: 'rgba(238, 46, 36, 0.1)', tension: 0.4 }] },
+                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '₹' + (v / 1000) + 'K' } } } }
+                });
+            }
+            // Example: Use monthly revenue for the last 6 months (replace with real API data)
+            // You may want to fetch analytics data for more detailed charts
+            dashboardAPI.getAnalyticsData && dashboardAPI.getAnalyticsData('revenue').then(analytics => {
+                if (analytics && analytics.revenue && analytics.revenue.length > 0) {
+                    const labels = analytics.revenue.map(r => r.date);
+                    const values = analytics.revenue.map(r => r.total);
+                    adminCharts.revenue.data.labels = labels;
+                    adminCharts.revenue.data.datasets[0].data = values;
+                    adminCharts.revenue.update();
+                } else {
+                    adminCharts.revenue.data.labels = [];
+                    adminCharts.revenue.data.datasets[0].data = [];
+                    adminCharts.revenue.update();
+                }
+            }).catch(() => {
+                adminCharts.revenue.data.labels = [];
+                adminCharts.revenue.data.datasets[0].data = [];
+                adminCharts.revenue.update();
+            });
+
+            // Property Types Chart
+            const propertyCtx = document.getElementById('propertyChart').getContext('2d');
+            if (!adminCharts.propertyTypes) {
+                adminCharts.propertyTypes = new Chart(propertyCtx, {
+                    type: 'doughnut',
+                    data: { labels: [], datasets: [{ data: [], backgroundColor: ['#EE2E24', '#1A73E8', '#34A853', '#FFA726'] }] },
+                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+            // Example: Use property type counts from properties.recent (replace with real API data)
+            const typeCounts = {};
+            (data.properties.recent || []).forEach(p => { typeCounts[p.property_type] = (typeCounts[p.property_type] || 0) + 1; });
+            adminCharts.propertyTypes.data.labels = Object.keys(typeCounts);
+            adminCharts.propertyTypes.data.datasets[0].data = Object.values(typeCounts);
+            adminCharts.propertyTypes.update();
+
+            // Add similar logic for other charts (monthlyRevenueChart, bookingStatusChart, cityPerformanceChart, userGrowthChart)
+            // Use dashboardAPI.getAnalyticsData('bookings'), etc., as needed
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+
+            // Update page title
+            const titles = {
+                'dashboard': 'Admin Dashboard',
+                'properties': 'Properties Management',
+                'users': 'Users Management',
+                'bookings': 'Bookings Management',
+                'payments': 'Payments Management',
+                'analytics': 'Analytics',
+                'reports': 'Reports',
+                'settings': 'Settings'
+            };
+
+            document.getElementById('page-title').textContent = titles[sectionName] || 'Admin Dashboard';
+
+            if (sectionName === 'dashboard') {
+                loadAdminDashboardData();
+            }
+        }
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', function () {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [300000, 450000, 320000, 580000, 680000, 750000],
+                        borderColor: '#EE2E24',
+                        backgroundColor: 'rgba(238, 46, 36, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return '₹' + (value / 1000) + 'K';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Property Types Chart
+            const propertyCtx = document.getElementById('propertyChart').getContext('2d');
+            new Chart(propertyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['PG', 'Shared Room', 'Single Room', 'Flat'],
+                    datasets: [{
+                        data: [35, 25, 25, 15],
+                        backgroundColor: ['#EE2E24', '#1A73E8', '#34A853', '#FFA726']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            // Monthly Revenue Chart (Analytics Section)
+            const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart');
+            if (monthlyRevenueCtx) {
+                new Chart(monthlyRevenueCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue (₹)',
+                            data: [300000, 450000, 320000, 580000, 680000, 750000, 820000, 690000, 780000, 850000, 920000, 1100000],
+                            backgroundColor: 'rgba(238, 46, 36, 0.8)',
+                            borderColor: '#EE2E24',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return '₹' + (value / 1000) + 'K';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Booking Status Chart
+            const bookingStatusCtx = document.getElementById('bookingStatusChart');
+            if (bookingStatusCtx) {
+                new Chart(bookingStatusCtx.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['Confirmed', 'Pending', 'Cancelled', 'Completed'],
+                        datasets: [{
+                            data: [45, 15, 10, 30],
+                            backgroundColor: ['#34A853', '#FFA726', '#EE2E24', '#1A73E8']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // City Performance Chart
+            const cityPerformanceCtx = document.getElementById('cityPerformanceChart');
+            if (cityPerformanceCtx) {
+                new Chart(cityPerformanceCtx.getContext('2d'), {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: ['Bangalore', 'Mumbai', 'Delhi', 'Pune', 'Hyderabad', 'Chennai'],
+                        datasets: [{
+                            label: 'Properties',
+                            data: [450, 380, 320, 280, 240, 200],
+                            backgroundColor: [
+                                'rgba(238, 46, 36, 0.8)',
+                                'rgba(26, 115, 232, 0.8)',
+                                'rgba(52, 168, 83, 0.8)',
+                                'rgba(255, 167, 38, 0.8)',
+                                'rgba(156, 39, 176, 0.8)',
+                                'rgba(255, 87, 34, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart');
+            if (userGrowthCtx) {
+                new Chart(userGrowthCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'New Users',
+                            data: [1200, 1900, 1500, 2200, 2800, 3200],
+                            borderColor: '#1A73E8',
+                            backgroundColor: 'rgba(26, 115, 232, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

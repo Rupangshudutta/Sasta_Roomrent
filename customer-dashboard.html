@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --warning: #FFA726;
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-280px);
+        }
+        
+        .main-content {
+            transition: margin-left 0.3s ease;
+        }
+        
+        .main-content.expanded {
+            margin-left: 0;
+        }
+        
+        .sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .sidebar-toggle:hover {
+            background: #d42a20;
+            transform: scale(1.1);
+        }
+        
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .profile-section {
+            display: none;
+        }
+        
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--neutral);
+            color: var(--text);
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, #d42a20 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 280px;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
+        }
+        
+        .sidebar .brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 15px 25px;
+            border-radius: 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar .nav-link:hover, 
+        .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .property-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .property-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+        
+        .favorite-btn.active {
+            color: var(--primary);
+        }
+        
+        .navbar-custom {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 0;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #d42a20;
+            border-color: #d42a20;
+        }
+        
+        .booking-card {
+            border-left: 4px solid var(--primary);
+        }
+        
+        .booking-card.completed {
+            border-left-color: var(--success);
+        }
+        
+        .booking-card.pending {
+            border-left-color: var(--warning);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .quick-action-btn {
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--neutral);
+            background: white;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .quick-action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .search-widget {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(238, 46, 36, 0.25);
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s;
+        }
+        
+        .notification-item:hover {
+            background-color: var(--neutral);
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .map-widget {
+            height: 300px;
+            background: var(--neutral);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <h4><i class="fas fa-home"></i> Sasta Room</h4>
+            <small id="welcomeMessage">Welcome, User</small>
+        </div>
+        
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="search">
+                    <i class="fas fa-search"></i> Search Properties
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="favorites">
+                    <i class="fas fa-heart"></i> My Favorites
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="bookings">
+                    <i class="fas fa-calendar-check"></i> My Bookings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="messages">
+                    <i class="fas fa-envelope"></i> Messages
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="payments">
+                    <i class="fas fa-credit-card"></i> Payments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-section="profile">
+                    <i class="fas fa-user-cog"></i> Profile
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <nav class="navbar navbar-custom navbar-expand-lg">
+            <div class="container-fluid">
+                <h3 class="mb-0" id="page-title">My Dashboard</h3>
+                <div class="d-flex align-items-center">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="me-4 notification-badge" onclick="toggleNotifications()">
+                        <i class="fas fa-bell text-muted"></i>
+                        <span class="badge bg-danger rounded-pill ms-1" id="notificationCount">0</span>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="p-3 border-bottom">
+                                <h6 class="mb-0">Notifications</h6>
+                            </div>
+                            <div id="notificationList">
+                                <div class="p-3 text-center text-muted">
+                                    <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                                    <p class="mb-0">No new notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                            <div class="profile-avatar me-2" id="profileAvatar">U</div>
+                            <span id="userFullName">User</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showSection('profile')"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="#" class="quick-action-btn" onclick="showSection('search')">
+                    <i class="fas fa-search fa-2x mb-2 text-primary"></i>
+                    <h6>Search Properties</h6>
+                    <small class="text-muted">Find your perfect stay</small>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="showSection('favorites')">
+                    <i class="fas fa-heart fa-2x mb-2 text-danger"></i>
+                    <h6>My Favorites</h6>
+                    <small class="text-muted">5 saved properties</small>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="showSection('bookings')">
+                    <i class="fas fa-calendar-check fa-2x mb-2 text-success"></i>
+                    <h6>My Bookings</h6>
+                    <small class="text-muted">2 active bookings</small>
+                </a>
+                <a href="#" class="quick-action-btn" onclick="showSection('messages')">
+                    <i class="fas fa-envelope fa-2x mb-2 text-info"></i>
+                    <h6>Messages</h6>
+                    <small class="text-muted">3 unread messages</small>
+                </a>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-number" id="favoriteCount">0</div>
+                        <h6>Favorite Properties</h6>
+                        <small class="text-muted">Properties you've saved</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-number" id="activeBookingCount">0</div>
+                        <h6>Active Bookings</h6>
+                        <small class="text-muted">Current reservations</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-number" id="totalBookingCount">0</div>
+                        <h6>Total Searches</h6>
+                        <small class="text-muted">This month</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card text-center">
+                        <div class="stat-number" id="totalSpent">₹0</div>
+                        <h6>Total Spent</h6>
+                        <small class="text-muted">This year</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity and Recommendations -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">Recent Activity</h5>
+                        <div class="notification-item">
+                            <div class="notification-icon bg-success text-white">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Booking Confirmed</h6>
+                                <small class="text-muted">Your booking for Green Valley PG has been confirmed</small>
+                                <div class="small text-muted">2 hours ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon bg-primary text-white">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">New Property Saved</h6>
+                                <small class="text-muted">You saved "Cozy Studio Space" to favorites</small>
+                                <div class="small text-muted">1 day ago</div>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon bg-info text-white">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Message Received</h6>
+                                <small class="text-muted">Property owner replied to your inquiry</small>
+                                <div class="small text-muted">2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">Recommended for You</h5>
+                        <div class="property-card">
+                            <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3" class="property-image" alt="Property">
+                            <div class="p-3">
+                                <h6 class="mb-1">Elite Executive PG</h6>
+                                <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> Gurgaon</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary">₹18,500/month</span>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div id="search-section" class="content-section" style="display: none;">
+            <div class="search-widget">
+                <h5 class="mb-4">Find Your Perfect Stay</h5>
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Preferred Location</label>
+                            <input type="text" class="form-control" placeholder="Enter city or area">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Property Type</label>
+                            <select class="form-select">
+                                <option>All Types</option>
+                                <option>PG</option>
+                                <option>Shared Room</option>
+                                <option>Single Room</option>
+                                <option>Flat</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Budget Range</label>
+                            <select class="form-select">
+                                <option>Any Budget</option>
+                                <option>Under ₹10,000</option>
+                                <option>₹10,000 - ₹20,000</option>
+                                <option>Above ₹20,000</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Map View -->
+            <div class="map-widget mb-4">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x mb-3"></i>
+                    <h5>Map View</h5>
+                    <p class="text-muted">See properties on map</p>
+                    <button class="btn btn-primary">Open Map</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Favorites Section -->
+        <div id="favorites-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>My Favorite Properties</h4>
+                <small class="text-muted">5 properties saved</small>
+            </div>
+            
+            <div class="row" id="favoritePropertiesList">
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card">
+                        <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3" class="property-image" alt="Property">
+                        <button class="favorite-btn active">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="p-3">
+                            <h6 class="mb-1">Green Valley PG</h6>
+                            <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> Koramangala, Bangalore</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">₹12,500/month</span>
+                                <button class="btn btn-sm btn-primary">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3" class="property-image" alt="Property">
+                        <button class="favorite-btn active">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <div class="p-3">
+                            <h6 class="mb-1">Urban Co-space</h6>
+                            <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> Powai, Mumbai</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary">₹8,500/month</span>
+                                <button class="btn btn-sm btn-primary">Book Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- More favorite properties would be here -->
+            </div>
+        </div>
+        
+        <!-- Bookings Section -->
+        <div id="bookings-section" class="content-section" style="display: none;">
+            <h4 class="mb-4">My Bookings</h4>
+            <div class="row" id="recentBookingsList">
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No bookings yet</h5>
+                        <p class="text-muted">Start exploring properties to make your first booking!</p>
+                        <button class="btn btn-primary" onclick="showSection('search')">Search Properties</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Section -->
+        <div id="profile-section" class="content-section profile-section" style="display: none;">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="dashboard-card">
+                        <h5 class="mb-4">Profile Information</h5>
+                        <form id="profileForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Role</label>
+                                <input type="text" class="form-control" id="role" readonly>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="dashboard-card text-center">
+                        <h6 class="mb-3">Profile Picture</h6>
+                        <div class="profile-avatar mx-auto mb-3" id="largeProfileAvatar" style="width: 100px; height: 100px; font-size: 36px;">U</div>
+                        <button class="btn btn-outline-primary btn-sm">Change Picture</button>
+                        <hr>
+                        <div class="text-start">
+                            <small class="text-muted">Member since</small>
+                            <div class="fw-bold" id="memberSince">-</div>
+                            <small class="text-muted mt-2 d-block">Last login</small>
+                            <div class="fw-bold" id="lastLogin">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-service.js"></script>
+    <script>
+        // Global variables
+        let currentUser = null;
+        let sidebarCollapsed = false;
+        
+        // Initialize user data
+        function initializeUser() {
+            const userData = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            
+            if (!userData || !token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = JSON.parse(userData);
+            updateUserInterface();
+        }
+        
+        // Update UI with user data
+        function updateUserInterface() {
+            if (!currentUser) return;
+            
+            const fullName = `${currentUser.first_name} ${currentUser.last_name}`;
+            const initials = `${currentUser.first_name.charAt(0)}${currentUser.last_name.charAt(0)}`.toUpperCase();
+            
+            // Update header
+            document.getElementById('userFullName').textContent = fullName;
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.first_name}`;
+            
+            // Update profile avatars
+            document.querySelectorAll('.profile-avatar').forEach(avatar => {
+                avatar.textContent = initials;
+            });
+            
+            // Update profile form if visible
+            if (document.getElementById('firstName')) {
+                document.getElementById('firstName').value = currentUser.first_name || '';
+                document.getElementById('lastName').value = currentUser.last_name || '';
+                document.getElementById('email').value = currentUser.email || '';
+                document.getElementById('phone').value = currentUser.phone || '';
+                document.getElementById('role').value = currentUser.role || '';
+                document.getElementById('memberSince').textContent = new Date(currentUser.created_at || Date.now()).toLocaleDateString();
+                document.getElementById('lastLogin').textContent = new Date(currentUser.last_login || Date.now()).toLocaleDateString();
+            }
+        }
+        
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+            }
+        }
+        
+        // Toggle notifications
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+        
+        // Auto-hide sidebar on mobile
+        function checkScreenSize() {
+            if (window.innerWidth < 768 && !sidebarCollapsed) {
+                toggleSidebar();
+            }
+        }
+        
+        // Close notifications when clicking outside
+        document.addEventListener('click', function(e) {
+            const notificationBadge = document.querySelector('.notification-badge');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            if (!notificationBadge.contains(e.target)) {
+                notificationDropdown.style.display = 'none';
+            }
+        });
+        
+        // Profile form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        first_name: document.getElementById('firstName').value,
+                        last_name: document.getElementById('lastName').value,
+                        phone: document.getElementById('phone').value
+                    };
+                    
+                    try {
+                        // Update profile via API
+                        const response = await fetch('http://127.0.0.1:3000/api/auth/profile', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            },
+                            body: JSON.stringify(formData)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Update local storage
+                            currentUser = { ...currentUser, ...formData };
+                            localStorage.setItem('user', JSON.stringify(currentUser));
+                            updateUserInterface();
+                            alert('Profile updated successfully!');
+                        } else {
+                            alert(result.message || 'Failed to update profile');
+                        }
+                    } catch (error) {
+                        console.error('Profile update error:', error);
+                        alert('Failed to update profile. Please try again.');
+                    }
+                });
+            }
+        });
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            initializeUser();
+            checkScreenSize();
+        });
+        
+        window.addEventListener('resize', checkScreenSize);
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') !== 'index.html') {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Show corresponding section
+                    const section = this.dataset.section;
+                    if (section) {
+                        showSection(section);
+                    }
+                }
+            });
+        });
+        
+        function showLoading() {
+            document.getElementById('dashboard-loading').style.display = 'block';
+        }
+        function hideLoading() {
+            document.getElementById('dashboard-loading').style.display = 'none';
+        }
+        function showErrorState(section) {
+            const container = document.getElementById(section + '-section');
+            if (container) {
+                container.innerHTML = '<div class="alert alert-danger">Failed to load data. Please try again later.</div>';
+            }
+        }
+        function showEmptyState(container, message) {
+            if (container) {
+                container.innerHTML = `<div class='alert alert-info text-center my-4'>${message}</div>`;
+            }
+        }
+
+        function updateCustomerStats(bookings, payments, reviews, favorites) {
+            // Example: update stat cards for bookings, payments, reviews, favorites
+            const stats = [
+                { id: 'favoriteCount', value: (favorites?.properties?.length || 0) },
+                { id: 'activeBookingCount', value: bookings?.active || 0 },
+                { id: 'totalBookingCount', value: bookings?.total || 0 },
+                { id: 'totalSpent', value: `₹${(payments?.total || 0).toLocaleString()}` }
+            ];
+            stats.forEach(stat => {
+                const el = document.getElementById(stat.id);
+                if (el) el.textContent = stat.value;
+            });
+        }
+
+        function updateRecentBookings(bookings) {
+            const container = document.getElementById('recentBookingsList');
+            if (!container) return;
+            if (!bookings || bookings.length === 0) {
+                showEmptyState(container, 'No recent bookings found.');
+                return;
+            }
+            container.innerHTML = bookings.map(booking => `
+                <div class="dashboard-card booking-card ${booking.status}">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h6>${booking.property?.title || '-'}</h6>
+                        <span class="badge bg-success">${booking.status}</span>
+                    </div>
+                    <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> ${booking.property?.property_type || ''}</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">Start Date</small>
+                            <div class="fw-bold">${new Date(booking.created_at).toLocaleDateString()}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Amount</small>
+                            <div class="fw-bold">₹${booking.property?.rent_amount?.toLocaleString() || '0'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRecentPayments(payments) {
+            const container = document.getElementById('recentPaymentsList');
+            if (!container) return;
+            if (!payments || payments.length === 0) {
+                showEmptyState(container, 'No recent payments found.');
+                return;
+            }
+            container.innerHTML = payments.map(payment => `
+                <div class="dashboard-card mb-2">
+                    <div class="d-flex justify-content-between">
+                        <span>Payment for ${payment.booking?.property?.title || '-'}</span>
+                        <span class="fw-bold text-primary">₹${payment.amount?.toLocaleString() || '0'}</span>
+                    </div>
+                    <small class="text-muted">${new Date(payment.payment_date).toLocaleDateString()}</small>
+                </div>
+            `).join('');
+        }
+
+        function updateRecentReviews(reviews) {
+            const container = document.getElementById('recentReviewsList');
+            if (!container) return;
+            if (!reviews || reviews.length === 0) {
+                showEmptyState(container, 'No recent reviews found.');
+                return;
+            }
+            container.innerHTML = reviews.map(review => `
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between mb-2">
+                        <strong>${review.property?.title || ''}</strong>
+                        <div class="text-warning">${'★'.repeat(Math.round(review.rating || 0))}</div>
+                    </div>
+                    <p class="mb-1 small">"${review.comment || ''}"</p>
+                    <small class="text-muted">${new Date(review.created_at).toLocaleDateString()}</small>
+                </div>
+            `).join('');
+        }
+
+        function updateFavoriteProperties(properties) {
+            const container = document.getElementById('favoritePropertiesList');
+            if (!container) return;
+            if (!properties || properties.length === 0) {
+                showEmptyState(container, 'No favorite properties found.');
+                return;
+            }
+            container.innerHTML = properties.map(property => `
+                <div class="property-card">
+                    <img src="${property.images?.[0] || 'https://via.placeholder.com/150'}" class="property-image" alt="Property">
+                    <div class="p-3">
+                        <h6 class="mb-1">${property.title}</h6>
+                        <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i> ${property.owner?.first_name || ''} ${property.owner?.last_name || ''}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-primary">₹${property.rent_amount?.toLocaleString() || '0'}/month</span>
+                            <button class="btn btn-sm btn-outline-primary">View</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load dashboard data with mock data for now
+        function loadCustomerDashboardData() {
+            // Mock data for demonstration
+            const mockData = {
+                bookings: { active: 0, total: 0, recent: [] },
+                payments: { total: 0, recent: [] },
+                reviews: { recent: [] },
+                favorites: { properties: [] }
+            };
+            
+            updateCustomerStats(mockData.bookings, mockData.payments, mockData.reviews, mockData.favorites);
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'My Dashboard',
+                'search': 'Search Properties',
+                'favorites': 'My Favorites',
+                'bookings': 'My Bookings',
+                'messages': 'Messages',
+                'payments': 'Payments & History',
+                'profile': 'My Profile'
+            };
+            
+            document.getElementById('page-title').textContent = titles[sectionName] || 'My Dashboard';
+
+            if (sectionName === 'dashboard') {
+                loadCustomerDashboardData();
+            }
+        }
+        
+        // Favorite button functionality
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const icon = this.querySelector('i');
+                if (this.classList.contains('active')) {
+                    icon.className = 'fas fa-heart';
+                } else {
+                    icon.className = 'far fa-heart';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

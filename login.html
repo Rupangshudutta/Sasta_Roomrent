@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --error: #dc3545;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--neutral) 0%, #e8f0fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        .login-sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, #d42a20 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .feature-item:hover {
+            opacity: 1;
+        }
+
+        .feature-item i {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 8px;
+            margin-right: 15px;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-form-container {
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h2 {
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .user-type-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 30px;
+            background: rgba(238, 46, 36, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            border: 2px solid transparent;
+        }
+
+        .user-type-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            color: var(--primary);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .user-type-btn:hover {
+            background: rgba(238, 46, 36, 0.1);
+        }
+
+        .user-type-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 3px 10px rgba(238, 46, 36, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(238, 46, 36, 0.25);
+        }
+
+        .form-control.error {
+            border-color: var(--error);
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e8eaed;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #d42a20;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #d42a20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 46, 36, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .divider {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .divider hr {
+            border: none;
+            height: 1px;
+            background: #e8eaed;
+            margin: 0;
+        }
+
+        .divider-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .signup-link {
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signup-link a:hover {
+            color: #d42a20;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .login-sidebar {
+                padding: 40px 30px;
+                min-height: auto;
+            }
+
+            .login-form-container {
+                padding: 40px 30px;
+                min-height: auto;
+            }
+
+            .brand-logo {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .login-container {
+                border-radius: 15px;
+            }
+
+            .login-sidebar {
+                padding: 30px 20px;
+            }
+
+            .login-form-container {
+                padding: 30px 20px;
+            }
+
+            .user-type-selector {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-container row g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-5 login-sidebar">
+                <div class="brand-logo">
+                    <i class="fas fa-home"></i> Sasta Room
+                </div>
+                <h3 class="mb-4">Welcome Back!</h3>
+                <p class="lead">Access your account to manage your stay</p>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-search"></i>
+                        <span>Find perfect long-term stays</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Save your favorite properties</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Manage your bookings</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Connect with property owners</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="col-lg-7 login-form-container">
+                <div class="form-header">
+                    <h2>Sign In</h2>
+                    <p>Choose your account type and sign in</p>
+                </div>
+
+                <!-- User Type Selector -->
+                <div class="user-type-selector">
+                    <button type="button" class="user-type-btn active" data-type="customer">
+                        <i class="fas fa-user me-2"></i>Customer
+                    </button>
+                    <button type="button" class="user-type-btn" data-type="owner">
+                        <i class="fas fa-building me-2"></i>Room Owner
+                    </button>
+                    <button type="button" class="user-type-btn" data-type="admin">
+                        <i class="fas fa-shield-alt me-2"></i>Admin
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                        <div class="error-message" id="emailError">Please enter a valid email address</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password"
+                            required>
+                        <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+                    </div>
+
+                    <div class="form-options">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="loginBtn">
+                        <span class="btn-text">Sign In</span>
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                        <i class="fas fa-arrow-right" id="arrowIcon"></i>
+                    </button>
+                </form>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <hr>
+                    <span class="divider-text">or</span>
+                </div>
+
+                <!-- Social Login -->
+                <div class="social-login">
+                    <a href="#" class="social-btn" id="googleLogin">
+                        <i class="fab fa-google"></i> Google
+                    </a>
+                    <a href="#" class="social-btn" id="facebookLogin">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                </div>
+
+                <!-- Sign Up Link -->
+                <div class="signup-link">
+                    <p>Don't have an account?
+                        <a href="register.html">Sign Up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-service.js"></script>
+    <script>
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const loginBtn = document.getElementById('loginBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const arrowIcon = document.getElementById('arrowIcon');
+        const btnText = document.querySelector('.btn-text');
+
+        // Validation patterns
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const passwordMinLength = 8;
+
+        // User type selector functionality
+        document.querySelectorAll('.user-type-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const userType = this.dataset.type;
+                updateFormForUserType(userType);
+                clearErrors();
+            });
+        });
+
+        function updateFormForUserType(type) {
+            switch (type) {
+                case 'customer':
+                    emailInput.placeholder = 'Enter your email';
+                    break;
+                case 'owner':
+                    emailInput.placeholder = 'Enter your business email';
+                    break;
+                case 'admin':
+                    emailInput.placeholder = 'Enter admin email';
+                    break;
+            }
+        }
+
+        // Real-time validation
+        emailInput.addEventListener('blur', validateEmail);
+        passwordInput.addEventListener('blur', validatePassword);
+        emailInput.addEventListener('input', function () {
+            if (emailInput.classList.contains('error')) {
+                validateEmail();
+            }
+        });
+        passwordInput.addEventListener('input', function () {
+            if (passwordInput.classList.contains('error')) {
+                validatePassword();
+            }
+        });
+
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showError(emailInput, emailError, 'Email is required');
+                return false;
+            }
+            if (!emailPattern.test(email)) {
+                showError(emailInput, emailError, 'Please enter a valid email address');
+                return false;
+            }
+            hideError(emailInput, emailError);
+            return true;
+        }
+
+        function validatePassword() {
+            const password = passwordInput.value;
+            if (!password) {
+                showError(passwordInput, passwordError, 'Password is required');
+                return false;
+            }
+            if (password.length < passwordMinLength) {
+                showError(passwordInput, passwordError, `Password must be at least ${passwordMinLength} characters`);
+                return false;
+            }
+            hideError(passwordInput, passwordError);
+            return true;
+        }
+
+        function showError(input, errorElement, message) {
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError(input, errorElement) {
+            input.classList.remove('error');
+            errorElement.style.display = 'none';
+        }
+
+        function clearErrors() {
+            hideError(emailInput, emailError);
+            hideError(passwordInput, passwordError);
+        }
+
+        function showLoading(show) {
+            if (show) {
+                loginBtn.disabled = true;
+                loadingSpinner.style.display = 'block';
+                arrowIcon.style.display = 'none';
+                btnText.textContent = 'Signing In...';
+            } else {
+                loginBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                arrowIcon.style.display = 'block';
+                btnText.textContent = 'Sign In';
+            }
+        }
+
+        // Form submission
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Validate all fields
+            const emailValid = validateEmail();
+            const passwordValid = validatePassword();
+
+            if (!emailValid || !passwordValid) {
+                return;
+            }
+
+            const activeUserType = document.querySelector('.user-type-btn.active').dataset.type;
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            showLoading(true);
+
+            try {
+                // Map frontend user types to backend roles
+                let expectedRole;
+                switch (activeUserType) {
+                    case 'customer':
+                        expectedRole = 'customer';
+                        break;
+                    case 'owner':
+                        expectedRole = 'room_owner';
+                        break;
+                    case 'admin':
+                        expectedRole = 'admin';
+                        break;
+                    default:
+                        expectedRole = 'customer';
+                }
+
+                // Use API service for login
+                const result = await apiService.login(email, password);
+                
+                if (result.success) {
+                    // Check if user role matches selected type
+                    const userRole = result.data.user.role;
+                    if (userRole !== expectedRole) {
+                        showError(emailInput, emailError, `Please select the correct account type. You are registered as ${userRole === 'room_owner' ? 'Room Owner' : userRole.charAt(0).toUpperCase() + userRole.slice(1)}.`);
+                        showLoading(false);
+                        return;
+                    }
+
+                    // Store user data
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    localStorage.setItem('token', result.data.token);
+
+                    // Redirect based on user type
+                    switch (userRole) {
+                        case 'customer':
+                            window.location.href = 'customer-dashboard.html';
+                            break;
+                        case 'room_owner':
+                            window.location.href = 'room-owner-dashboard.html';
+                            break;
+                        case 'admin':
+                            window.location.href = 'admin-dashboard.html';
+                            break;
+                        default:
+                            window.location.href = 'index.html';
+                    }
+                } else {
+                    // Handle error
+                    if (result.message) {
+                        if (result.message.toLowerCase().includes('email') || result.message.toLowerCase().includes('password')) {
+                            showError(passwordInput, passwordError, result.message);
+                        } else {
+                            showError(emailInput, emailError, result.message);
+                        }
+                    } else {
+                        showError(passwordInput, passwordError, 'Login failed. Please try again.');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                const errorMessage = error.message || 'Network error. Please check your connection and try again.';
+                showError(passwordInput, passwordError, errorMessage);
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Social login handlers
+        document.getElementById('googleLogin').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Implement Google OAuth
+            alert('Google login not implemented yet');
+        });
+
+        document.getElementById('facebookLogin').addEventListener('click', function (e) {
+            e.preventDefault();
+            // Implement Facebook OAuth
+            alert('Facebook login not implemented yet');
+        });
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (token && user.role) {
+                // User is already logged in, redirect to appropriate dashboard
+                switch (user.role) {
+                    case 'customer':
+                        window.location.href = 'customer-dashboard.html';
+                        break;
+                    case 'room_owner':
+                        window.location.href = 'room-owner-dashboard.html';
+                        break;
+                    case 'admin':
+                        window.location.href = 'admin-dashboard.html';
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

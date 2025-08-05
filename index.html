@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sasta Room - Find Your Perfect Long-term Stay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --dark-grey: #5F6368;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), #d42a20);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(238, 46, 36, 0.9), rgba(212, 42, 32, 0.9)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 100px 0;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .property-card {
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            margin-bottom: 25px;
+            height: 100%;
+            background: white;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .property-card img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .property-type-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .rating {
+            background-color: var(--success);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        
+        .price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .amenities i {
+            color: var(--secondary);
+            margin-right: 8px;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d42a20;
+            border-color: #d42a20;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .filter-pills .btn {
+            border-radius: 25px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .filter-pills .btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 50px 0 30px 0;
+        }
+        
+        .map-container {
+            height: 300px;
+            background: var(--neutral);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-grey);
+        }
+        
+        .user-type-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-type-card {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid var(--neutral);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-type-card:hover, .user-type-card.active {
+            border-color: var(--primary);
+            background-color: rgba(238, 46, 36, 0.05);
+        }
+        
+        .search-input {
+            color: #000000 !important;
+        }
+        
+        .search-input::placeholder {
+            color: #666666 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-home me-2"></i>
+                <strong>Sasta Room</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a href="register.html" class="btn btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Find Your Perfect Long-term Stay</h1>
+            <p class="lead mb-4">Discover PGs, Shared Rooms, Single Rooms & Flats at unbeatable prices</p>
+        </div>
+    </section>
+
+    <!-- Search Box -->
+    <div class="container">
+        <div class="search-box">
+            <form>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Preferred Location</label>
+                        <input type="text" class="form-control search-input" placeholder="Enter city, area, or landmark">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Accommodation Type</label>
+                        <select class="form-select search-input">
+                            <option value="">All Types</option>
+                            <option value="pg">PG (Paying Guest)</option>
+                            <option value="shared">Shared Room</option>
+                            <option value="single">Single Room</option>
+                            <option value="flat">Flat</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i> Search
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <section class="py-4">
+        <div class="container">
+            <div class="filter-pills text-center">
+                <button class="btn btn-outline-secondary active">All</button>
+                <button class="btn btn-outline-secondary">PG</button>
+                <button class="btn btn-outline-secondary">Shared Room</button>
+                <button class="btn btn-outline-secondary">Single Room</button>
+                <button class="btn btn-outline-secondary">Flat</button>
+                <button class="btn btn-outline-secondary">Under ₹10,000</button>
+                <button class="btn btn-outline-secondary">₹10,000 - ₹20,000</button>
+                <button class="btn btn-outline-secondary">Above ₹20,000</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Properties Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Featured Long-term Stays</h2>
+            <div class="row">
+                <!-- Property 1 - PG -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3" class="card-img-top" alt="PG Accommodation">
+                        <span class="property-type-badge">PG</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Green Valley PG</h5>
+                                <span class="rating">4.6 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Koramangala, Bangalore</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-wifi"></i> Free WiFi</small>
+                                <small class="d-block"><i class="fas fa-utensils"></i> Meals Included</small>
+                                <small class="d-block"><i class="fas fa-washing-machine"></i> Laundry</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹12,500<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('pg1')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 2 - Shared Room -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3" class="card-img-top" alt="Shared Room">
+                        <span class="property-type-badge">Shared Room</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Urban Living Co-space</h5>
+                                <span class="rating">4.8 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Powai, Mumbai</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-wifi"></i> High-speed Internet</small>
+                                <small class="d-block"><i class="fas fa-dumbbell"></i> Gym Access</small>
+                                <small class="d-block"><i class="fas fa-car"></i> Parking</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹8,500<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('shared1')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 3 - Single Room -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3" class="card-img-top" alt="Single Room">
+                        <span class="property-type-badge">Single Room</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Cozy Studio Space</h5>
+                                <span class="rating">4.7 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Sector 62, Noida</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-bed"></i> Furnished</small>
+                                <small class="d-block"><i class="fas fa-snowflake"></i> AC</small>
+                                <small class="d-block"><i class="fas fa-shield-alt"></i> 24/7 Security</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹15,000<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('single1')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 4 - Flat -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3" class="card-img-top" alt="Flat">
+                        <span class="property-type-badge">Flat</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Modern 2BHK Apartment</h5>
+                                <span class="rating">4.9 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> HSR Layout, Bangalore</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-swimming-pool"></i> Swimming Pool</small>
+                                <small class="d-block"><i class="fas fa-leaf"></i> Garden</small>
+                                <small class="d-block"><i class="fas fa-child"></i> Kids Play Area</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹28,000<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('flat1')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 5 - PG -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3" class="card-img-top" alt="Premium PG">
+                        <span class="property-type-badge">PG</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Elite Executive PG</h5>
+                                <span class="rating">4.5 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Gurgaon Sector 29</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-concierge-bell"></i> Housekeeping</small>
+                                <small class="d-block"><i class="fas fa-tv"></i> Entertainment Room</small>
+                                <small class="d-block"><i class="fas fa-medical-kit"></i> First Aid</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹18,500<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('pg2')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 6 - Shared Room -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card card position-relative">
+                        <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3" class="card-img-top" alt="Co-living Space">
+                        <span class="property-type-badge">Shared Room</span>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">Co-living Hub</h5>
+                                <span class="rating">4.4 <i class="fas fa-star"></i></span>
+                            </div>
+                            <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> Bandra West, Mumbai</p>
+                            <div class="amenities mb-3">
+                                <small class="d-block"><i class="fas fa-users"></i> Community Events</small>
+                                <small class="d-block"><i class="fas fa-coffee"></i> Common Kitchen</small>
+                                <small class="d-block"><i class="fas fa-book"></i> Study Area</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">₹11,000<small>/month</small></span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('shared2')">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-primary btn-lg">
+                    View All Properties <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5" style="background-color: var(--neutral);">
+        <div class="container">
+            <h2 class="section-title text-center">How Sasta Room Works</h2>
+            <div class="row text-center mt-5">
+                <div class="col-md-3 mb-4">
+                    <div class="p-4 bg-white rounded shadow-sm h-100">
+                        <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background-color: var(--primary);">
+                            <i class="fas fa-search fa-2x"></i>
+                        </div>
+                        <h4>Search</h4>
+                        <p>Find your preferred location and accommodation type</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="p-4 bg-white rounded shadow-sm h-100">
+                        <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background-color: var(--secondary);">
+                            <i class="fas fa-eye fa-2x"></i>
+                        </div>
+                        <h4>View</h4>
+                        <p>Browse detailed property information and photos</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="p-4 bg-white rounded shadow-sm h-100">
+                        <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background-color: var(--success);">
+                            <i class="fas fa-handshake fa-2x"></i>
+                        </div>
+                        <h4>Connect</h4>
+                        <p>Contact property owners directly</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <div class="p-4 bg-white rounded shadow-sm h-100">
+                        <div class="text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background-color: var(--primary);">
+                            <i class="fas fa-home fa-2x"></i>
+                        </div>
+                        <h4>Move In</h4>
+                        <p>Settle into your perfect long-term stay</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Property Map Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">Explore Properties on Map</h2>
+            <div class="map-container">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x mb-3"></i>
+                    <h5>Interactive Map View</h5>
+                    <p class="text-muted">Find properties near your preferred locations</p>
+                    <button class="btn btn-primary">Launch Map View</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4"><i class="fas fa-home me-2"></i> Sasta Room</h4>
+                    <p>Your trusted partner for long-term accommodation. Find PGs, shared rooms, single rooms, and flats at the best prices.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Properties</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Locations</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">About</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Contact Us</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Safety Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">For Property Owners</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="room-owner-login.html" class="text-white-50">List Your Property</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Owner Benefits</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Marketing Support</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Success Stories</a></li>
+                    </ul>
+                    <div class="mt-4">
+                        <h6>Follow Us</h6>
+                        <p class="small text-white-50">Stay updated with latest properties</p>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0 text-white-50">&copy; 2024 Sasta Room. All rights reserved. | Made with ❤️ for better living</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/test-connection.js"></script>
+    
+    <script>
+        // Global variables
+        let properties = [];
+        let currentFilters = {};
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProperties();
+            setupEventListeners();
+        });
+
+        // Load properties from API
+        async function loadProperties(filters = {}) {
+            try {
+                const response = await apiService.getProperties(filters);
+                if (response.success) {
+                    properties = response.data.properties;
+                    displayProperties(properties);
+                } else {
+                    console.error('Failed to load properties:', response.message);
+                }
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                // Show fallback properties for demo
+                displayFallbackProperties();
+            }
+        }
+
+        // Display properties in the UI
+        function displayProperties(properties) {
+            const container = document.querySelector('.row');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            if (properties.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <h4>No properties found</h4>
+                        <p class="text-muted">Try adjusting your search criteria</p>
+                    </div>
+                `;
+                return;
+            }
+
+            properties.forEach(property => {
+                const propertyCard = createPropertyCard(property);
+                container.appendChild(propertyCard);
+            });
+        }
+
+        // Create property card HTML
+        function createPropertyCard(property) {
+            const div = document.createElement('div');
+            div.className = 'col-lg-4 col-md-6 mb-4';
+            
+            const imageUrl = property.images && property.images.length > 0 
+                ? property.images[0].image_url 
+                : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3';
+
+            div.innerHTML = `
+                <div class="property-card card position-relative">
+                    <img src="${imageUrl}" class="card-img-top" alt="${property.title}">
+                    <span class="property-type-badge">${property.property_type}</span>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">${property.title}</h5>
+                            <span class="rating">${property.rating || 4.0} <i class="fas fa-star"></i></span>
+                        </div>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-map-marker-alt me-1"></i> ${property.city}, ${property.state}
+                        </p>
+                        <div class="amenities mb-3">
+                            <small class="d-block"><i class="fas fa-bed"></i> ${property.bedrooms} Bedroom</small>
+                            <small class="d-block"><i class="fas fa-bath"></i> ${property.bathrooms} Bathroom</small>
+                            <small class="d-block"><i class="fas fa-home"></i> ${property.furnishing}</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price">₹${property.rent_amount}<small>/month</small></span>
+                            <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('${property.id}')">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Display fallback properties for demo
+        function displayFallbackProperties() {
+            console.log('Showing fallback properties');
+            // Keep existing static properties for demo
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter pills functionality
+            document.querySelectorAll('.filter-pills .btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-pills .btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filterType = this.dataset.filter;
+                    if (filterType) {
+                        currentFilters.property_type = filterType;
+                        loadProperties(currentFilters);
+                    }
+                });
+            });
+
+            // Search functionality
+            const searchForm = document.querySelector('form');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const location = document.querySelector('input[placeholder*="city"]').value;
+                    const type = document.querySelector('select').value;
+                    
+                    currentFilters = {};
+                    if (location) currentFilters.city = location;
+                    if (type) currentFilters.property_type = type;
+                    
+                    loadProperties(currentFilters);
+                });
+            }
+        }
+
+        // Property details function
+        function showPropertyDetails(propertyId) {
+            // Redirect to property detail page or show modal
+            window.location.href = `property-details.html?id=${propertyId}`;
+        }
+
+        // Check authentication status
+        function checkAuthStatus() {
+            if (apiService.isAuthenticated()) {
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                updateUIForAuthenticatedUser(user);
+            }
+        }
+
+        // Update UI for authenticated user
+        function updateUIForAuthenticatedUser(user) {
+            const navbar = document.querySelector('.navbar-nav');
+            if (navbar) {
+                const userMenu = document.createElement('li');
+                userMenu.className = 'nav-item dropdown';
+                userMenu.innerHTML = `
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>${user.first_name || 'User'}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="profile.html">Profile</a></li>
+                        <li><a class="dropdown-item" href="my-bookings.html">My Bookings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()">Logout</a></li>
+                    </ul>
+                `;
+                navbar.appendChild(userMenu);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            try {
+                await apiService.logout();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize auth check
+        checkAuthStatus();
+    </script>
+</body>
+</html>

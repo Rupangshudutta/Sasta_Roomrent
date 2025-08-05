@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--neutral) 0%, #e8f0fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .register-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        
+        .register-sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, #d42a20 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 5px;
+        }
+        
+        .user-type-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 12px;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .user-type-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .register-form-container {
+            padding: 60px 50px;
+        }
+        
+        .form-control {
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(238, 46, 36, 0.25);
+        }
+        
+        .form-select {
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(238, 46, 36, 0.25);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #d42a20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 46, 36, 0.3);
+        }
+        
+        .social-login {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e8eaed;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .social-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin-top: 40px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .feature-item i {
+            background: rgba(255,255,255,0.2);
+            padding: 8px;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.875rem;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #e8eaed;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+        
+        .strength-weak { background: #ea4335; width: 25%; }
+        .strength-fair { background: #fbbc04; width: 50%; }
+        .strength-good { background: #34a853; width: 75%; }
+        .strength-strong { background: #137333; width: 100%; }
+        
+        .owner-fields {
+            display: none;
+        }
+        
+        .owner-fields.show {
+            display: block;
+        }
+        
+        .terms-text {
+            font-size: 0.875rem;
+            color: #5f6368;
+        }
+        
+        .terms-text a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-container row g-0">
+            <!-- Sidebar -->
+            <div class="col-lg-5 register-sidebar">
+                <div class="brand-logo">
+                    <i class="fas fa-home"></i> Sasta Room
+                </div>
+                <h3 class="mb-4">Join Our Community!</h3>
+                <p class="lead">Create your account and start your journey</p>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="fas fa-rocket"></i>
+                        <span>Quick and easy registration</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure and verified accounts</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-star"></i>
+                        <span>Access to premium features</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-headset"></i>
+                        <span>24/7 customer support</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div class="col-lg-7 register-form-container">
+                <div class="mb-4">
+                    <h2 class="fw-bold mb-2">Create Account</h2>
+                    <p class="text-muted">Choose your account type and get started</p>
+                </div>
+                
+                <!-- User Type Selector -->
+                <div class="user-type-selector mb-4">
+                    <button type="button" class="user-type-btn active" data-type="customer">
+                        <i class="fas fa-user me-2"></i>Customer
+                    </button>
+                    <button type="button" class="user-type-btn" data-type="owner">
+                        <i class="fas fa-building me-2"></i>Room Owner
+                    </button>
+                </div>
+                
+                <!-- Registration Form -->
+                <form id="registerForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">First Name</label>
+                            <input type="text" class="form-control" name="firstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Last Name</label>
+                            <input type="text" class="form-control" name="lastName" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <input type="tel" class="form-control" name="phone" placeholder="Enter phone number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Date of Birth</label>
+                            <input type="date" class="form-control" name="dob" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Owner-specific fields -->
+                    <div class="owner-fields" id="ownerFields">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Business Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="businessName" placeholder="Enter business/property name">
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Business Type <span class="text-danger">*</span></label>
+                                <select class="form-select" name="businessType">
+                                    <option value="">Select business type</option>
+                                    <option value="individual">Individual Owner</option>
+                                    <option value="company">Company</option>
+                                    <option value="agency">Real Estate Agency</option>
+                                    <option value="broker">Property Broker</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Experience (Years)</label>
+                                <select class="form-select" name="experience">
+                                    <option value="">Select experience</option>
+                                    <option value="0-1">0-1 Years</option>
+                                    <option value="1-3">1-3 Years</option>
+                                    <option value="3-5">3-5 Years</option>
+                                    <option value="5+">5+ Years</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Number of Properties</label>
+                                <select class="form-select" name="propertyCount">
+                                    <option value="">Select range</option>
+                                    <option value="1">1 Property</option>
+                                    <option value="2-5">2-5 Properties</option>
+                                    <option value="6-10">6-10 Properties</option>
+                                    <option value="10+">10+ Properties</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Primary Location</label>
+                                <input type="text" class="form-control" name="primaryLocation" placeholder="Main operating city">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tax ID/Registration Number</label>
+                            <input type="text" class="form-control" name="taxId" placeholder="GST/PAN/Registration number">
+                            <small class="text-muted">Optional - for tax purposes and verification</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Bank Account Details</label>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="bankAccount" placeholder="Bank account number">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" name="ifscCode" placeholder="IFSC Code">
+                                </div>
+                            </div>
+                            <small class="text-muted">For rental payments and security deposits</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Address</label>
+                        <input type="text" class="form-control" name="address" placeholder="Enter your address" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">City</label>
+                            <input type="text" class="form-control" name="city" placeholder="Enter city" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">State</label>
+                            <select class="form-select" name="state" required>
+                                <option value="">Select state</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Pincode</label>
+                            <input type="text" class="form-control" name="pincode" placeholder="6-digit pincode" maxlength="6" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Create a strong password" required>
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <small id="strengthText" class="text-muted">Password strength: Weak</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Confirm Password</label>
+                        <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm your password" required>
+                        <small id="passwordMatch" class="text-muted"></small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label terms-text" for="agreeTerms">
+                                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                            </label>
+                        </div>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" id="newsletter">
+                            <label class="form-check-label terms-text" for="newsletter">
+                                Subscribe to our newsletter for updates and offers
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 mb-4">
+                        Create Account <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+                
+                <!-- Divider -->
+                <div class="position-relative mb-4">
+                    <hr>
+                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted">or</span>
+                </div>
+                
+                <!-- Social Registration -->
+                <div class="social-login mb-4">
+                    <a href="#" class="social-btn">
+                        <i class="fab fa-google"></i> Google
+                    </a>
+                    <a href="#" class="social-btn">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                </div>
+                
+                <!-- Sign In Link -->
+                <div class="text-center">
+                    <p class="mb-0">Already have an account? 
+                        <a href="login.html" class="text-decoration-none fw-semibold">Sign In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api-service.js"></script>
+    <script>
+        // User type selector functionality
+        document.querySelectorAll('.user-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.user-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const userType = this.dataset.type;
+                updateFormForUserType(userType);
+            });
+        });
+        
+        function updateFormForUserType(type) {
+            const ownerFields = document.getElementById('ownerFields');
+            const emailInput = document.querySelector('input[name="email"]');
+            
+            if (type === 'owner') {
+                ownerFields.classList.add('show');
+                emailInput.placeholder = 'Enter your business email';
+                // Make required owner fields
+                const requiredFields = ['businessName', 'businessType'];
+                ownerFields.querySelectorAll('input, select').forEach(field => {
+                    field.required = requiredFields.includes(field.name);
+                });
+            } else {
+                ownerFields.classList.remove('show');
+                emailInput.placeholder = 'Enter your email';
+                // Remove required from all owner fields
+                ownerFields.querySelectorAll('input, select').forEach(field => {
+                    field.required = false;
+                });
+            }
+        }
+        
+        // Password strength checker
+        const passwordInput = document.querySelector('input[name="password"]');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            updatePasswordStrength(strength);
+        });
+        
+        function calculatePasswordStrength(password) {
+            let score = 0;
+            
+            if (password.length >= 8) score++;
+            if (password.match(/[a-z]/)) score++;
+            if (password.match(/[A-Z]/)) score++;
+            if (password.match(/[0-9]/)) score++;
+            if (password.match(/[^a-zA-Z0-9]/)) score++;
+            
+            return score;
+        }
+        
+        function updatePasswordStrength(strength) {
+            strengthFill.className = 'strength-fill';
+            
+            switch(strength) {
+                case 0:
+                case 1:
+                    strengthFill.classList.add('strength-weak');
+                    strengthText.textContent = 'Password strength: Weak';
+                    strengthText.className = 'text-danger';
+                    break;
+                case 2:
+                    strengthFill.classList.add('strength-fair');
+                    strengthText.textContent = 'Password strength: Fair';
+                    strengthText.className = 'text-warning';
+                    break;
+                case 3:
+                case 4:
+                    strengthFill.classList.add('strength-good');
+                    strengthText.textContent = 'Password strength: Good';
+                    strengthText.className = 'text-info';
+                    break;
+                case 5:
+                    strengthFill.classList.add('strength-strong');
+                    strengthText.textContent = 'Password strength: Strong';
+                    strengthText.className = 'text-success';
+                    break;
+            }
+        }
+        
+        // Password confirmation checker
+        const confirmPasswordInput = document.querySelector('input[name="confirmPassword"]');
+        const passwordMatchText = document.getElementById('passwordMatch');
+        
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword === '') {
+                passwordMatchText.textContent = '';
+                passwordMatchText.className = 'text-muted';
+            } else if (password === confirmPassword) {
+                passwordMatchText.textContent = 'Passwords match';
+                passwordMatchText.className = 'text-success';
+            } else {
+                passwordMatchText.textContent = 'Passwords do not match';
+                passwordMatchText.className = 'text-danger';
+            }
+        });
+        
+        // Form validation and submission
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const password = formData.get('password');
+            const confirmPassword = formData.get('confirmPassword');
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // Validate password strength (must meet backend requirements)
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long!');
+                return;
+            }
+            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(password)) {
+                alert('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character!');
+                return;
+            }
+            
+            // Validate terms agreement
+            if (!agreeTerms) {
+                alert('Please agree to the Terms of Service and Privacy Policy!');
+                return;
+            }
+            
+            // Validate email format
+            const email = formData.get('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address!');
+                return;
+            }
+            
+            // Validate phone number (Indian format)
+            const phone = formData.get('phone').replace(/[\s\-\(\)]/g, '');
+            if (phone.length !== 10 || !/^[6-9]\d{9}$/.test(phone)) {
+                alert('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9!');
+                return;
+            }
+            
+            // Validate names (only letters and spaces)
+            const firstName = formData.get('firstName').trim();
+            const lastName = formData.get('lastName').trim();
+            if (!/^[a-zA-Z\s]+$/.test(firstName)) {
+                alert('First name can only contain letters and spaces!');
+                return;
+            }
+            if (!/^[a-zA-Z\s]+$/.test(lastName)) {
+                alert('Last name can only contain letters and spaces!');
+                return;
+            }
+            
+            // Validate owner-specific fields
+            if (activeUserType === 'owner') {
+                const businessName = formData.get('businessName').trim();
+                const businessType = formData.get('businessType');
+                
+                if (!businessName) {
+                    alert('Business name is required for room owners!');
+                    return;
+                }
+                if (!businessType) {
+                    alert('Please select your business type!');
+                    return;
+                }
+            }
+            
+            // Validate pincode
+            const pincode = formData.get('pincode');
+            if (!/^\d{6}$/.test(pincode)) {
+                alert('Please enter a valid 6-digit pincode!');
+                return;
+            }
+            
+            // Get user type
+            const activeUserType = document.querySelector('.user-type-btn.active').dataset.type;
+            
+            // Prepare registration data
+            const registrationData = {
+                first_name: formData.get('firstName'),
+                last_name: formData.get('lastName'),
+                email: email,
+                password: password,
+                phone: phone,
+                role: activeUserType === 'owner' ? 'room_owner' : 'customer'
+            };
+            
+            // Add owner-specific data if applicable
+            if (activeUserType === 'owner') {
+                registrationData.business_name = formData.get('businessName');
+                registrationData.business_type = formData.get('businessType');
+                registrationData.experience = formData.get('experience');
+                registrationData.property_count = formData.get('propertyCount');
+                registrationData.primary_location = formData.get('primaryLocation');
+                registrationData.tax_id = formData.get('taxId');
+                registrationData.bank_account = formData.get('bankAccount');
+                registrationData.ifsc_code = formData.get('ifscCode');
+            }
+            
+            // Show loading state
+            const submitButton = document.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+            submitButton.disabled = true;
+            
+            try {
+                // Call API service for registration
+                const result = await apiService.register(registrationData);
+                
+                if (result.success) {
+                    alert(`Account created successfully! Welcome to Sasta Room!`);
+                    
+                    // Redirect to login page
+                    window.location.href = `login.html?registered=${activeUserType}`;
+                } else {
+                    alert(result.message || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('Network error. Please check your connection and try again.');
+            } finally {
+                // Reset button state
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+        
+        // Email validation on blur
+        document.querySelector('input[name="email"]').addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.style.borderColor = '#ea4335';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(234, 67, 53, 0.25)';
+            } else {
+                this.style.borderColor = '';
+                this.style.boxShadow = '';
+            }
+        });
+        
+        // Phone number formatting (Indian format)
+        document.querySelector('input[name="phone"]').addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+            this.value = value;
+        });
+        
+        // Auto-capitalize names
+        document.querySelectorAll('input[name="firstName"], input[name="lastName"]').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
+            });
+        });
+        
+        // Check for registration success from URL params
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromLogin = urlParams.get('from');
+            
+            if (fromLogin === 'login') {
+                // Show a welcome message or highlight the registration form
+                document.querySelector('.register-form-container h2').innerHTML = 
+                    '<i class="fas fa-user-plus me-2"></i>Create Your Account';
+            }
+        });
+    </script>
+</body>
+</html>
+<!-- End of register.html -->

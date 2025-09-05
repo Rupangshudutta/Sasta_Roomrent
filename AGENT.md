@@ -1,5 +1,4 @@
-# Sasta Room - AI Agent Configuration
-
+# Sasta Room -
 ## Project Overview
 Sasta Room is a comprehensive long-term accommodation booking platform similar to OYO, built with modern web technologies and featuring separate dashboards for customers, room owners, and administrators.
 

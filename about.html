@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --dark-grey: #5F6368;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), #d42a20);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary), #d42a20);
+            color: white;
+            padding: 80px 0;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0, transparent 60%),
+                        linear-gradient(90deg, rgba(238,46,36,0.08), rgba(26,115,232,0.06));
+            pointer-events: none;
+            z-index: 1;
+            animation: heroFloat 14s infinite linear;
+        }
+        @keyframes heroFloat {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(12px); }
+            100% { transform: translateY(0); }
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .trust-badge {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            height: 100%;
+        }
+        
+        .trust-badge i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 50px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            margin-bottom: 50px;
+            position: relative;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            width: 45%;
+            position: relative;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: 55%;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-right: 55%;
+            text-align: right;
+        }
+        
+        .timeline-badge {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 0 0 4px white, 0 0 0 8px var(--primary);
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+        
+        .testimonial-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-section { padding: 40px 0; }
+            .testimonial-card { padding: 18px; }
+            .timeline-content { padding: 18px; }
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+            padding: 12px 30px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d42a20;
+            border-color: #d42a20;
+        }
+        
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 50px 0 30px 0;
+        }
+        
+        .video-section {
+            position: relative;
+            padding: 80px 0;
+            background: var(--neutral);
+        }
+        
+        .video-placeholder {
+            background: linear-gradient(135deg, rgba(238, 46, 36, 0.1), rgba(26, 115, 232, 0.1));
+            border-radius: 15px;
+            padding: 100px 50px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 80px !important;
+                text-align: left !important;
+            }
+            
+            .timeline-badge {
+                left: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-home me-2"></i>
+                <strong>Sasta Room</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Properties.html">Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="locations.html">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a href="register.html" class="btn btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center hero-inner">
+            <h1 class="display-4 fw-bold mb-3">Finding Your Perfect Room<br>Shouldn't Be This Hard</h1>
+            <p class="lead fs-5">We're changing that. One verified property at a time.</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="Properties.html" class="btn btn-light btn-lg">
+                    <i class="fas fa-search me-2"></i>Browse Properties
+                </a>
+                <a href="register.html" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem & Solution -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row align-items-center mb-5">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4">The Problem We Saw</h2>
+                    <p class="lead">In 2020, we noticed something broken in the rental market:</p>
+                    <ul class="fs-5">
+                        <li class="mb-3">Students paying brokers ₹5,000-10,000 just to see rooms</li>
+                        <li class="mb-3">Fake listings with photos from Google</li>
+                        <li class="mb-3">Owners struggling to find genuine tenants</li>
+                        <li class="mb-3">No transparency in pricing or amenities</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?ixlib=rb-4.0.3" alt="Problem" class="img-fluid rounded shadow" loading="lazy">
+                </div>
+            </div>
+            
+            <div class="row align-items-center">
+                <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4">Our Solution</h2>
+                    <p class="lead">A platform where:</p>
+                    <ul class="fs-5">
+                        <li class="mb-3"><strong>Zero broker fees</strong> - Direct connection with owners</li>
+                        <li class="mb-3"><strong>100% verified</strong> - Every property physically verified</li>
+                        <li class="mb-3"><strong>Real photos</strong> - What you see is what you get</li>
+                        <li class="mb-3"><strong>Transparent pricing</strong> - No hidden charges</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 order-lg-1">
+                    <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3" alt="Solution" class="img-fluid rounded shadow" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges -->
+    <section class="py-5" style="background: var(--neutral);">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Why Students & Professionals Trust Us</h2>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="trust-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Verified Properties</h4>
+                        <p class="mb-0">Every listing verified by our team</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="trust-badge">
+                        <i class="fas fa-rupee-sign"></i>
+                        <h4>Zero Brokerage</h4>
+                        <p class="mb-0">Save thousands in broker fees</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="trust-badge">
+                        <i class="fas fa-headset"></i>
+                        <h4>24/7 Support</h4>
+                        <p class="mb-0">Real humans, real help</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="trust-badge">
+                        <i class="fas fa-lock"></i>
+                        <h4>Secure Payments</h4>
+                        <p class="mb-0">Bank-grade security</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journey Timeline -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Our Journey So Far</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-badge">2020</div>
+                    <div class="timeline-content">
+                        <h4>Started in a Bangalore PG</h4>
+                        <p>Three roommates frustrated with the rental process decided to build something better. Started with just 50 properties in Bangalore.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-badge">2021</div>
+                    <div class="timeline-content">
+                        <h4>First 1,000 Happy Customers</h4>
+                        <p>Expanded to Mumbai and Delhi. Word spread fast - students started recommending us to friends. Zero marketing budget, pure word-of-mouth.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-badge">2022</div>
+                    <div class="timeline-content">
+                        <h4>Went Pan-India</h4>
+                        <p>Launched in 25 cities. Introduced instant booking and virtual tours. Helped 50,000+ people find homes during this year alone.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-badge">2023</div>
+                    <div class="timeline-content">
+                        <h4>Crossed 1 Million Users</h4>
+                        <p>Became one of India's fastest-growing rental platforms. Launched mobile app. Added AI-powered recommendations.</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-badge">2024</div>
+                    <div class="timeline-content">
+                        <h4>Today</h4>
+                        <p><strong>50,000+ properties | 100+ cities | 2M+ users</strong><br>Still growing, still improving, still focused on making renting easier for you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real Testimonials -->
+    <section class="py-5" style="background: var(--neutral);">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">What Our Users Say</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://i.pravatar.cc/150?img=1" alt="User" loading="lazy">
+                            <div class="ms-3">
+                                <h5 class="mb-0">Rahul Sharma</h5>
+                                <small class="text-muted">Engineering Student, Bangalore</small>
+                            </div>
+                        </div>
+                        <p>"Saved ₹8,000 in broker fees! Found my PG in 2 days. The photos were exactly like the actual room. Highly recommend!"</p>
+                        <div class="text-warning">★★★★★</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="User" loading="lazy">
+                            <div class="ms-3">
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <small class="text-muted">Software Engineer, Pune</small>
+                            </div>
+                        </div>
+                        <p>"Best decision ever! Direct contact with owner, transparent pricing, and the support team actually responds. No more broker harassment."</p>
+                        <div class="text-warning">★★★★★</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://i.pravatar.cc/150?img=8" alt="User" loading="lazy">
+                            <div class="ms-3">
+                                <h5 class="mb-0">Amit Kumar</h5>
+                                <small class="text-muted">MBA Student, Delhi</small>
+                            </div>
+                        </div>
+                        <p>"Found a great flat near my college. The virtual tour feature saved me so much time. Moved in within a week!"</p>
+                        <div class="text-warning">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">See How It Works</h2>
+            <div class="video-placeholder">
+                <i class="fas fa-play-circle" style="font-size: 5rem; color: var(--primary);"></i>
+                <h3 class="mt-4">Watch Our 2-Minute Demo</h3>
+                <p class="lead">See how easy it is to find your perfect room</p>
+                <button class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-play me-2"></i>Play Video
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-3">Built By Real People</h2>
+            <p class="text-center text-muted mb-5">Not a faceless corporation. Just a team that cares.</p>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mx-auto mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h4>Rajesh Kumar</h4>
+                        <p class="text-muted">Founder & CEO</p>
+                        <p class="small">Ex-OYO, IIT Delhi. Started this after his own bad rental experience.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mx-auto mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--secondary), var(--success)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h4>Priya Sharma</h4>
+                        <p class="text-muted">CTO</p>
+                        <p class="small">Built the entire platform. Believes in simple, user-friendly tech.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mx-auto mb-3" style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--success), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Amit Patel</h4>
+                        <p class="text-muted">Head of Operations</p>
+                        <p class="small">Ensures every property is verified. Quality is his obsession.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h3 class="mb-4">Website Developed By</h3>
+                <div class="row g-4 justify-content-center">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3">
+                            <div class="mx-auto mb-2" style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h5>Arjun Verma</h5>
+                            <p class="text-muted small mb-1">Full-Stack Developer</p>
+                            <p class="small">Node.js | React | MySQL</p>
+                            <a href="mailto:arjun.dev@sastaroom.com" class="text-primary small"><i class="fas fa-envelope"></i> arjun.dev@sastaroom.com</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3">
+                            <div class="mx-auto mb-2" style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--secondary), var(--success)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <h5>Sneha Reddy</h5>
+                            <p class="text-muted small mb-1">UI/UX Designer</p>
+                            <p class="small">Design | Frontend</p>
+                            <a href="mailto:sneha.design@sastaroom.com" class="text-primary small"><i class="fas fa-envelope"></i> sneha.design@sastaroom.com</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3">
+                            <div class="mx-auto mb-2" style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--success), var(--primary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <h5>Vikram Singh</h5>
+                            <p class="text-muted small mb-1">Backend Engineer</p>
+                            <p class="small">API | Database | Security</p>
+                            <a href="mailto:vikram.backend@sastaroom.com" class="text-primary small"><i class="fas fa-envelope"></i> vikram.backend@sastaroom.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4"><i class="fas fa-home me-2"></i> Sasta Room</h4>
+                    <p>Making room hunting simple, transparent, and broker-free since 2020.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="Properties.html" class="text-white-50">Properties</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-white-50">About</a></li>
+                        <li class="mb-2"><a href="contact.html" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Safety Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">For Property Owners</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="room-owner-login.html" class="text-white-50">List Your Property</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Owner Benefits</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Success Stories</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p id="footerYearText" class="mb-0 text-white-50">&copy; 2024 Sasta Room. All rights reserved. | Made with ❤️ for better living</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update footer year dynamically
+        (function updateFooterYear(){
+            try{
+                const el = document.getElementById('footerYearText');
+                if (el) {
+                    const y = new Date().getFullYear();
+                    el.innerHTML = `&copy; ${y} Sasta Room. All rights reserved. | Made with ❤️ for better living`;
+                }
+            }catch(e){ /* ignore */ }
+        })();
+    </script>
+</body>
+</html>

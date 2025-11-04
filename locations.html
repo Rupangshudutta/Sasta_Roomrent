@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popular Locations - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --dark-grey: #5F6368;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), #d42a20);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(238, 46, 36, 0.9), rgba(212, 42, 32, 0.9)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 100px 0;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 70px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .location-card {
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            margin-bottom: 25px;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .location-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .location-card .card-body {
+            background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+        }
+
+        /* keyboard focus styles for accessibility */
+        .location-card:focus {
+            outline: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 0 0 4px rgba(238,46,36,0.12);
+            transform: translateY(-6px);
+        }
+
+        @media (max-width: 767.98px) {
+            .hero-section { padding: 60px 0; }
+            .location-card img { height: 160px; }
+        }
+        
+        .location-card img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .location-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255,255,255,0.95);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d42a20;
+            border-color: #d42a20;
+        }
+        
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 50px 0 30px 0;
+        }
+        
+        .city-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--neutral);
+        }
+        
+        .city-stats div {
+            text-align: center;
+        }
+        
+        .city-stats .stat-number {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .city-stats .stat-label {
+            font-size: 0.8rem;
+            color: var(--dark-grey);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-home me-2"></i>
+                <strong>Sasta Room</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Properties.html">Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="locations.html">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a href="register.html" class="btn btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">Explore Popular Locations</h1>
+            <p class="lead mb-4">Find your perfect stay in India's top cities</p>
+        </div>
+    </section>
+
+    <!-- Top Cities Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title">Top Cities</h2>
+            <div class="row" id="topCitiesContainer">
+                <!-- Bangalore -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Bangalore')">
+                        <img src="https://images.unsplash.com/photo-1596176530529-78163a4f7af2?ixlib=rb-4.0.3" alt="Bangalore" loading="lazy">
+                        <span class="location-badge">2,500+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Bangalore</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Karnataka</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹8K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.5★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mumbai -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Mumbai')">
+                        <img src="https://images.unsplash.com/photo-1566552881560-0be862a7c445?ixlib=rb-4.0.3" alt="Mumbai" loading="lazy">
+                        <span class="location-badge">3,200+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Mumbai</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Maharashtra</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹10K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.6★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delhi -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Delhi')">
+                        <img src="https://images.unsplash.com/photo-1587474260584-136574528ed5?ixlib=rb-4.0.3" alt="Delhi" loading="lazy">
+                        <span class="location-badge">2,800+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Delhi</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> National Capital</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹9K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.4★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pune -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Pune')">
+                        <img src="https://images.unsplash.com/photo-1595658658481-d53d3f999875?ixlib=rb-4.0.3" alt="Pune" loading="lazy">
+                        <span class="location-badge">1,800+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Pune</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Maharashtra</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹7K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.5★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hyderabad -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Hyderabad')">
+                        <img src="https://images.unsplash.com/photo-1609920658906-8223bd289001?ixlib=rb-4.0.3" alt="Hyderabad" loading="lazy">
+                        <span class="location-badge">2,100+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Hyderabad</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Telangana</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹7.5K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.6★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chennai -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Chennai')">
+                        <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?ixlib=rb-4.0.3" alt="Chennai" loading="lazy">
+                        <span class="location-badge">1,600+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Chennai</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> Tamil Nadu</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹7K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.4★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolkata -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="location-card card position-relative" onclick="searchLocation('Kolkata')">
+                        <img src="https://images.unsplash.com/photo-1558431382-27e303142255?ixlib=rb-4.0.3" alt="Kolkata" loading="lazy">
+                        <span class="location-badge">1,400+ Properties</span>
+                        <div class="card-body">
+                            <h4 class="card-title mb-2">Kolkata</h4>
+                            <p class="text-muted mb-3"><i class="fas fa-map-marker-alt me-1"></i> West Bengal</p>
+                            <div class="city-stats">
+                                <div>
+                                    <div class="stat-number">₹6.5K+</div>
+                                    <div class="stat-label">Starting from</div>
+                                </div>
+                                <div>
+                                    <div class="stat-number">4.5★</div>
+                                    <div class="stat-label">Avg Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Areas Section -->
+    <section class="py-5" style="background-color: var(--neutral);">
+        <div class="container">
+            <h2 class="section-title">Popular Areas in Bangalore</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Koramangala, Bangalore')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Koramangala</h5>
+                            <p class="text-muted mb-0 small">850+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('HSR Layout, Bangalore')">
+                        <div class="card-body">
+                            <h5 class="mb-2">HSR Layout</h5>
+                            <p class="text-muted mb-0 small">720+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Whitefield, Bangalore')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Whitefield</h5>
+                            <p class="text-muted mb-0 small">680+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Indiranagar, Bangalore')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Indiranagar</h5>
+                            <p class="text-muted mb-0 small">590+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title mt-5">Popular Areas in Mumbai</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Powai, Mumbai')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Powai</h5>
+                            <p class="text-muted mb-0 small">920+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Bandra, Mumbai')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Bandra</h5>
+                            <p class="text-muted mb-0 small">850+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Andheri, Mumbai')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Andheri</h5>
+                            <p class="text-muted mb-0 small">780+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Thane, Mumbai')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Thane</h5>
+                            <p class="text-muted mb-0 small">650+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title mt-5">Popular Areas in Delhi NCR</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Gurgaon')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Gurgaon</h5>
+                            <p class="text-muted mb-0 small">1,100+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Noida')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Noida</h5>
+                            <p class="text-muted mb-0 small">980+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Dwarka, Delhi')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Dwarka</h5>
+                            <p class="text-muted mb-0 small">720+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Rohini, Delhi')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Rohini</h5>
+                            <p class="text-muted mb-0 small">650+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title mt-5">Popular Areas in Kolkata</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Salt Lake, Kolkata')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Salt Lake</h5>
+                            <p class="text-muted mb-0 small">520+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('New Town, Kolkata')">
+                        <div class="card-body">
+                            <h5 class="mb-2">New Town</h5>
+                            <p class="text-muted mb-0 small">480+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Rajarhat, Kolkata')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Rajarhat</h5>
+                            <p class="text-muted mb-0 small">420+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                    <div class="card location-card" onclick="searchLocation('Howrah, Kolkata')">
+                        <div class="card-body">
+                            <h5 class="mb-2">Howrah</h5>
+                            <p class="text-muted mb-0 small">390+ Properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4"><i class="fas fa-home me-2"></i> Sasta Room</h4>
+                    <p>Your trusted partner for long-term accommodation. Find PGs, shared rooms, single rooms, and flats at the best prices.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="Properties.html" class="text-white-50">Properties</a></li>
+                        <li class="mb-2"><a href="locations.html" class="text-white-50">Locations</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">About</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Contact Us</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Safety Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">For Property Owners</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="room-owner-login.html" class="text-white-50">List Your Property</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Owner Benefits</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Marketing Support</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Success Stories</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                 <p id="footerYearText" class="mb-0 text-white-50">&copy; 2024 Sasta Room. All rights reserved. | Made with ❤️ for better living</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function searchLocation(location) {
+            window.location.href = `Properties.html?location=${encodeURIComponent(location)}`;
+        }
+            // Enhance accessibility: make .location-card focusable and respond to Enter/Space keys
+            (function makeCardsAccessible(){
+                document.querySelectorAll('.location-card').forEach(card => {
+                    if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex','0');
+                    if (!card.hasAttribute('role')) card.setAttribute('role','button');
+                    // set aria-label from title if not present
+                    if (!card.hasAttribute('aria-label')){
+                        const title = card.querySelector('.card-title, h4, h5');
+                        if (title) card.setAttribute('aria-label', title.textContent.trim());
+                    }
+                    card.addEventListener('keydown', function(e){
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+                    });
+                });
+            })();
+
+            // Update footer year dynamically
+            (function updateFooterYear(){
+                try{
+                    const el = document.getElementById('footerYearText');
+                    if (el) {
+                        const y = new Date().getFullYear();
+                        el.innerHTML = `&copy; ${y} Sasta Room. All rights reserved. | Made with ❤️ for better living`;
+                    }
+                }catch(e){ /* ignore */ }
+            })();
+    </script>
+</body>
+</html>

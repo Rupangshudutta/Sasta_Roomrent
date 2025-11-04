@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Properties - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --dark-grey: #5F6368;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--neutral);
+            color: var(--text);
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), #d42a20);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-bar-sticky {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .filter-sidebar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+        
+        .filter-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--neutral);
+        }
+        
+        .filter-section:last-child {
+            border-bottom: none;
+        }
+        
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .property-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+        
+        .property-image {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+        }
+        
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .property-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .wishlist-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .wishlist-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* List view adjustments */
+        .list-view .property-card {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+        }
+        .list-view .property-image {
+            flex: 0 0 40%;
+            height: 200px;
+        }
+        .list-view .property-content {
+            flex: 1 1 60%;
+        }
+
+        @media (max-width: 767.98px) {
+            .property-image { height: 160px; }
+            .list-view .property-card { flex-direction: column; }
+            .list-view .property-image { width: 100%; height: 160px; }
+            .d-md-none { display: inline-block !important; }
+            .d-none.d-lg-block { display: none !important; }
+        }
+        
+        .property-content {
+            padding: 16px;
+        }
+        
+        .property-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+        
+        .property-location {
+            color: var(--dark-grey);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+        
+        .property-rating {
+            display: inline-flex;
+            align-items: center;
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .property-amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .amenity-item {
+            font-size: 0.85rem;
+            color: var(--dark-grey);
+        }
+        
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--neutral);
+        }
+        
+        .property-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .property-price small {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--dark-grey);
+        }
+        
+        .btn-view {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-view:hover {
+            background: #d42a20;
+            color: white;
+        }
+        
+        .sort-dropdown {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+        
+        .results-count {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .price-range-slider {
+            width: 100%;
+        }
+        
+        .filter-checkbox {
+            margin-bottom: 10px;
+        }
+        
+        .clear-filters {
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .clear-filters:hover {
+            text-decoration: underline;
+        }
+        
+        .pagination-custom {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+        }
+        
+        .pagination-custom .page-btn {
+            border: 1px solid #ddd;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination-custom .page-btn:hover,
+        .pagination-custom .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-home me-2"></i>
+                <strong>Sasta Room</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="Properties.html">Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a href="register.html" class="btn btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-bar-sticky">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex">
+                    <input type="text" id="searchLocation" class="form-control me-2" placeholder="Search by city or area">
+                    <!-- Mobile: open filters offcanvas -->
+                    <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#filtersOffcanvas" aria-controls="filtersOffcanvas">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <select id="propertyType" class="form-select">
+                        <option value="">All Types</option>
+                        <option value="pg">PG</option>
+                        <option value="shared">Shared Room</option>
+                        <option value="single">Single Room</option>
+                        <option value="flat">Flat</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select id="sortBy" class="form-select sort-dropdown">
+                        <option value="relevance">Sort by Relevance</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100" onclick="applyFilters()">
+                        <i class="fas fa-search me-1"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-4 mb-5">
+        <div class="row">
+            <!-- Filters Sidebar -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="filter-sidebar">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Filters</h5>
+                        <span class="clear-filters" onclick="clearAllFilters()">Clear All</span>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <div class="filter-title">Price Range</div>
+                        <input type="range" class="form-range price-range-slider" min="0" max="50000" step="1000" id="priceRange" value="50000">
+                        <div class="d-flex justify-content-between">
+                            <small>₹0</small>
+                            <small id="priceValue">₹50,000</small>
+                        </div>
+                    </div>
+
+                    <!-- Property Type -->
+                    <div class="filter-section">
+                        <div class="filter-title">Property Type</div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="type_pg" value="pg">
+                            <label for="type_pg" class="ms-2">PG</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="type_shared" value="shared">
+                            <label for="type_shared" class="ms-2">Shared Room</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="type_single" value="single">
+                            <label for="type_single" class="ms-2">Single Room</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="type_flat" value="flat">
+                            <label for="type_flat" class="ms-2">Flat</label>
+                        </div>
+                    </div>
+
+                    <!-- Amenities -->
+                    <div class="filter-section">
+                        <div class="filter-title">Amenities</div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="wifi" value="wifi">
+                            <label for="wifi" class="ms-2">WiFi</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="ac" value="ac">
+                            <label for="ac" class="ms-2">AC</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="parking" value="parking">
+                            <label for="parking" class="ms-2">Parking</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="gym" value="gym">
+                            <label for="gym" class="ms-2">Gym</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="meals" value="meals">
+                            <label for="meals" class="ms-2">Meals Included</label>
+                        </div>
+                    </div>
+
+                    <!-- Furnishing -->
+                    <div class="filter-section">
+                        <div class="filter-title">Furnishing</div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="furnished" value="furnished">
+                            <label for="furnished" class="ms-2">Furnished</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="semi_furnished" value="semi_furnished">
+                            <label for="semi_furnished" class="ms-2">Semi-Furnished</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="unfurnished" value="unfurnished">
+                            <label for="unfurnished" class="ms-2">Unfurnished</label>
+                        </div>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="filter-section">
+                        <div class="filter-title">Rating</div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="rating_4" value="4">
+                            <label for="rating_4" class="ms-2">4+ ⭐</label>
+                        </div>
+                        <div class="filter-checkbox">
+                            <input type="checkbox" id="rating_3" value="3">
+                            <label for="rating_3" class="ms-2">3+ ⭐</label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary w-100 mt-3" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </div>
+
+            <!-- Offcanvas for mobile filters -->
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="filtersOffcanvas" aria-labelledby="filtersOffcanvasLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="filtersOffcanvasLabel">Filters</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="filter-sidebar p-0">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Filters</h5>
+                            <span class="clear-filters" onclick="clearAllFilters()">Clear All</span>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="filter-section">
+                            <div class="filter-title">Price Range</div>
+                            <input type="range" class="form-range price-range-slider" min="0" max="50000" step="1000" id="priceRange_offcanvas" value="50000">
+                            <div class="d-flex justify-content-between">
+                                <small>₹0</small>
+                                <small id="priceValue_offcanvas">₹50,000</small>
+                            </div>
+                        </div>
+
+                        <!-- Property Type -->
+                        <div class="filter-section">
+                            <div class="filter-title">Property Type</div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="type_pg_offcanvas" value="pg">
+                                <label for="type_pg_offcanvas" class="ms-2">PG</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="type_shared_offcanvas" value="shared">
+                                <label for="type_shared_offcanvas" class="ms-2">Shared Room</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="type_single_offcanvas" value="single">
+                                <label for="type_single_offcanvas" class="ms-2">Single Room</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="type_flat_offcanvas" value="flat">
+                                <label for="type_flat_offcanvas" class="ms-2">Flat</label>
+                            </div>
+                        </div>
+
+                        <!-- Amenities -->
+                        <div class="filter-section">
+                            <div class="filter-title">Amenities</div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="wifi_offcanvas" value="wifi">
+                                <label for="wifi_offcanvas" class="ms-2">WiFi</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="ac_offcanvas" value="ac">
+                                <label for="ac_offcanvas" class="ms-2">AC</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="parking_offcanvas" value="parking">
+                                <label for="parking_offcanvas" class="ms-2">Parking</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="gym_offcanvas" value="gym">
+                                <label for="gym_offcanvas" class="ms-2">Gym</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="meals_offcanvas" value="meals">
+                                <label for="meals_offcanvas" class="ms-2">Meals Included</label>
+                            </div>
+                        </div>
+
+                        <!-- Furnishing -->
+                        <div class="filter-section">
+                            <div class="filter-title">Furnishing</div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="furnished_offcanvas" value="furnished">
+                                <label for="furnished_offcanvas" class="ms-2">Furnished</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="semi_furnished_offcanvas" value="semi_furnished">
+                                <label for="semi_furnished_offcanvas" class="ms-2">Semi-Furnished</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="unfurnished_offcanvas" value="unfurnished">
+                                <label for="unfurnished_offcanvas" class="ms-2">Unfurnished</label>
+                            </div>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="filter-section">
+                            <div class="filter-title">Rating</div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="rating_4_offcanvas" value="4">
+                                <label for="rating_4_offcanvas" class="ms-2">4+ ⭐</label>
+                            </div>
+                            <div class="filter-checkbox">
+                                <input type="checkbox" id="rating_3_offcanvas" value="3">
+                                <label for="rating_3_offcanvas" class="ms-2">3+ ⭐</label>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-3" onclick="applyFilters(); closeFiltersOffcanvas()">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties List -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="results-count" id="resultsCount">Loading properties...</div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleView('grid')">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="propertiesContainer" class="row">
+                    <!-- Properties will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-custom" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let allProperties = [];
+        let filteredProperties = [];
+        let currentPage = 1;
+        const propertiesPerPage = 9;
+
+        // Sample properties data
+        const sampleProperties = [
+            {
+                id: 1,
+                title: "Green Valley PG",
+                type: "PG",
+                location: "Koramangala, Bangalore",
+                price: 12500,
+                rating: 4.6,
+                image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3",
+                amenities: ["WiFi", "Meals", "Laundry"],
+                furnishing: "furnished"
+            },
+            {
+                id: 2,
+                title: "Urban Living Co-space",
+                type: "Shared Room",
+                location: "Powai, Mumbai",
+                price: 8500,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3",
+                amenities: ["WiFi", "Gym", "Parking"],
+                furnishing: "furnished"
+            },
+            {
+                id: 3,
+                title: "Cozy Studio Space",
+                type: "Single Room",
+                location: "Sector 62, Noida",
+                price: 15000,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3",
+                amenities: ["AC", "WiFi", "Security"],
+                furnishing: "furnished"
+            },
+            {
+                id: 4,
+                title: "Modern 2BHK Apartment",
+                type: "Flat",
+                location: "HSR Layout, Bangalore",
+                price: 28000,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3",
+                amenities: ["Pool", "Garden", "Parking"],
+                furnishing: "furnished"
+            },
+            {
+                id: 5,
+                title: "Elite Executive PG",
+                type: "PG",
+                location: "Gurgaon Sector 29",
+                price: 18500,
+                rating: 4.5,
+                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3",
+                amenities: ["WiFi", "Housekeeping", "Meals"],
+                furnishing: "furnished"
+            },
+            {
+                id: 6,
+                title: "Co-living Hub",
+                type: "Shared Room",
+                location: "Bandra West, Mumbai",
+                price: 11000,
+                rating: 4.4,
+                image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3",
+                amenities: ["WiFi", "Kitchen", "Events"],
+                furnishing: "furnished"
+            },
+            {
+                id: 7,
+                title: "Premium Studio",
+                type: "Single Room",
+                location: "Indiranagar, Bangalore",
+                price: 16500,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3",
+                amenities: ["AC", "WiFi", "Gym"],
+                furnishing: "furnished"
+            },
+            {
+                id: 8,
+                title: "Spacious 3BHK",
+                type: "Flat",
+                location: "Whitefield, Bangalore",
+                price: 35000,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?ixlib=rb-4.0.3",
+                amenities: ["Parking", "Security", "Pool"],
+                furnishing: "semi_furnished"
+            },
+            {
+                id: 9,
+                title: "Budget Friendly PG",
+                type: "PG",
+                location: "Andheri East, Mumbai",
+                price: 9500,
+                rating: 4.3,
+                image: "https://images.unsplash.com/photo-1484154218962-a197022b5858?ixlib=rb-4.0.3",
+                amenities: ["WiFi", "Meals", "Security"],
+                furnishing: "furnished"
+            }
+        ];
+
+        // Helper: escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Helper: normalize strings for comparisons (case-insensitive, remove punctuation)
+        function normalize(value) {
+            return String(value || '')
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-z0-9_]/g, '');
+        }
+
+        // Wishlist helpers (persist in localStorage)
+        function getWishlist() {
+            try { return JSON.parse(localStorage.getItem('wishlist') || '[]'); } catch(e) { return []; }
+        }
+        function saveWishlist(list) { localStorage.setItem('wishlist', JSON.stringify(list)); }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            allProperties = [...sampleProperties];
+            filteredProperties = [...allProperties];
+            displayProperties();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('priceRange').addEventListener('input', function(e) {
+                document.getElementById('priceValue').textContent = '₹' + parseInt(e.target.value).toLocaleString();
+            });
+
+            document.getElementById('sortBy').addEventListener('change', function() {
+                sortProperties(this.value);
+            });
+        }
+
+        // Debounce helper
+        function debounce(fn, wait) {
+            let t;
+            return function(...args) {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), wait);
+            };
+        }
+
+        // Wire search input with debounce
+        (function wireSearch() {
+            const el = document.getElementById('searchLocation');
+            if (!el) return;
+            el.addEventListener('input', debounce(() => {
+                applyFilters();
+            }, 400));
+
+            // mirror price range in offcanvas if present
+            const pr = document.getElementById('priceRange_offcanvas');
+            if (pr) {
+                pr.addEventListener('input', function(e){
+                    document.getElementById('priceValue_offcanvas').textContent = '₹' + parseInt(e.target.value).toLocaleString();
+                });
+            }
+        })();
+
+        // Close filters offcanvas programmatically
+        function closeFiltersOffcanvas() {
+            const el = document.getElementById('filtersOffcanvas');
+            if (!el) return;
+            const bs = bootstrap.Offcanvas.getInstance(el) || new bootstrap.Offcanvas(el);
+            bs.hide();
+        }
+
+        // Display properties
+        function displayProperties() {
+            const container = document.getElementById('propertiesContainer');
+            const start = (currentPage - 1) * propertiesPerPage;
+            const end = start + propertiesPerPage;
+            const paginatedProperties = filteredProperties.slice(start, end);
+
+            if (paginatedProperties.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="no-results">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h4>No properties found</h4>
+                            <p class="text-muted">Try adjusting your filters</p>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('resultsCount').textContent = '0 properties found';
+                return;
+            }
+            const wishlist = getWishlist();
+
+            container.innerHTML = paginatedProperties.map(property => {
+                const isSaved = wishlist.includes(property.id);
+                const heartIcon = isSaved ? 'fas fa-heart' : 'far fa-heart';
+                const safeTitle = escapeHtml(property.title);
+                const safeLocation = escapeHtml(property.location);
+                const safeType = escapeHtml(property.type);
+                const safeImage = escapeHtml(property.image);
+                return `
+                <div class="col-lg-4 col-md-6">
+                    <div class="property-card">
+                        <div class="property-image">
+                            <img src="${safeImage}" alt="${safeTitle}" loading="lazy">
+                            <span class="property-badge">${safeType}</span>
+                            <button class="wishlist-btn" aria-label="Toggle wishlist" data-id="${property.id}" onclick="toggleWishlist(${property.id}, this)">
+                                <i class="${heartIcon}"></i>
+                            </button>
+                        </div>
+                        <div class="property-content">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="property-title">${safeTitle}</h5>
+                                <span class="property-rating">${property.rating} ⭐</span>
+                            </div>
+                            <p class="property-location">
+                                <i class="fas fa-map-marker-alt me-1"></i> ${safeLocation}
+                            </p>
+                            <div class="property-amenities">
+                                ${property.amenities.map(amenity => `
+                                    <span class="amenity-item">
+                                        <i class="fas fa-check-circle text-success"></i> ${escapeHtml(amenity)}
+                                    </span>
+                                `).join('')}
+                            </div>
+                            <div class="property-footer">
+                                <div class="property-price">
+                                    ₹${property.price.toLocaleString()}<small>/month</small>
+                                </div>
+                                <button class="btn-view" onclick="viewProperty(${property.id})">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            document.getElementById('resultsCount').textContent = `${filteredProperties.length} properties found`;
+            renderPagination();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchLocation = (document.getElementById('searchLocation').value || '').trim().toLowerCase();
+            const propertyType = (document.getElementById('propertyType').value || '').trim();
+            const maxPrice = parseInt(document.getElementById('priceRange').value || '0', 10) || 0;
+
+            const selectedTypes = Array.from(document.querySelectorAll('[id^="type_"]:checked')).map(cb => cb.value);
+            // Amenity checkboxes (ids)
+            const amenityIds = ['wifi','ac','parking','gym','meals'];
+            const selectedAmenities = amenityIds.filter(id => document.getElementById(id) && document.getElementById(id).checked);
+            // Furnishing
+            const furnishingIds = ['furnished','semi_furnished','unfurnished'];
+            const selectedFurnishing = furnishingIds.filter(id => document.getElementById(id) && document.getElementById(id).checked).map(id => document.getElementById(id).value);
+            // Ratings (checkboxes may be multiple); choose the smallest checked value (more inclusive)
+            const ratingChecks = Array.from(document.querySelectorAll('[id^="rating_"]:checked')).map(cb => parseFloat(cb.value));
+            const minRating = ratingChecks.length ? Math.min(...ratingChecks) : null;
+
+            filteredProperties = allProperties.filter(property => {
+                const matchesLocation = !searchLocation || property.location.toLowerCase().includes(searchLocation);
+
+                const normPropType = normalize(property.type);
+                const matchesType = !propertyType || normPropType.includes(normalize(propertyType));
+
+                const matchesPrice = property.price <= maxPrice;
+
+                const matchesSelectedTypes = selectedTypes.length === 0 || selectedTypes.some(st => normPropType.includes(normalize(st)));
+
+                const matchesFurnishing = selectedFurnishing.length === 0 || selectedFurnishing.includes(property.furnishing);
+
+                // Amenities: normalize property amenities and ensure all selected are present
+                const normAmenities = property.amenities.map(a => normalize(a));
+                const matchesAmenities = selectedAmenities.length === 0 || selectedAmenities.every(sa => normAmenities.includes(normalize(sa)));
+
+                const matchesRating = !minRating || property.rating >= parseFloat(minRating);
+
+                return matchesLocation && matchesType && matchesPrice && matchesSelectedTypes && matchesFurnishing && matchesAmenities && matchesRating;
+            });
+
+            currentPage = 1;
+            displayProperties();
+        }
+
+        // Sort properties (operate on current filteredProperties; default/relevance does not reset)
+        function sortProperties(sortBy) {
+            switch(sortBy) {
+                case 'price_low':
+                    filteredProperties.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price_high':
+                    filteredProperties.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProperties.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'newest':
+                    filteredProperties.sort((a, b) => b.id - a.id);
+                    break;
+                default:
+                    // 'relevance' or unknown - keep current filtered order (no-op)
+                    break;
+            }
+            displayProperties();
+        }
+
+        // Clear filters
+        function clearAllFilters() {
+            document.getElementById('searchLocation').value = '';
+            document.getElementById('propertyType').value = '';
+            document.getElementById('priceRange').value = 50000;
+            document.getElementById('priceValue').textContent = '₹50,000';
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            filteredProperties = [...allProperties];
+            currentPage = 1;
+            displayProperties();
+        }
+
+        // Pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (currentPage > 1) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage - 1})">Previous</button>`;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="page-btn">...</span>`;
+                }
+            }
+
+            if (currentPage < totalPages) {
+                html += `<button class="page-btn" onclick="changePage(${currentPage + 1})">Next</button>`;
+            }
+
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayProperties();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleWishlist(id, btnEl) {
+            // Toggle id in wishlist array and update icon
+            const list = getWishlist();
+            const idx = list.indexOf(id);
+            if (idx === -1) list.push(id); else list.splice(idx, 1);
+            saveWishlist(list);
+
+            // update button icon if element provided
+            if (btnEl) {
+                const icon = btnEl.querySelector('i');
+                if (icon) {
+                    if (list.includes(id)) {
+                        icon.classList.remove('far'); icon.classList.add('fas');
+                    } else {
+                        icon.classList.remove('fas'); icon.classList.add('far');
+                    }
+                }
+            }
+        }
+
+        function viewProperty(id) {
+            window.location.href = `property-details.html?id=${id}`;
+        }
+
+        function toggleView(view) {
+            const container = document.getElementById('propertiesContainer');
+            const gridBtn = document.querySelector('.fa-th') && document.querySelector('.fa-th').closest('button');
+            const listBtn = document.querySelector('.fa-list') && document.querySelector('.fa-list').closest('button');
+            if (view === 'list') {
+                container.classList.add('list-view');
+                if (listBtn) listBtn.classList.add('active');
+                if (gridBtn) gridBtn.classList.remove('active');
+            } else {
+                container.classList.remove('list-view');
+                if (gridBtn) gridBtn.classList.add('active');
+                if (listBtn) listBtn.classList.remove('active');
+            }
+            // re-render in case markup needs to adjust
+            displayProperties();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Sasta Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #EE2E24;
+            --secondary: #1A73E8;
+            --background: #FFFFFF;
+            --text: #202124;
+            --success: #34A853;
+            --neutral: #F8F9FA;
+            --dark-grey: #5F6368;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), #d42a20);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary), #d42a20);
+            color: white;
+            padding: 60px 0 120px;
+            text-align: center;
+        }
+        
+        .contact-cards {
+            margin-top: -80px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .quick-contact {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            height: 100%;
+            border: 3px solid transparent;
+        }
+        
+        .quick-contact:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(238, 46, 36, 0.2);
+        }
+        
+        .quick-contact .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary), #d42a20);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .quick-contact h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .quick-contact .contact-link {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin: 15px 0;
+        }
+        
+        .quick-contact .contact-link:hover {
+            color: #d42a20;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+        
+        .form-control, .form-select {
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid #e8e8e8;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(238, 46, 36, 0.1);
+            outline: none;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #d42a20);
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(238, 46, 36, 0.4);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, rgba(238, 46, 36, 0.05), rgba(26, 115, 232, 0.05));
+            border-radius: 20px;
+            padding: 40px;
+            height: 100%;
+        }
+        
+        .info-item {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(0,0,0,0.05);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .info-item i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .info-item h4 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .faq-section {
+            background: var(--neutral);
+        }
+        
+        .faq-item {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .faq-item:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .faq-question {
+            padding: 25px 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        .faq-question:hover {
+            background: var(--neutral);
+        }
+        
+        .faq-question i {
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 30px;
+        }
+        
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 0 30px 25px;
+        }
+        
+        .faq-answer p {
+            color: var(--dark-grey);
+            line-height: 1.8;
+        }
+        
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 50px 0 30px 0;
+        }
+        
+        .success-message {
+            display: none;
+            background: var(--success);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 0 100px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .info-box {
+                padding: 30px 20px;
+                margin-top: 30px;
+            }
+            
+            .quick-contact {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-home me-2"></i>
+                <strong>Sasta Room</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Properties.html">Properties</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-light me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                    <a href="register.html" class="btn btn-light">
+                        <i class="fas fa-user-plus me-1"></i> Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-3">Get In Touch</h1>
+            <p class="lead fs-4">We're here to help you find your perfect room</p>
+        </div>
+    </section>
+
+    <!-- Quick Contact Cards -->
+    <section class="contact-cards pb-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="quick-contact">
+                        <div class="icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <h3>Call Us Now</h3>
+                        <p class="text-muted">Available 24/7 for your queries</p>
+                        <a href="tel:+918800123456" class="contact-link">+91 88001 23456</a>
+                        <p class="small text-muted mt-2">Toll-free | Instant Support</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="quick-contact">
+                        <div class="icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <h3>WhatsApp Chat</h3>
+                        <p class="text-muted">Get instant replies on WhatsApp</p>
+                        <a href="https://wa.me/918800123456" class="contact-link" target="_blank">Start Chat</a>
+                        <p class="small text-muted mt-2">Fastest Response Time</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="quick-contact">
+                        <div class="icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email Support</h3>
+                        <p class="text-muted">We reply within 2 hours</p>
+                        <a href="mailto:support@sastaroom.com" class="contact-link">support@sastaroom.com</a>
+                        <p class="small text-muted mt-2">Detailed Assistance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form & Info -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="form-section">
+                        <h2 class="fw-bold mb-2">Send Us a Message</h2>
+                        <p class="text-muted mb-4">Fill out the form and we'll get back to you within 2 hours</p>
+                        
+                        <div id="successMessage" class="success-message">
+                            <i class="fas fa-check-circle me-2"></i>Message sent successfully! We'll contact you soon.
+                        </div>
+                        
+                        <form id="contactForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Your Name *</label>
+                                    <input type="text" class="form-control" placeholder="John Doe" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" placeholder="+91 98765 43210" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" placeholder="john@example.com" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">I'm looking for *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select an option</option>
+                                        <option value="pg">PG Accommodation</option>
+                                        <option value="shared">Shared Room</option>
+                                        <option value="single">Single Room</option>
+                                        <option value="flat">Flat/Apartment</option>
+                                        <option value="owner">I'm a Property Owner</option>
+                                        <option value="other">Other Query</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Your Message *</label>
+                                    <textarea class="form-control" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="info-box">
+                        <div class="info-item">
+                            <i class="fas fa-clock d-block"></i>
+                            <h4>Response Time</h4>
+                            <p class="text-muted mb-0">Average response time: <strong class="text-primary">Under 2 Hours</strong></p>
+                            <p class="text-muted small">We're committed to helping you quickly</p>
+                        </div>
+                        
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt d-block"></i>
+                            <h4>Head Office</h4>
+                            <p class="text-muted mb-1"><strong>Bangalore, India</strong></p>
+                            <p class="text-muted small mb-0">123, MG Road, Koramangala<br>Bangalore, Karnataka - 560034</p>
+                        </div>
+                        
+                        <div class="info-item">
+                            <i class="fas fa-business-time d-block"></i>
+                            <h4>Working Hours</h4>
+                            <p class="text-muted mb-0">Phone Support: <strong>24/7</strong></p>
+                            <p class="text-muted mb-0">Office: <strong>Mon-Sat, 9 AM - 7 PM</strong></p>
+                        </div>
+                        
+                        <div class="info-item">
+                            <i class="fas fa-share-alt d-block"></i>
+                            <h4>Follow Us</h4>
+                            <div class="d-flex gap-3 mt-3">
+                                <a href="#" class="text-primary fs-4"><i class="fab fa-facebook"></i></a>
+                                <a href="#" class="text-info fs-4"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-danger fs-4"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="text-primary fs-4"><i class="fab fa-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-3">Frequently Asked Questions</h2>
+                <p class="text-muted">Quick answers to common questions</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How quickly can I find a room?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Most users find their perfect room within 2-3 days. You can browse properties instantly, contact owners directly, and schedule visits the same day. Our verified listings ensure you don't waste time on fake properties.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Do I need to pay any brokerage?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Absolutely not! Sasta Room is 100% broker-free. You connect directly with property owners. No hidden charges, no brokerage fees. Save thousands of rupees that you would otherwise pay to brokers.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Are all properties verified?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes! Every single property is physically verified by our team. We check ownership documents, visit the property, verify amenities, and ensure all photos are authentic. Your safety and trust are our priority.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>What if I need to cancel my booking?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We have a flexible cancellation policy. If you cancel before moving in, you get a full refund minus processing charges. After moving in, refunds depend on the agreement with the owner. Contact our support team for assistance.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>How do I list my property?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>It's simple! Click "List Your Property", fill in details, upload photos, and submit. Our team will verify your property within 24-48 hours. Listing is completely free. You only pay a small commission when you get a tenant.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Is my payment information secure?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>100% secure! We use Razorpay, India's most trusted payment gateway with bank-grade encryption. We never store your card details. All transactions are PCI-DSS compliant and protected by SSL encryption.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <p class="lead mb-3">Still have questions?</p>
+                <a href="#contactForm" class="btn btn-primary btn-lg">
+                    <i class="fas fa-comments me-2"></i>Contact Support
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="mb-4"><i class="fas fa-home me-2"></i> Sasta Room</h4>
+                    <p>Making room hunting simple, transparent, and broker-free since 2020.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="Properties.html" class="text-white-50">Properties</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-white-50">About</a></li>
+                        <li class="mb-2"><a href="contact.html" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Safety Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="mb-4">For Property Owners</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="room-owner-login.html" class="text-white-50">List Your Property</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Owner Benefits</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50">Success Stories</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4" style="background-color: rgba(255,255,255,0.1);">
+            <div class="text-center">
+                <p class="mb-0 text-white-50">&copy; 2024 Sasta Room. All rights reserved. | Made with ❤️ for better living</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // FAQ Toggle with smooth animation
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const isActive = answer.classList.contains('active');
+            
+            // Close all FAQs
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.faq-question').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked FAQ if it wasn't active
+            if (!isActive) {
+                answer.classList.add('active');
+                element.classList.add('active');
+            }
+        }
+        
+        // Form Submission with validation
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            
+            // Scroll to success message
+            successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Reset form
+            this.reset();
+            
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 5000);
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

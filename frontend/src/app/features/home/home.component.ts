@@ -1,0 +1,191 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { PropertyService } from '../../core/services/property.service';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { PropertyCardComponent } from '../../shared/components/property-card/property-card.component';
+import { Property } from '../../shared/models/models';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule, NavbarComponent, FooterComponent, PropertyCardComponent],
+  template: `
+    <app-navbar></app-navbar>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Find Your Perfect Long-term Stay</h1>
+        <p class="lead mb-4">Discover PGs, Shared Rooms, Single Rooms & Flats at unbeatable prices</p>
+      </div>
+    </section>
+
+    <!-- Search Box -->
+    <div class="container">
+      <div class="search-box">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Preferred Location</label>
+              <input type="text" class="form-control search-input" placeholder="Enter city, area, or landmark" [(ngModel)]="searchCity" name="searchCity">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Accommodation Type</label>
+              <select class="form-select search-input" [(ngModel)]="searchType" name="searchType">
+                <option value="">All Types</option>
+                <option value="pg">PG (Paying Guest)</option>
+                <option value="shared_room">Shared Room</option>
+                <option value="single_room">Single Room</option>
+                <option value="flat">Flat</option>
+              </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+              <button type="button" class="btn btn-primary w-100" (click)="search()">
+                <i class="fas fa-search me-1"></i> Search
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <section class="py-4">
+      <div class="container">
+        <div class="filter-pills text-center">
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter===''" (click)="filterByType('')">All</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='pg'" (click)="filterByType('pg')">PG</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='shared_room'" (click)="filterByType('shared_room')">Shared Room</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='single_room'" (click)="filterByType('single_room')">Single Room</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='flat'" (click)="filterByType('flat')">Flat</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='budget'" (click)="filterByBudget('budget')">Under ₹10,000</button>
+          <button class="btn btn-outline-secondary">₹10,000 - ₹20,000</button>
+          <button class="btn btn-outline-secondary">Above ₹20,000</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Properties Section -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="section-title">Featured Long-term Stays</h2>
+        <div class="row g-4">
+          @if (loading) {
+            <div class="text-center py-5 w-100">
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+          } @else if (properties.length > 0) {
+            @for (property of properties; track property.id) {
+              <div class="col-lg-4 col-md-6">
+                <app-property-card [property]="property"></app-property-card>
+              </div>
+            }
+          } @else {
+            <div class="text-center py-5 w-100">
+              <p class="text-muted">No properties found.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-5 bg-white">
+      <div class="container">
+        <h2 class="section-title text-center">How Sasta Room Works</h2>
+        <div class="row text-center mt-5">
+          <div class="col-md-3 mb-4">
+            <div class="mb-3">
+              <i class="fas fa-search fa-3x text-primary"></i>
+            </div>
+            <h5>1. Search</h5>
+            <p class="text-muted">Find your preferred location and accommodation type</p>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="mb-3">
+              <i class="fas fa-eye fa-3x text-secondary"></i>
+            </div>
+            <h5>2. View</h5>
+            <p class="text-muted">Browse detailed property information and photos</p>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="mb-3">
+              <i class="fas fa-handshake fa-3x text-success"></i>
+            </div>
+            <h5>3. Connect</h5>
+            <p class="text-muted">Contact property owners directly</p>
+          </div>
+          <div class="col-md-3 mb-4">
+            <div class="mb-3">
+              <i class="fas fa-home fa-3x text-warning"></i>
+            </div>
+            <h5>4. Move In</h5>
+            <p class="text-muted">Settle into your perfect long-term stay</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5" style="background-color: var(--neutral);">
+      <div class="container text-center">
+        <h2 class="mb-4">Are you a Property Owner?</h2>
+        <p class="lead mb-4">List your PG, flat, or rooms with us and reach thousands of verified tenants.</p>
+        <a routerLink="/auth/register" class="btn btn-primary btn-lg">List Your Property Free</a>
+      </div>
+    </section>
+
+    <app-footer></app-footer>
+  `,
+  styles: [`
+    /* We intentionally leave this mostly blank because all original styles are in styles.scss now */
+  `],
+})
+export class HomeComponent implements OnInit {
+  private propertyService = inject(PropertyService);
+  private router = inject(Router);
+
+  properties: Property[] = [];
+  loading = true;
+  activeFilter = '';
+  searchCity = '';
+  searchType = '';
+
+  howItWorks = [
+    { icon: 'fa-search', title: 'Search', desc: 'Find your preferred location and accommodation type', color: '#EE2E24' },
+    { icon: 'fa-eye', title: 'View', desc: 'Browse detailed property information and photos', color: '#1A73E8' },
+    { icon: 'fa-handshake', title: 'Connect', desc: 'Contact property owners directly', color: '#34A853' },
+    { icon: 'fa-home', title: 'Move In', desc: 'Settle into your perfect long-term stay', color: '#F59E0B' },
+  ];
+
+  ngOnInit(): void { this.loadProperties(); }
+
+  loadProperties(filters = {}): void {
+    this.loading = true;
+    this.propertyService.getProperties({ limit: 6, ...filters }).subscribe({
+      next: (res: any) => { if (res.success && res.data) this.properties = res.data.properties; },
+      error: () => {},
+      complete: () => { this.loading = false; },
+    });
+  }
+
+  search(): void {
+    this.router.navigate(['/properties'], {
+      queryParams: { city: this.searchCity || undefined, property_type: this.searchType || undefined },
+    });
+  }
+
+  filterByType(type: string): void {
+    this.activeFilter = type;
+    this.loadProperties(type ? { property_type: type } : {});
+  }
+
+  filterByBudget(filter: string): void {
+    this.activeFilter = filter;
+    this.loadProperties({ max_rent: 10000 });
+  }
+}

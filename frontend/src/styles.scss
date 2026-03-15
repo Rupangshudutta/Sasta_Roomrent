@@ -1,0 +1,460 @@
+/* ============================================================
+   Sasta Room - Global Styles (Restored from Original Design)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+:root {
+  --primary: #EE2E24;
+  --secondary: #1A73E8;
+  --success: #34A853;
+  --warning: #F59E0B;
+  --background: #FFFFFF;
+  --text: #202124;
+  --neutral: #F8F9FA;
+  --dark-grey: #5F6368;
+  --border: #dee2e6;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--neutral);
+    color: var(--text);
+    margin: 0;
+}
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.navbar {
+    background: linear-gradient(90deg, var(--primary), #d42a20);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white !important;
+}
+
+.navbar .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    transition: color 0.2s;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #d42a20;
+    border-color: #d42a20;
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    font-weight: 500;
+}
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-view {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-view:hover {
+    background: #d42a20;
+    color: white;
+}
+
+/* ============================================================
+   Sections & Utilities
+   ============================================================ */
+.section-title {
+    position: relative;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+    font-weight: 600;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 70px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 2px;
+}
+.section-title.text-center::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer {
+    background: var(--text);
+    color: white;
+    padding: 50px 0 30px 0;
+    margin-top: auto;
+}
+
+/* ============================================================
+   Home Page Components
+   ============================================================ */
+.hero-section {
+    background: linear-gradient(rgba(238, 46, 36, 0.9), rgba(212, 42, 32, 0.9)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3') no-repeat center center;
+    background-size: cover;
+    color: white;
+    padding: 100px 0;
+}
+
+.search-box {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: -60px;
+    position: relative;
+    z-index: 10;
+}
+
+.filter-pills .btn {
+    border-radius: 25px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.filter-pills .btn.active {
+    background-color: var(--primary);
+    color: white;
+}
+
+.map-container {
+    height: 300px;
+    background: var(--neutral);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark-grey);
+}
+
+.user-type-selector {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.user-type-card {
+    flex: 1;
+    padding: 20px;
+    border: 2px solid var(--neutral);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.user-type-card:hover, .user-type-card.active {
+    border-color: var(--primary);
+    background-color: rgba(238, 46, 36, 0.05);
+}
+
+.search-input {
+    color: #000000 !important;
+}
+
+.search-input::placeholder {
+    color: #666666 !important;
+}
+
+/* ============================================================
+   Property Cards
+   ============================================================ */
+.property-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e0e0e0;
+    height: 100%;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.property-card img.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.property-type-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: var(--primary);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rating {
+    background-color: var(--success);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.price {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+.price small,
+.property-price small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--dark-grey);
+}
+
+.amenities i {
+    color: var(--secondary);
+    margin-right: 8px;
+}
+
+.wishlist-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.wishlist-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.property-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.property-location {
+    color: var(--dark-grey);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.property-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+.amenity-item {
+    font-size: 0.85rem;
+    color: var(--dark-grey);
+}
+
+.property-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--neutral);
+}
+
+/* List view adjustments */
+.list-view .property-card {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+}
+.list-view .property-image {
+    flex: 0 0 40%;
+    height: 200px;
+}
+.list-view .property-content {
+    flex: 1 1 60%;
+    padding: 16px;
+}
+
+@media (max-width: 767.98px) {
+    .property-image { height: 160px; }
+    .list-view .property-card { flex-direction: column; }
+    .list-view .property-image { width: 100%; height: 160px; }
+    .d-md-none { display: inline-block !important; }
+    .d-none.d-lg-block { display: none !important; }
+}
+
+/* ============================================================
+   Properties Page List Specifics
+   ============================================================ */
+.search-bar-sticky {
+    background: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.filter-sidebar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+}
+
+.filter-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--neutral);
+}
+
+.filter-section:last-child {
+    border-bottom: none;
+}
+
+.filter-title {
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.sort-dropdown {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.results-count {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.price-range-slider {
+    width: 100%;
+}
+
+.filter-checkbox {
+    margin-bottom: 10px;
+}
+
+.clear-filters {
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.clear-filters:hover {
+    text-decoration: underline;
+}
+
+.pagination-custom {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.pagination-custom .page-btn,
+.pagination-custom .page-link {
+    border: 1px solid #ddd;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text);
+}
+
+.pagination-custom .page-btn:hover,
+.pagination-custom .page-btn.active,
+.pagination-custom .page-item.active .page-link {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+/* Skeleton Loading Shimmer */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}

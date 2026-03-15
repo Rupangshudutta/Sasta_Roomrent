@@ -1,225 +1,223 @@
-    <app-navbar></app-navbar>
+<app-navbar></app-navbar>
 
-    <!-- Hero Section -->
-    <section class="about-hero-section">
-      <div class="container text-center hero-inner">
-        <h1 class="display-4 fw-bold mb-3">Finding Your Perfect Room<br>Shouldn't Be This Hard</h1>
-        <p class="lead fs-5">We're changing that. One verified property at a time.</p>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-          <a routerLink="/properties" class="btn btn-light btn-lg">
-            <i class="fas fa-search me-2"></i>Browse Properties
-          </a>
-          <a routerLink="/auth/register" class="btn btn-outline-light btn-lg">
-            <i class="fas fa-user-plus me-2"></i>Sign Up Free
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Problem & Solution -->
-    <section class="py-5">
-      <div class="container">
-        <div class="row align-items-center mb-5">
-          <div class="col-lg-6 mb-4 mb-lg-0">
-            <h2 class="fw-bold mb-4">The Problem We Saw</h2>
-            <p class="lead">In 2020, we noticed something broken in the rental market:</p>
-            <ul class="fs-5">
-              <li class="mb-3">Students paying brokers ₹5,000-10,000 just to see rooms</li>
-              <li class="mb-3">Fake listings with photos from Google</li>
-              <li class="mb-3">Owners struggling to find genuine tenants</li>
-              <li class="mb-3">No transparency in pricing or amenities</li>
-            </ul>
-          </div>
-          <div class="col-lg-6">
-            <img src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?ixlib=rb-4.0.3" alt="Problem" class="img-fluid rounded shadow" loading="lazy">
+<main class="about-page bg-light">
+  <!-- 1. Hero Section -->
+  <section class="hero-wrapper pb-5">
+    <div class="container pb-4">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6 hero-content reveal #revealAnim">
+          <h1><span>Making Long-Term Living</span> Simple and Affordable</h1>
+          <p class="mb-5">Sasta Room helps students, professionals, and families find trusted long-term accommodation with ease.</p>
+          <div class="d-flex flex-wrap gap-3">
+            <a routerLink="/properties" class="btn btn-primary btn-lg rounded-pill px-4 py-3 shadow-sm" style="font-weight: 600;">Browse Rooms</a>
+            <a routerLink="/auth/register" class="btn btn-outline-dark btn-lg rounded-pill px-4 py-3 bg-white shadow-sm" style="font-weight: 600;">Become a Property Owner</a>
           </div>
         </div>
-
-        <div class="row align-items-center">
-          <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
-            <h2 class="fw-bold mb-4">Our Solution</h2>
-            <p class="lead">A platform where:</p>
-            <ul class="fs-5">
-              <li class="mb-3"><strong>Zero broker fees</strong> - Direct connection with owners</li>
-              <li class="mb-3"><strong>100% verified</strong> - Every property physically verified</li>
-              <li class="mb-3"><strong>Real photos</strong> - What you see is what you get</li>
-              <li class="mb-3"><strong>Transparent pricing</strong> - No hidden charges</li>
-            </ul>
-          </div>
-          <div class="col-lg-6 order-lg-1">
-            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3" alt="Solution" class="img-fluid rounded shadow" loading="lazy">
+        <div class="col-lg-6 reveal delay-1 #revealAnim">
+          <div class="hero-image-wrapper">
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800" alt="People searching for rooms">
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Trust Badges -->
-    <section class="py-5" style="background: var(--neutral);">
-      <div class="container">
-        <h2 class="text-center fw-bold mb-5">Why Students & Professionals Trust Us</h2>
-        <div class="row g-4">
-          <div class="col-md-3 col-sm-6">
-            <div class="trust-badge">
-              <i class="fas fa-shield-alt"></i>
+  <!-- 2. Our Mission Section -->
+  <section class="mission-section reveal #revealAnim">
+    <div class="container">
+      <div class="mission-card shadow-sm">
+        <div class="mb-4 text-primary">
+          <i class="fas fa-bullseye fa-3x"></i>
+        </div>
+        <h2>Our Mission</h2>
+        <p>Our mission is to simplify long-term accommodation by connecting tenants with verified property owners. We aim to eliminate the friction, high brokerage fees, and lack of trust that plagues the traditional rental market, replacing it with transparency, security, and a seamless digital experience.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. What We Offer -->
+  <section class="offerings-section">
+    <div class="container">
+      <div class="section-header reveal #revealAnim">
+        <h2>What We Offer</h2>
+        <p>A diverse range of verfied accommodations designed to fit your needs and budget.</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3 reveal delay-1 #revealAnim">
+          <div class="offer-card">
+            <div class="icon-wrapper"><i class="fas fa-bed"></i></div>
+            <h3>PG Accommodation</h3>
+            <p>Fully managed paying guest options with meals, laundry, and daily housekeeping included.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal delay-2 #revealAnim">
+          <div class="offer-card">
+            <div class="icon-wrapper"><i class="fas fa-user-friends"></i></div>
+            <h3>Shared Rooms</h3>
+            <p>Budget-friendly shared spaces. Split the rent, make friends, and live comfortably.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal delay-3 #revealAnim">
+          <div class="offer-card">
+            <div class="icon-wrapper"><i class="fas fa-door-closed"></i></div>
+            <h3>Private Rooms</h3>
+            <p>Your own personal sanctuary in a pre-furnished house. Privacy without the cost of a full flat.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal delay-4 #revealAnim">
+          <div class="offer-card">
+            <div class="icon-wrapper"><i class="fas fa-building"></i></div>
+            <h3>Full Flats</h3>
+            <p>Complete 1BHK, 2BHK, and 3BHK apartments for families and groups of friends.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How It Works -->
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-header reveal #revealAnim">
+        <h2>How It Works</h2>
+        <p>Finding your next home is as easy as 1-2-3.</p>
+      </div>
+
+      <div class="row position-relative">
+        <div class="col-md-4 timeline-step reveal delay-1 #revealAnim">
+          <div class="step-circle"><i class="fas fa-search"></i></div>
+          <h4>1. Search Rooms</h4>
+          <p>Browse thousands of verified listings with real photos and exact pricing.</p>
+        </div>
+        <div class="col-md-4 timeline-step reveal delay-2 #revealAnim">
+          <div class="step-circle"><i class="fas fa-mouse-pointer"></i></div>
+          <h4>2. Book Online</h4>
+          <p>Schedule a visit or instantly reserve the property securely through our platform.</p>
+        </div>
+        <div class="col-md-4 timeline-step reveal delay-3 #revealAnim">
+          <div class="step-circle"><i class="fas fa-home"></i></div>
+          <h4>3. Move In</h4>
+          <p>Sign the agreement digitally and move into your new home hassle-free.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Why Choose Sasta Room -->
+  <section class="why-choose-section bg-light">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6 reveal #revealAnim">
+          <h2 class="display-6 fw-bold mb-5">Why Choose<br>Sasta Room?</h2>
+          
+          <div class="feature-list-item">
+            <div class="icon-box"><i class="fas fa-check-circle"></i></div>
+            <div>
               <h4>Verified Properties</h4>
-              <p class="mb-0">Every listing verified by our team</p>
+              <p>Every single listing is physically checked by our team. Say goodbye to fake photos and scams.</p>
             </div>
           </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="trust-badge">
-              <i class="fas fa-rupee-sign"></i>
-              <h4>Zero Brokerage</h4>
-              <p class="mb-0">Save thousands in broker fees</p>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="trust-badge">
-              <i class="fas fa-headset"></i>
-              <h4>24/7 Support</h4>
-              <p class="mb-0">Real humans, real help</p>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="trust-badge">
-              <i class="fas fa-lock"></i>
+          
+          <div class="feature-list-item">
+            <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+            <div>
               <h4>Secure Payments</h4>
-              <p class="mb-0">Bank-grade security</p>
+              <p>We hold your deposit securely. Transactions are encrypted using bank-grade security protocols.</p>
+            </div>
+          </div>
+          
+          <div class="feature-list-item">
+            <div class="icon-box"><i class="fas fa-tags"></i></div>
+            <div>
+              <h4>Transparent Pricing</h4>
+              <p>Zero broker fees. What you see on the screen is exactly what you pay. No hidden charges ever.</p>
+            </div>
+          </div>
+          
+          <div class="feature-list-item">
+            <div class="icon-box"><i class="fas fa-headset"></i></div>
+            <div>
+              <h4>24/7 Customer Support</h4>
+              <p>Our dedicated team is always available to help you with viewing, moving, or any issues during your stay.</p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Journey Timeline -->
-    <section class="py-5">
-      <div class="container">
-        <h2 class="text-center fw-bold mb-5">Our Journey So Far</h2>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-badge">2020</div>
-            <div class="timeline-content">
-              <h4>Started in a Bangalore PG</h4>
-              <p>Three roommates frustrated with the rental process decided to build something better. Started with just 50 properties in Bangalore.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-badge">2021</div>
-            <div class="timeline-content">
-              <h4>First 1,000 Happy Customers</h4>
-              <p>Expanded to Mumbai and Delhi. Word spread fast - students started recommending us to friends. Zero marketing budget, pure word-of-mouth.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-badge">2022</div>
-            <div class="timeline-content">
-              <h4>Went Pan-India</h4>
-              <p>Launched in 25 cities. Introduced instant booking and virtual tours. Helped 50,000+ people find homes during this year alone.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-badge">2023</div>
-            <div class="timeline-content">
-              <h4>Crossed 1 Million Users</h4>
-              <p>Became one of India's fastest-growing rental platforms. Launched mobile app. Added AI-powered recommendations.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-badge">2024</div>
-            <div class="timeline-content">
-              <h4>Today</h4>
-              <p><strong>50,000+ properties | 100+ cities | 2M+ users</strong><br>Still growing, still improving, still focused on making renting easier for you.</p>
-            </div>
-          </div>
+        
+        <div class="col-lg-6 reveal delay-2 #revealAnim">
+          <img src="https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=800" alt="Why Choose Us" class="why-image">
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Testimonials -->
-    <section class="py-5" style="background: var(--neutral);">
-      <div class="container">
-        <h2 class="text-center fw-bold mb-5">What Our Users Say</h2>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="testimonial-card">
-              <div class="d-flex align-items-center mb-3">
-                <img src="https://i.pravatar.cc/150?img=1" alt="User" loading="lazy">
-                <div class="ms-3">
-                  <h5 class="mb-0">Rahul Sharma</h5>
-                  <small class="text-muted">Engineering Student, Bangalore</small>
+  <!-- 6. Platform Statistics -->
+  <section class="stats-section reveal #revealAnim">
+    <div class="container">
+      <div class="row g-4 justify-content-center">
+        <div class="col-6 col-md-3 stat-item">
+          <div class="stat-number"><span #countUp>{{ usersCount() }}</span>K+</div>
+          <div class="stat-label">Happy Users</div>
+        </div>
+        <div class="col-6 col-md-3 stat-item">
+          <div class="stat-number"><span #countUp>{{ propertiesCount() }}</span>+</div>
+          <div class="stat-label">Verified Properties</div>
+        </div>
+        <div class="col-6 col-md-3 stat-item">
+          <div class="stat-number"><span #countUp>{{ citiesCount() }}</span>+</div>
+          <div class="stat-label">Cities Covered</div>
+        </div>
+        <div class="col-6 col-md-3 stat-item">
+          <div class="stat-number"><span #countUp>{{ satisfactionCount() }}</span>%</div>
+          <div class="stat-label">Customer Satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Team Section -->
+  <section class="team-section">
+    <div class="container">
+      <div class="section-header reveal #revealAnim">
+        <h2>Meet The Team</h2>
+        <p>The passionate people working behind the scenes to reinvent the rental market.</p>
+      </div>
+
+      <div class="row g-4">
+        @for (member of teamMembers; track member.name) {
+          <div class="col-md-6 col-lg-3 reveal #revealAnim">
+            <div class="team-card">
+              <div class="team-img-wrapper">
+                <img [src]="member.image" [alt]="member.name">
+              </div>
+              <div class="team-info">
+                <h3>{{ member.name }}</h3>
+                <p>{{ member.role }}</p>
+                <div class="social-links">
+                  <a [href]="member.ln"><i class="fab fa-linkedin"></i></a>
                 </div>
               </div>
-              <p>"Saved ₹8,000 in broker fees! Found my PG in 2 days. The photos were exactly like the actual room. Highly recommend!"</p>
-              <div class="text-warning">★★★★★</div>
             </div>
           </div>
-          <div class="col-md-4">
-            <div class="testimonial-card">
-              <div class="d-flex align-items-center mb-3">
-                <img src="https://i.pravatar.cc/150?img=5" alt="User" loading="lazy">
-                <div class="ms-3">
-                  <h5 class="mb-0">Priya Patel</h5>
-                  <small class="text-muted">Software Engineer, Pune</small>
-                </div>
-              </div>
-              <p>"Best decision ever! Direct contact with owner, transparent pricing, and the support team actually responds. No more broker harassment."</p>
-              <div class="text-warning">★★★★★</div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="testimonial-card">
-              <div class="d-flex align-items-center mb-3">
-                <img src="https://i.pravatar.cc/150?img=8" alt="User" loading="lazy">
-                <div class="ms-3">
-                  <h5 class="mb-0">Amit Kumar</h5>
-                  <small class="text-muted">MBA Student, Delhi</small>
-                </div>
-              </div>
-              <p>"Found a great flat near my college. The virtual tour feature saved me so much time. Moved in within a week!"</p>
-              <div class="text-warning">★★★★★</div>
-            </div>
-          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Call to Action -->
+  <section class="cta-section reveal #revealAnim">
+    <div class="container">
+      <div class="cta-box shadow-sm">
+        <h2>Start Your Stay with Sasta Room Today</h2>
+        <p>Join thousands of users who have already found their perfect home or the perfect tenant through our platform.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a routerLink="/properties" class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm">Find Rooms</a>
+          <a routerLink="/auth/register" class="btn btn-outline-primary btn-lg rounded-pill px-5 bg-white shadow-sm">List Your Property</a>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Team Section -->
-    <section class="py-5">
-      <div class="container">
-        <h2 class="text-center fw-bold mb-3">Built By Real People</h2>
-        <p class="text-center text-muted mb-5">Not a faceless corporation. Just a team that cares.</p>
-        <div class="row g-4 mb-5">
-          <div class="col-md-4">
-            <div class="text-center">
-              <div class="mx-auto mb-3" style="width:100px;height:100px;background:linear-gradient(135deg,#EE2E24,#1A73E8);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:2.5rem;">
-                <i class="fas fa-user-tie"></i>
-              </div>
-              <h4>Rajesh Kumar</h4>
-              <p class="text-muted">Founder & CEO</p>
-              <p class="small">Ex-OYO, IIT Delhi. Started this after his own bad rental experience.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-center">
-              <div class="mx-auto mb-3" style="width:100px;height:100px;background:linear-gradient(135deg,#1A73E8,#34A853);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:2.5rem;">
-                <i class="fas fa-laptop-code"></i>
-              </div>
-              <h4>Priya Sharma</h4>
-              <p class="text-muted">CTO</p>
-              <p class="small">Built the entire platform. Believes in simple, user-friendly tech.</p>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-center">
-              <div class="mx-auto mb-3" style="width:100px;height:100px;background:linear-gradient(135deg,#34A853,#EE2E24);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:2.5rem;">
-                <i class="fas fa-users"></i>
-              </div>
-              <h4>Amit Patel</h4>
-              <p class="text-muted">Head of Operations</p>
-              <p class="small">Ensures every property is verified. Quality is his obsession.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <app-footer></app-footer>
+  <!-- 9. Footer -->
+  <app-footer></app-footer>
+</main>

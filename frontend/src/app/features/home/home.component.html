@@ -12,14 +12,15 @@
     <div class="container">
       <div class="search-box">
         <form>
+          <!-- Search inputs -->
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fw-semibold">Preferred Location</label>
-              <input type="text" class="form-control search-input" placeholder="Enter city, area, or landmark" [(ngModel)]="searchCity" name="searchCity">
+              <input type="text" class="form-control search-input" placeholder="Enter city, area, or landmark" [ngModel]="searchCity()" (ngModelChange)="searchCity.set($event)" name="searchCity">
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">Accommodation Type</label>
-              <select class="form-select search-input" [(ngModel)]="searchType" name="searchType">
+              <select class="form-select search-input" [ngModel]="searchType()" (ngModelChange)="searchType.set($event)" name="searchType">
                 <option value="">All Types</option>
                 <option value="pg">PG (Paying Guest)</option>
                 <option value="shared_room">Shared Room</option>
@@ -41,12 +42,12 @@
     <section class="py-4">
       <div class="container">
         <div class="filter-pills text-center">
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter===''" (click)="filterByType('')">All</button>
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='pg'" (click)="filterByType('pg')">PG</button>
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='shared_room'" (click)="filterByType('shared_room')">Shared Room</button>
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='single_room'" (click)="filterByType('single_room')">Single Room</button>
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='flat'" (click)="filterByType('flat')">Flat</button>
-          <button class="btn btn-outline-secondary" [class.active]="activeFilter==='budget'" (click)="filterByBudget('budget')">Under ₹10,000</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === ''" (click)="filterByType('')">All</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === 'pg'" (click)="filterByType('pg')">PG</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === 'shared_room'" (click)="filterByType('shared_room')">Shared Room</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === 'single_room'" (click)="filterByType('single_room')">Single Room</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === 'flat'" (click)="filterByType('flat')">Flat</button>
+          <button class="btn btn-outline-secondary" [class.active]="activeFilter() === 'budget'" (click)="filterByBudget('budget')">Under ₹10,000</button>
           <button class="btn btn-outline-secondary">₹10,000 - ₹20,000</button>
           <button class="btn btn-outline-secondary">Above ₹20,000</button>
         </div>
@@ -57,19 +58,19 @@
     <section class="py-5">
       <div class="container">
         <h2 class="section-title">Featured Long-term Stays</h2>
-        <div class="row g-4">
-          @if (loading) {
-            <div class="text-center py-5 w-100">
-              <div class="spinner-border text-primary" role="status"></div>
+        <div class="row g-4 mt-2">
+          @if (loading()) {
+            <app-skeleton-list [count]="6" colClass="col-lg-4 col-md-6"></app-skeleton-list>
+          } @else if (properties().length > 0) {
+            <div class="row g-4 fade-in">
+              @for (property of properties(); track property.id) {
+                <div class="col-lg-4 col-md-6">
+                  <app-property-card [property]="property"></app-property-card>
+                </div>
+              }
             </div>
-          } @else if (properties.length > 0) {
-            @for (property of properties; track property.id) {
-              <div class="col-lg-4 col-md-6">
-                <app-property-card [property]="property"></app-property-card>
-              </div>
-            }
           } @else {
-            <div class="text-center py-5 w-100">
+            <div class="text-center py-5 w-100 fade-in">
               <p class="text-muted">No properties found.</p>
             </div>
           }

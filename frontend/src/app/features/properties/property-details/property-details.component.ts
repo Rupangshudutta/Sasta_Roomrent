@@ -1,15 +1,17 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import { SkeletonDetailComponent } from '../../../shared/components/skeleton/skeleton.components';
 import { PropertyService } from '../../../core/services/property.service';
 import { Property } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-property-details',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent, SkeletonDetailComponent],
   templateUrl: './property-details.component.html',
   styles: [`
     .gallery-img { height: 400px; object-fit: cover; border-radius: 12px; width: 100%; }

@@ -1,11 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [NavbarComponent, FooterComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
   templateUrl: './contact.component.html',
   styles: [`
     .contact-hero-section {
@@ -77,6 +82,10 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
       background: #34A853; color: white; padding: 20px;
       border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 600;
     }
+    .error-message {
+      background: #dc3545; color: white; padding: 20px;
+      border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 600;
+    }
 
     @media (max-width: 768px) {
       .contact-hero-section { padding: 40px 0 100px; }
@@ -86,15 +95,26 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
   `],
 })
 export class ContactComponent {
-  submitted = false;
+  private http = inject(HttpClient);
+
+  formData = {
+    name: '',
+    phone: '',
+    email: '',
+    subject: '',
+    message: ''
+  };
+
+  submitted = signal<boolean>(false);
+  error = signal<string>('');
 
   faqs = [
-    { q: 'How quickly can I find a room?', a: 'Most users find their perfect room within 2-3 days. You can browse properties instantly, contact owners directly, and schedule visits the same day. Our verified listings ensure you don\'t waste time on fake properties.', open: false },
-    { q: 'Do I need to pay any brokerage?', a: 'Absolutely not! Sasta Room is 100% broker-free. You connect directly with property owners. No hidden charges, no brokerage fees. Save thousands of rupees that you would otherwise pay to brokers.', open: false },
-    { q: 'Are all properties verified?', a: 'Yes! Every single property is physically verified by our team. We check ownership documents, visit the property, verify amenities, and ensure all photos are authentic. Your safety and trust are our priority.', open: false },
-    { q: 'What if I need to cancel my booking?', a: 'We have a flexible cancellation policy. If you cancel before moving in, you get a full refund minus processing charges. After moving in, refunds depend on the agreement with the owner. Contact our support team for assistance.', open: false },
-    { q: 'How do I list my property?', a: 'It\'s simple! Click "List Your Property", fill in details, upload photos, and submit. Our team will verify your property within 24-48 hours. Listing is completely free. You only pay a small commission when you get a tenant.', open: false },
-    { q: 'Is my payment information secure?', a: '100% secure! We use Razorpay, India\'s most trusted payment gateway with bank-grade encryption. We never store your card details. All transactions are PCI-DSS compliant and protected by SSL encryption.', open: false },
+    { q: 'How quickly can I find a room?', a: 'Most users find their perfect room within 2-3 days... (verified listings).', open: false },
+    { q: 'Do I need to pay any brokerage?', a: 'Absolutely not! Sasta Room is 100% broker-free.', open: false },
+    { q: 'Are all properties verified?', a: 'Yes! Every single property is physically verified by our team.', open: false },
+    { q: 'What if I need to cancel my booking?', a: 'We have a flexible cancellation policy. Contact our support team for assistance.', open: false },
+    { q: 'How do I list my property?', a: 'It\'s simple! Click "List Your Property", fill in details, upload photos, and submit.', open: false },
+    { q: 'Is my payment information secure?', a: '100% secure! We use Razorpay with bank-grade encryption.', open: false },
   ];
 
   toggleFaq(faq: any) {
@@ -103,8 +123,30 @@ export class ContactComponent {
 
   submitForm(e: Event) {
     e.preventDefault();
-    this.submitted = true;
-    (e.target as HTMLFormElement).reset();
-    setTimeout(() => this.submitted = false, 5000);
+    this.submitted.set(false);
+    this.error.set('');
+
+    const payload = {
+      name: this.formData.name,
+      email: this.formData.email,
+      phone: this.formData.phone,
+      subject: this.formData.subject,
+      message: this.formData.message,
+    };
+
+    this.http.post<{success: boolean, message: string}>(`${environment.apiUrl}/contact`, payload)
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.submitted.set(true);
+            this.formData = { name: '', phone: '', email: '', subject: '', message: '' };
+            setTimeout(() => this.submitted.set(false), 5000);
+          } else {
+            this.error.set(res.message);
+          }
+        },
+        error: () => this.error.set('Failed to send message. Please try again later.')
+      });
   }
 }
+

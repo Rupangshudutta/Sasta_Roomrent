@@ -1,17 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { PropertyService, PropertyFilters } from '../../../core/services/property.service';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../../shared/components/footer/footer.component';
 import { PropertyCardComponent } from '../../../shared/components/property-card/property-card.component';
+import { SkeletonListComponent } from '../../../shared/components/skeleton/skeleton.components';
 import { Property } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-property-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent, PropertyCardComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule, FormsModule, RouterLink,
+    NavbarComponent, FooterComponent,
+    PropertyCardComponent, SkeletonListComponent,
+  ],
   templateUrl: './property-list.component.html',
   styles: [`
     .page-header { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-bottom: 1px solid #dee2e6; }
@@ -19,86 +27,98 @@ import { Property } from '../../../shared/models/models';
     .page-link { cursor: pointer; }
   `],
 })
-export class PropertyListComponent implements OnInit {
+export class PropertyListComponent implements OnInit, OnDestroy {
   private propertyService = inject(PropertyService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private destroy$ = new Subject<void>();
 
-  properties: Property[] = [];
-  loading = true;
-  total = 0;
-  currentPage = 1;
-  totalPages = 1;
+  // Use signals for all reactive state
+  properties = signal<Property[]>([]);
+  loading = signal(true);
+  error = signal('');
+  total = signal(0);
+  currentPage = signal(1);
+  totalPages = signal(1);
   readonly LIMIT = 12;
-  error = '';
 
   filters: PropertyFilters = {};
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.filters = {
-        city: params['city'],
-        property_type: params['property_type'],
-        search: params['search'],
-        min_rent: params['min_rent'] ? Number(params['min_rent']) : undefined,
-        max_rent: params['max_rent'] ? Number(params['max_rent']) : undefined,
-      };
-      this.currentPage = params['page'] ? Number(params['page']) : 1;
-      this.loadProperties();
-    });
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        this.filters = {
+          city: params['city'],
+          property_type: params['property_type'],
+          search: params['search'],
+          min_rent: params['min_rent'] ? Number(params['min_rent']) : undefined,
+          max_rent: params['max_rent'] ? Number(params['max_rent']) : undefined,
+        };
+        this.currentPage.set(params['page'] ? Number(params['page']) : 1);
+        this.loadProperties();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadProperties(): void {
-    console.log('[Property List] 🔄 Loading properties with filters:', { ...this.filters, page: this.currentPage, limit: this.LIMIT });
-    this.loading = true;
-    this.propertyService.getProperties({ ...this.filters, page: this.currentPage, limit: this.LIMIT }).subscribe({
-      next: (res: any) => {
-        console.log('[Property List] ✅ Backend response received:', res);
-        if (res.success && res.data) {
-          this.properties = res.data.properties;
-          this.total = res.data.total;
-          this.totalPages = Math.ceil(this.total / this.LIMIT);
-          console.log(`[Property List] 📊 Loaded ${this.properties.length} properties out of ${this.total} total.`);
-        }
-      },
-      error: (err) => { 
-        console.error('[Property List] ❌ ERROR loading properties:', err);
-        this.loading = false; 
-      },
-      complete: () => { 
-        console.log('[Property List] ✨ Loading complete');
-        this.loading = false; 
-      },
-    });
+    this.loading.set(true);
+    this.error.set('');
+    this.propertyService
+      .getProperties({ ...this.filters, page: this.currentPage(), limit: this.LIMIT })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          if (res.success && res.data) {
+            this.properties.set(res.data.properties);
+            this.total.set(res.data.total);
+            this.totalPages.set(Math.ceil(res.data.total / this.LIMIT));
+          }
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.error.set('Failed to load properties. Please try again.');
+          this.loading.set(false);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   applyFilters(): void {
-    console.log('[Property List] 🔍 Apply Filters clicked. Current filters:', this.filters);
-    this.currentPage = 1;
+    this.currentPage.set(1);
     this.updateQueryParams();
   }
 
   clearFilters(): void {
-    console.log('[Property List] 🧹 Clear Filters clicked.');
     this.filters = {};
-    this.currentPage = 1;
+    this.currentPage.set(1);
     this.updateQueryParams();
   }
 
   goToPage(page: number): void {
-    console.log(`[Property List] 📄 Page change requested to page ${page}`);
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
       this.updateQueryParams();
     }
   }
 
   pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  }
+
+  /** trackBy for property list — prevents unnecessary DOM re-creation */
+  trackByPropertyId(_: number, p: Property): number {
+    return p.id;
   }
 
   private updateQueryParams(): void {
-    const queryParams: Record<string, unknown> = { page: this.currentPage };
+    const queryParams: Record<string, unknown> = { page: this.currentPage() };
     for (const [k, v] of Object.entries(this.filters)) {
       if (v !== undefined && v !== '') queryParams[k] = v;
     }

@@ -52,39 +52,46 @@
               <h2 class="fw-bold mb-2">Send Us a Message</h2>
               <p class="text-muted mb-4">Fill out the form and we'll get back to you within 2 hours</p>
 
-              <div id="successMsg" [style.display]="submitted ? 'block' : 'none'" class="success-message">
-                <i class="fas fa-check-circle me-2"></i>Message sent successfully! We'll contact you soon.
-              </div>
+              @if (submitted()) {
+                <div class="success-message fade-in">
+                  <i class="fas fa-check-circle me-2"></i>Message sent successfully! We'll contact you soon.
+                </div>
+              }
+              @if (error()) {
+                <div class="error-message fade-in">
+                  <i class="fas fa-exclamation-triangle me-2"></i>{{ error() }}
+                </div>
+              }
 
               <form (ngSubmit)="submitForm($event)">
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Your Name *</label>
-                    <input type="text" class="form-control" placeholder="John Doe" required>
+                    <input type="text" class="form-control" placeholder="John Doe" [(ngModel)]="formData.name" name="name" required>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Phone Number *</label>
-                    <input type="tel" class="form-control" placeholder="+91 98765 43210" required>
+                    <input type="tel" class="form-control" placeholder="+91 98765 43210" [(ngModel)]="formData.phone" name="phone" required>
                   </div>
                   <div class="col-12">
                     <label class="form-label">Email Address *</label>
-                    <input type="email" class="form-control" placeholder="john&#64;example.com" required>
+                    <input type="email" class="form-control" placeholder="john@example.com" [(ngModel)]="formData.email" name="email" required>
                   </div>
                   <div class="col-12">
                     <label class="form-label">I'm looking for *</label>
-                    <select class="form-select" required>
+                    <select class="form-select" [(ngModel)]="formData.subject" name="subject" required>
                       <option value="">Select an option</option>
-                      <option value="pg">PG Accommodation</option>
-                      <option value="shared">Shared Room</option>
-                      <option value="single">Single Room</option>
-                      <option value="flat">Flat/Apartment</option>
-                      <option value="owner">I'm a Property Owner</option>
-                      <option value="other">Other Query</option>
+                      <option value="PG Accommodation">PG Accommodation</option>
+                      <option value="Shared Room">Shared Room</option>
+                      <option value="Single Room">Single Room</option>
+                      <option value="Flat/Apartment">Flat/Apartment</option>
+                      <option value="I'm a Property Owner">I'm a Property Owner</option>
+                      <option value="Other Query">Other Query</option>
                     </select>
                   </div>
                   <div class="col-12">
                     <label class="form-label">Your Message *</label>
-                    <textarea class="form-control" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                    <textarea class="form-control" rows="5" placeholder="Tell us how we can help you..." [(ngModel)]="formData.message" name="message" required></textarea>
                   </div>
                   <div class="col-12">
                     <button type="submit" class="btn btn-primary w-100">

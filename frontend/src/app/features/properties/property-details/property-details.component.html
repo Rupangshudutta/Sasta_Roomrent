@@ -2,10 +2,7 @@
 
 <main class="bg-light pb-5">
   @if (loading()) {
-    <div class="container py-5 text-center">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p class="mt-3 text-muted">Loading property details...</p>
-    </div>
+    <app-skeleton-detail></app-skeleton-detail>
   } @else if (error()) {
     <div class="container py-5 text-center">
       <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
@@ -16,7 +13,7 @@
   } @else if (property()) {
     <ng-container *ngIf="property() as p">
     <!-- Hero Image Gallery -->
-    <div class="container pt-4 mb-4">
+    <div class="container pt-4 mb-4 fade-in">
       <div class="row g-2">
         <div class="col-md-8">
           <img 

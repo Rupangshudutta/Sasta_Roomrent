@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Property } from '../../models/models';
@@ -6,6 +6,7 @@ import { Property } from '../../models/models';
 @Component({
   selector: 'app-property-card',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterLink],
   templateUrl: './property-card.component.html',
   styles: [`

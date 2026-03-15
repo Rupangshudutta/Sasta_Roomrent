@@ -1,0 +1,115 @@
+<app-navbar></app-navbar>
+
+<!-- Hero -->
+<section class="success-hero">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Owner Success Stories</h1>
+    <p class="lead opacity-75 mb-5">Real owners. Real income. Real stories.</p>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-3">
+        <div class="bg-white bg-opacity-10 rounded-4 p-4 text-white">
+          <div class="fs-2 fw-bold">5,400+</div>
+          <div class="opacity-75">Verified Owners</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="bg-white bg-opacity-10 rounded-4 p-4 text-white">
+          <div class="fs-2 fw-bold">₹1.2 Cr+</div>
+          <div class="opacity-75">Paid to Owners</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="bg-white bg-opacity-10 rounded-4 p-4 text-white">
+          <div class="fs-2 fw-bold">4.8★</div>
+          <div class="opacity-75">Avg Owner Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stories -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4">
+      @for (story of stories; track story.name) {
+        <div class="col-md-4">
+          <div class="story-card">
+            <img [src]="story.image" [alt]="story.name" loading="lazy">
+            <div class="story-body">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:48px;height:48px;font-size:1.2rem;">
+                  {{ story.name.charAt(0) }}
+                </div>
+                <div>
+                  <div class="owner-name">{{ story.name }}</div>
+                  <div class="text-muted small"><i class="fas fa-map-marker-alt me-1 text-danger"></i>{{ story.city }}</div>
+                </div>
+              </div>
+              <div class="earnings">{{ story.earnings }} · {{ story.units }} units</div>
+              <p class="quote mt-3">"{{ story.quote }}"</p>
+              <div class="mt-3 text-warning">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">Why Owners Choose Sasta Room</h2>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="stat-box">
+          <div class="num">4 days</div>
+          <div class="label">Avg. time to first tenant</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <div class="num">98%</div>
+          <div class="label">On-time payment rate</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <div class="num">₹0</div>
+          <div class="label">Listing fee</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <div class="num">24/7</div>
+          <div class="label">Owner support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="cta-section text-center p-5">
+      <h2 class="fw-bold mb-3">Your success story starts here</h2>
+      <p class="opacity-75 mb-4 lead">List your first property today. Free forever, with no hidden charges.</p>
+      <a routerLink="/list-property" class="btn btn-danger btn-lg px-5 me-3 fw-bold">List Your Property Free</a>
+      <a routerLink="/owner/guidelines" class="btn btn-outline-light btn-lg px-4">Read Owner Guidelines</a>
+    </div>
+  </div>
+</section>
+
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div class="py-4"></div>
+}

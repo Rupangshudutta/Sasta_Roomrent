@@ -1,0 +1,120 @@
+<app-navbar></app-navbar>
+
+<!-- Hero -->
+<section class="page-hero">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-3">Terms of Service</h1>
+    <p class="opacity-75 mb-0">Last updated: {{ lastUpdated }}</p>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Table of Contents -->
+      <div class="col-lg-3">
+        <div class="toc">
+          <h6 class="fw-bold text-uppercase text-muted small mb-3">Contents</h6>
+          <a href="#acceptance" class="toc-link">1. Acceptance of Terms</a>
+          <a href="#use" class="toc-link">2. Use of Platform</a>
+          <a href="#accounts" class="toc-link">3. User Accounts</a>
+          <a href="#listings" class="toc-link">4. Property Listings</a>
+          <a href="#payments" class="toc-link">5. Payments</a>
+          <a href="#cancellation" class="toc-link">6. Cancellation Policy</a>
+          <a href="#liability" class="toc-link">7. Limitation of Liability</a>
+          <a href="#termination" class="toc-link">8. Termination</a>
+          <a href="#governing" class="toc-link">9. Governing Law</a>
+          <a href="#contact" class="toc-link">10. Contact Us</a>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="col-lg-9">
+        <div id="acceptance" class="content-section">
+          <h2>1. Acceptance of Terms</h2>
+          <p>By accessing or using Sasta Room ("Platform"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Platform.</p>
+          <p>Sasta Room reserves the right to modify these Terms at any time. Continued use of the Platform after such modifications constitutes your acceptance of the new Terms.</p>
+        </div>
+
+        <div id="use" class="content-section">
+          <h2>2. Use of Platform</h2>
+          <p>You agree to use Sasta Room only for lawful purposes and in a manner that does not infringe the rights of others. Prohibited activities include:</p>
+          <ul>
+            <li>Posting false, misleading, or fraudulent property listings</li>
+            <li>Harassing, threatening, or abusing other users</li>
+            <li>Attempting to circumvent the Platform for direct transactions to avoid fees</li>
+            <li>Using automated tools to scrape or extract data without permission</li>
+            <li>Impersonating another person or entity</li>
+          </ul>
+        </div>
+
+        <div id="accounts" class="content-section">
+          <h2>3. User Accounts</h2>
+          <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorized use. We reserve the right to terminate accounts that violate these Terms.</p>
+          <p>You must be at least 18 years of age to create an account and use our services.</p>
+        </div>
+
+        <div id="listings" class="content-section">
+          <h2>4. Property Listings</h2>
+          <p>Property owners ("Owners") are solely responsible for the accuracy of their listings. Sasta Room verifies listings on a best-effort basis but does not guarantee accuracy. Owners must ensure:</p>
+          <ul>
+            <li>All photographs are authentic and represent the listed property</li>
+            <li>Amenities listed are available and functional</li>
+            <li>Pricing information is accurate and complete</li>
+            <li>The property complies with all applicable local laws</li>
+          </ul>
+        </div>
+
+        <div id="payments" class="content-section">
+          <h2>5. Payments</h2>
+          <p>All payments on Sasta Room are processed through secure, PCI-compliant payment gateways. Sasta Room charges a service fee on successful bookings. Security deposits, if applicable, are governed by the individual listing agreement.</p>
+        </div>
+
+        <div id="cancellation" class="content-section">
+          <h2>6. Cancellation Policy</h2>
+          <p>Cancellation policies vary by listing and are set by individual Owners. The applicable policy is displayed on each property listing page. In general:</p>
+          <ul>
+            <li><strong>Full refund:</strong> Cancellations made 72+ hours before move-in date</li>
+            <li><strong>50% refund:</strong> Cancellations within 24–72 hours</li>
+            <li><strong>No refund:</strong> Cancellations less than 24 hours before move-in</li>
+          </ul>
+        </div>
+
+        <div id="liability" class="content-section">
+          <h2>7. Limitation of Liability</h2>
+          <p>Sasta Room acts as an intermediary platform connecting property seekers with owners. We are not liable for any disputes arising from the rental relationship, including disputes regarding property conditions, payment defaults, or personal safety incidents.</p>
+          <p>Our total liability for any claim shall not exceed the transaction value of the disputed booking.</p>
+        </div>
+
+        <div id="termination" class="content-section">
+          <h2>8. Termination</h2>
+          <p>Sasta Room reserves the right to suspend or terminate your account if you violate these Terms, engage in fraudulent activity, or for any other reason at our sole discretion. Upon termination, your right to use the Platform ceases immediately.</p>
+        </div>
+
+        <div id="governing" class="content-section">
+          <h2>9. Governing Law</h2>
+          <p>These Terms shall be governed by and construed in accordance with the laws of India. Any disputes arising shall be subject to the exclusive jurisdiction of courts in Bangalore, Karnataka.</p>
+        </div>
+
+        <div id="contact" class="content-section">
+          <h2>10. Contact Us</h2>
+          <p>For any questions about these Terms, please contact us:</p>
+          <ul>
+            <li><strong>Email:</strong> legal&#64;sastaroom.in</li>
+            <li><strong>Address:</strong> Sasta Room Technologies Pvt. Ltd., Bangalore, Karnataka — 560001</li>
+          </ul>
+          <div class="mt-4">
+            <a routerLink="/contact" class="btn btn-danger me-3">Contact Support</a>
+            <a routerLink="/privacy" class="btn btn-outline-secondary">Privacy Policy</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div class="py-4"></div>
+}

@@ -52,7 +52,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
   },
 
-  // About & Contact
+  // About & Contact (already existed)
   {
     path: 'about',
     loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
@@ -62,6 +62,40 @@ export const routes: Routes = [
     loadComponent: () => import('./features/contact/contact.component').then(m => m.ContactComponent),
   },
 
+  // Support pages
+  {
+    path: 'help',
+    loadComponent: () => import('./features/help/help.component').then(m => m.HelpComponent),
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./features/terms/terms.component').then(m => m.TermsComponent),
+  },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./features/privacy/privacy.component').then(m => m.PrivacyComponent),
+  },
+  {
+    path: 'safety',
+    loadComponent: () => import('./features/safety/safety.component').then(m => m.SafetyComponent),
+  },
+
+  // Owner pages
+  {
+    path: 'list-property',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/list-property/list-property.component').then(m => m.ListPropertyComponent),
+  },
+  {
+    path: 'owner/guidelines',
+    loadComponent: () => import('./features/owner-guidelines/owner-guidelines.component').then(m => m.OwnerGuidelinesComponent),
+  },
+  {
+    path: 'owner/success',
+    loadComponent: () => import('./features/owner-success/owner-success.component').then(m => m.OwnerSuccessComponent),
+  },
+
   // Fallback
   { path: '**', redirectTo: '' },
 ];
+

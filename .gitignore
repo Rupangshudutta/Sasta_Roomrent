@@ -1,0 +1,59 @@
+# ===========================
+# Sasta Room — Root .gitignore
+# ===========================
+
+# ---------- Environment Variables (NEVER commit these) ----------
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+**/.env.development
+**/.env.production
+**/.env.test
+!**/.env.example
+
+# ---------- Node ----------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---------- Build Artifacts ----------
+dist/
+build/
+out/
+.angular/
+
+# ---------- TypeScript ----------
+*.js.map
+*.d.ts.map
+
+# ---------- Editor / OS ----------
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ---------- Test Coverage ----------
+coverage/
+.nyc_output/
+
+# ---------- Logs ----------
+logs/
+*.log
+
+# ---------- Uploads (use object storage, not git) ----------
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ---------- Temp ----------
+tmp/
+.tmp/

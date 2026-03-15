@@ -1,0 +1,206 @@
+<app-navbar></app-navbar>
+
+<section class="page-hero text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">List Your Property</h1>
+    <p class="opacity-75">Free listing · Verified tenants · Guaranteed payments</p>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container" style="max-width: 760px;">
+
+    @if (submitted()) {
+      <div class="text-center py-5">
+        <div class="mb-4" style="font-size: 5rem;">🎉</div>
+        <h2 class="fw-bold text-success">Listing Submitted!</h2>
+        <p class="text-muted mb-4">Our team will verify your property within 24–48 hours and contact you.</p>
+        <a routerLink="/dashboard/owner" class="btn btn-danger btn-lg">Go to Dashboard</a>
+      </div>
+    } @else {
+      <!-- Step indicator -->
+      <div class="step-indicator">
+        <div class="step" [class.active]="currentStep() === 1" [class.done]="currentStep() > 1">
+          <div class="text-center me-2">
+            <div class="step-circle">{{ currentStep() > 1 ? '✓' : '1' }}</div>
+            <small class="step-label d-block mt-1">Location</small>
+          </div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="currentStep() === 2" [class.done]="currentStep() > 2">
+          <div class="text-center me-2">
+            <div class="step-circle">{{ currentStep() > 2 ? '✓' : '2' }}</div>
+            <small class="step-label d-block mt-1">Details</small>
+          </div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="currentStep() === 3">
+          <div class="text-center">
+            <div class="step-circle">3</div>
+            <small class="step-label d-block mt-1">Amenities</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Location -->
+      @if (currentStep() === 1) {
+        <div class="step-box" [formGroup]="step1Form">
+          <h4 class="fw-bold mb-4">Where is your property?</h4>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Property Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="title" placeholder="e.g. Cozy PG near MG Road Metro">
+            @if (step1Form.get('title')?.invalid && step1Form.get('title')?.touched) {
+              <div class="text-danger small mt-1">Title must be at least 10 characters</div>
+            }
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Property Type <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="property_type">
+              <option value="">Select type</option>
+              <option value="pg">PG (Paying Guest)</option>
+              <option value="shared_room">Shared Room</option>
+              <option value="single_room">Single Room</option>
+              <option value="flat">Full Flat</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Full Address <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="address_line1" placeholder="Street, Building, Locality">
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="city" placeholder="Bangalore">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">State <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="state" placeholder="Karnataka">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Pincode <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="pincode" placeholder="560001">
+            </div>
+          </div>
+          <div class="nav-buttons">
+            <div></div>
+            <button class="btn btn-danger px-5" (click)="nextStep()" [disabled]="step1Form.invalid">
+              Next: Property Details <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Details -->
+      @if (currentStep() === 2) {
+        <div class="step-box" [formGroup]="step2Form">
+          <h4 class="fw-bold mb-4">Property Details & Pricing</h4>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Monthly Rent (₹) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="rent_amount" placeholder="8000">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Security Deposit (₹) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" formControlName="security_deposit" placeholder="16000">
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Bedrooms</label>
+              <select class="form-select" formControlName="bedrooms">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3</option>
+                <option [value]="4">4+</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Bathrooms</label>
+              <select class="form-select" formControlName="bathrooms">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3+</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Max Occupancy</label>
+              <select class="form-select" formControlName="max_occupancy">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3</option>
+                <option [value]="4">4+</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Furnishing Status</label>
+            <select class="form-select" formControlName="furnishing">
+              <option value="">Select</option>
+              <option value="furnished">Fully Furnished</option>
+              <option value="semi-furnished">Semi Furnished</option>
+              <option value="unfurnished">Unfurnished</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="4" formControlName="description" placeholder="Describe your property, nearby facilities, rules, preferred tenants..."></textarea>
+            <div class="text-muted small mt-1">Minimum 50 characters</div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn-outline-secondary px-4" (click)="prevStep()">
+              <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
+            <button class="btn btn-danger px-5" (click)="nextStep()" [disabled]="step2Form.invalid">
+              Next: Amenities <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Amenities & Submit -->
+      @if (currentStep() === 3) {
+        <div class="step-box">
+          <h4 class="fw-bold mb-4">Available Amenities</h4>
+          <div class="row g-3 mb-4">
+            @for (amenity of amenities; track amenity) {
+              <div class="col-md-4 col-6">
+                <label class="amenity-check w-100">
+                  <input type="checkbox" [checked]="selectedAmenities.includes(amenity)" (change)="toggleAmenity(amenity)">
+                  <span>{{ amenity }}</span>
+                </label>
+              </div>
+            }
+          </div>
+
+          <h4 class="fw-bold mb-3">Upload Photos</h4>
+          <div class="upload-area mb-4">
+            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3 d-block"></i>
+            <p class="text-muted mb-2">Drag and drop photos or click to browse</p>
+            <p class="small text-muted">JPG, PNG · Max 5MB each · Up to 10 photos</p>
+            <input type="file" multiple accept="image/*" class="d-none" id="photoUpload">
+            <label for="photoUpload" class="btn btn-outline-danger mt-2">Choose Photos</label>
+          </div>
+
+          <div class="nav-buttons">
+            <button class="btn btn-outline-secondary px-4" (click)="prevStep()">
+              <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
+            <button class="btn btn-danger btn-lg px-5 fw-bold" (click)="submitListing()" [disabled]="submitting()">
+              @if (submitting()) {
+                <span class="spinner-border spinner-border-sm me-2"></span>Submitting...
+              } @else {
+                <i class="fas fa-check-circle me-2"></i>Submit Listing
+              }
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>
+
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div class="py-4"></div>
+}

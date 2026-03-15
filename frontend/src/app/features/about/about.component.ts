@@ -1,5 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, signal, inject, PLATFORM_ID, ElementRef, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
@@ -7,92 +6,58 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 @Component({
   selector: 'app-about',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
+  imports: [RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+  styles: [`
+    .about-hero-section {
+      position: relative;
+      background: linear-gradient(135deg, #EE2E24, #d42a20);
+      color: white;
+      padding: 80px 0;
+      overflow: hidden;
+    }
+    .trust-badge {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      height: 100%;
+    }
+    .trust-badge i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; display: block; }
+    .timeline { position: relative; padding: 50px 0; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 3px; background: var(--primary);
+      transform: translateX(-50%);
+    }
+    .timeline-item { margin-bottom: 50px; position: relative; }
+    .timeline-content {
+      background: white; padding: 30px;
+      border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      width: 45%; position: relative;
+    }
+    .timeline-item:nth-child(odd) .timeline-content { margin-left: 55%; }
+    .timeline-item:nth-child(even) .timeline-content { margin-right: 55%; text-align: right; }
+    .timeline-badge {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 60px; height: 60px; background: var(--primary);
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; color: white; font-weight: 700;
+      box-shadow: 0 0 0 4px white, 0 0 0 8px var(--primary);
+    }
+    .testimonial-card {
+      background: white; border-radius: 15px; padding: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08); height: 100%;
+    }
+    .testimonial-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+    @media (max-width: 768px) {
+      .timeline::before { left: 30px; }
+      .timeline-content { width: calc(100% - 80px); margin-left: 80px !important; text-align: left !important; }
+      .timeline-badge { left: 30px; }
+    }
+  `],
 })
-export class AboutComponent implements OnInit, AfterViewInit, OnDestroy {
-  private platformId = inject(PLATFORM_ID);
-  
-  @ViewChildren('revealAnim') revealElements!: QueryList<ElementRef>;
-  @ViewChildren('countUp') counterElements!: QueryList<ElementRef>;
-
-  // Stats signals
-  usersCount = signal(0);
-  propertiesCount = signal(0);
-  citiesCount = signal(0);
-  satisfactionCount = signal(0);
-
-  private observer: IntersectionObserver | null = null;
-  private hasAnimatedStats = false;
-
-  teamMembers = [
-    { name: 'Rajesh Kumar', role: 'Founder & CEO', image: 'https://i.pravatar.cc/150?img=11', ln: '#' },
-    { name: 'Priya Sharma', role: 'CTO', image: 'https://i.pravatar.cc/150?img=5', ln: '#' },
-    { name: 'Amit Patel', role: 'Head of Operations', image: 'https://i.pravatar.cc/150?img=8', ln: '#' },
-    { name: 'Sneha Reddy', role: 'Head of Design', image: 'https://i.pravatar.cc/150?img=4', ln: '#' }
-  ];
-
-  ngOnInit() {}
-
-  ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.initIntersectionObserver();
-    }
-  }
-
-  ngOnDestroy() {
-    if (this.observer) {
-      this.observer.disconnect();
-    }
-  }
-
-  private initIntersectionObserver() {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.2
-    };
-
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          
-          if (entry.target.classList.contains('stats-section') && !this.hasAnimatedStats) {
-            this.animateStats();
-            this.hasAnimatedStats = true;
-          }
-        }
-      });
-    }, options);
-
-    this.revealElements.forEach(el => this.observer?.observe(el.nativeElement));
-  }
-
-  private animateStats() {
-    this.animateValue(this.usersCount, 0, 10, 2000); // 10K+
-    this.animateValue(this.propertiesCount, 0, 1500, 2000); // 1500+
-    this.animateValue(this.citiesCount, 0, 20, 2000); // 20+
-    this.animateValue(this.satisfactionCount, 0, 95, 2000); // 95%
-  }
-
-  private animateValue(targetSignal: any, start: number, end: number, duration: number) {
-    let startTimestamp: number | null = null;
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
-      // Easing function: easeOutQuart
-      const easeProgress = 1 - Math.pow(1 - progress, 4);
-      targetSignal.set(Math.floor(easeProgress * (end - start) + start));
-      
-      if (progress < 1) {
-        window.requestAnimationFrame(step);
-      }
-    };
-    window.requestAnimationFrame(step);
-  }
-}
-
+export class AboutComponent {}

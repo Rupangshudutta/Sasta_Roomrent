@@ -12,126 +12,7 @@ import { Property } from '../../../shared/models/models';
   selector: 'app-property-list',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, FooterComponent, PropertyCardComponent],
-  template: `
-    <app-navbar></app-navbar>
-
-    <div class="page-header py-4">
-      <div class="container">
-        <h1 class="fw-bold mb-0">Find Your Stay</h1>
-        <p class="text-muted">{{ total }} properties available across India</p>
-      </div>
-    </div>
-
-    <section class="py-4">
-      <div class="container">
-        <div class="row g-4">
-          <!-- Filters Sidebar -->
-          <div class="col-lg-3">
-            <div class="filter-sidebar p-4 rounded-3 shadow-sm bg-white">
-              <h5 class="fw-bold mb-4"><i class="fas fa-sliders-h me-2 text-primary"></i>Filters</h5>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Search</label>
-                <input type="text" class="form-control" placeholder="City, area, landmark..."
-                  [(ngModel)]="filters.search" (keyup.enter)="applyFilters()">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Property Type</label>
-                <select class="form-select" [(ngModel)]="filters.property_type" (change)="applyFilters()">
-                  <option value="">All Types</option>
-                  <option value="pg">PG</option>
-                  <option value="shared_room">Shared Room</option>
-                  <option value="single_room">Single Room</option>
-                  <option value="flat">Flat</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Min Rent (₹)</label>
-                <input type="number" class="form-control" placeholder="0" [(ngModel)]="filters.min_rent">
-              </div>
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Max Rent (₹)</label>
-                <input type="number" class="form-control" placeholder="100000" [(ngModel)]="filters.max_rent">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Furnishing</label>
-                <select class="form-select" [(ngModel)]="filters.furnishing" (change)="applyFilters()">
-                  <option value="">Any</option>
-                  <option value="furnished">Furnished</option>
-                  <option value="semi-furnished">Semi-Furnished</option>
-                  <option value="unfurnished">Unfurnished</option>
-                </select>
-              </div>
-
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Min Bedrooms</label>
-                <select class="form-select" [(ngModel)]="filters.bedrooms" (change)="applyFilters()">
-                  <option [ngValue]="undefined">Any</option>
-                  <option [ngValue]="1">1+</option>
-                  <option [ngValue]="2">2+</option>
-                  <option [ngValue]="3">3+</option>
-                </select>
-              </div>
-
-              <button class="btn btn-primary w-100 mb-2" (click)="applyFilters()">
-                <i class="fas fa-search me-2"></i>Apply Filters
-              </button>
-              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">Clear</button>
-            </div>
-          </div>
-
-          <!-- Property Grid -->
-          <div class="col-lg-9">
-            @if (loading) {
-              <div class="text-center py-5">
-                <div class="spinner-border text-primary"></div>
-                <p class="mt-3 text-muted">Loading properties...</p>
-              </div>
-            } @else if (properties.length > 0) {
-              <div class="row g-4">
-                @for (property of properties; track property.id) {
-                  <div class="col-md-6 col-xl-4">
-                    <app-property-card [property]="property"></app-property-card>
-                  </div>
-                }
-              </div>
-
-              <!-- Pagination -->
-              @if (totalPages > 1) {
-                <nav class="mt-5">
-                  <ul class="pagination justify-content-center">
-                    <li class="page-item" [class.disabled]="currentPage === 1">
-                      <a class="page-link" (click)="goToPage(currentPage - 1)">‹</a>
-                    </li>
-                    @for (p of pages(); track p) {
-                      <li class="page-item" [class.active]="p === currentPage">
-                        <a class="page-link" (click)="goToPage(p)">{{ p }}</a>
-                      </li>
-                    }
-                    <li class="page-item" [class.disabled]="currentPage === totalPages">
-                      <a class="page-link" (click)="goToPage(currentPage + 1)">›</a>
-                    </li>
-                  </ul>
-                </nav>
-              }
-            } @else {
-              <div class="text-center py-5">
-                <i class="fas fa-search fa-4x text-muted mb-4"></i>
-                <h4>No properties found</h4>
-                <p class="text-muted">Try adjusting or clearing your filters</p>
-                <button class="btn btn-outline-primary mt-2" (click)="clearFilters()">Clear All Filters</button>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <app-footer></app-footer>
-  `,
+  templateUrl: './property-list.component.html',
   styles: [`
     .page-header { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-bottom: 1px solid #dee2e6; }
     .filter-sidebar { position: sticky; top: 80px; }
@@ -149,6 +30,7 @@ export class PropertyListComponent implements OnInit {
   currentPage = 1;
   totalPages = 1;
   readonly LIMIT = 12;
+  error = '';
 
   filters: PropertyFilters = {};
 
@@ -167,32 +49,44 @@ export class PropertyListComponent implements OnInit {
   }
 
   loadProperties(): void {
+    console.log('[Property List] 🔄 Loading properties with filters:', { ...this.filters, page: this.currentPage, limit: this.LIMIT });
     this.loading = true;
     this.propertyService.getProperties({ ...this.filters, page: this.currentPage, limit: this.LIMIT }).subscribe({
       next: (res: any) => {
+        console.log('[Property List] ✅ Backend response received:', res);
         if (res.success && res.data) {
           this.properties = res.data.properties;
           this.total = res.data.total;
           this.totalPages = Math.ceil(this.total / this.LIMIT);
+          console.log(`[Property List] 📊 Loaded ${this.properties.length} properties out of ${this.total} total.`);
         }
       },
-      error: () => {},
-      complete: () => { this.loading = false; },
+      error: (err) => { 
+        console.error('[Property List] ❌ ERROR loading properties:', err);
+        this.loading = false; 
+      },
+      complete: () => { 
+        console.log('[Property List] ✨ Loading complete');
+        this.loading = false; 
+      },
     });
   }
 
   applyFilters(): void {
+    console.log('[Property List] 🔍 Apply Filters clicked. Current filters:', this.filters);
     this.currentPage = 1;
     this.updateQueryParams();
   }
 
   clearFilters(): void {
+    console.log('[Property List] 🧹 Clear Filters clicked.');
     this.filters = {};
     this.currentPage = 1;
     this.updateQueryParams();
   }
 
   goToPage(page: number): void {
+    console.log(`[Property List] 📄 Page change requested to page ${page}`);
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.updateQueryParams();

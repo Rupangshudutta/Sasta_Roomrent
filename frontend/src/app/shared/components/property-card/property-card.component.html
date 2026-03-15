@@ -1,0 +1,40 @@
+<div class="property-card card position-relative h-100 border-0 shadow-sm transition-transform hover-lift">
+  <img
+    [src]="property.primary_image || property.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"
+    class="card-img-top rounded-top-3"
+    [alt]="property.title"
+    loading="lazy"
+    style="height: 220px; object-fit: cover;"
+  >
+  <span class="property-type-badge">{{ property.property_type | titlecase }}</span>
+  @if (property.is_featured) {
+    <span class="featured-badge" style="position: absolute; top: 12px; right: 12px; background: #f59e0b; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; z-index: 2;"><i class="fas fa-star me-1"></i>Featured</span>
+  }
+
+  <div class="card-body p-4 d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="card-title mb-0 text-truncate fw-bold text-dark" style="max-width:70%;">{{ property.title }}</h5>
+      @if (property.rating_count > 0) {
+        <span class="rating badge bg-light text-dark border"><i class="fas fa-star text-warning me-1"></i>{{ property.rating_avg | number:'1.1-1' }}</span>
+      }
+    </div>
+    
+    <p class="text-muted small mb-3"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ property.city }}, {{ property.state }}</p>
+    
+    <div class="amenities d-flex gap-3 mb-4 text-secondary small">
+      <span class="d-flex align-items-center gap-1"><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
+      <span class="d-flex align-items-center gap-1"><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
+      <span class="d-flex align-items-center gap-1"><i class="fas fa-couch"></i> {{ property.furnishing === 'unfurnished' ? 'Unfurnished' : (property.furnishing === 'furnished' ? 'Furnished' : 'Semi') }}</span>
+    </div>
+    
+    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+      <div>
+        <span class="fs-5 fw-bold text-primary">₹{{ property.rent_amount | number }}</span>
+        <span class="text-muted small">/month</span>
+      </div>
+      <a [routerLink]="['/properties', property.id]" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm property-action-btn">
+        View Details
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<app-navbar></app-navbar>
+
+<main class="bg-light pb-5">
+  <div class="container pt-4">
+    <button class="btn btn-link text-decoration-none text-secondary mb-3 px-0" (click)="location.back()">
+      <i class="fas fa-arrow-left me-2"></i> Back to Property
+    </button>
+    
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-3 text-muted">Loading booking details...</p>
+      </div>
+    } @else if (error()) {
+      <div class="text-center py-5">
+        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+        <h4 class="text-danger">Error</h4>
+        <p class="text-muted">{{ error() }}</p>
+      </div>
+    } @else if (property()) {
+      <ng-container *ngIf="property() as p">
+      <h2 class="fw-bold mb-4">Request to Book</h2>
+      
+      <div class="row g-5">
+        <!-- Left Column: Form -->
+        <div class="col-lg-7">
+          <div class="card border-0 shadow-sm p-4 mb-4 rounded-4">
+            <h4 class="fw-bold mb-4">Reservation Details</h4>
+            
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Check-in Date</label>
+              <input type="date" class="form-control form-control-lg" 
+                     [ngModel]="checkInDate()" (ngModelChange)="updateCheckInDate($event)">
+              <div class="form-text">Choose the date you plan to move in.</div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Lease Duration (Months)</label>
+              <input type="number" class="form-control form-control-lg" 
+                     [min]="p.min_lease_months || 1" 
+                     [ngModel]="leaseMonths()" (ngModelChange)="updateLeaseMonths($event)">
+              <div class="form-text">Minimum lease is {{ p.min_lease_months || 1 }} months for this property.</div>
+            </div>
+            
+            <div class="mb-2">
+              <label class="form-label fw-semibold">Special Requests / Notes</label>
+              <textarea class="form-control" rows="4" placeholder="Any questions for the owner?"
+                        [ngModel]="notes()" (ngModelChange)="updateNotes($event)"></textarea>
+            </div>
+          </div>
+          
+          <div class="card border-0 shadow-sm p-4 rounded-4">
+            <h4 class="fw-bold mb-3">Payment Method</h4>
+            <div class="border rounded-3 p-3 d-flex align-items-center mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentType" id="paymentUPI" checked>
+                <label class="form-check-label fw-semibold" for="paymentUPI">
+                  UPI / NetBanking
+                </label>
+              </div>
+              <div class="ms-auto d-flex gap-2">
+                <i class="fab fa-google-pay fa-2x text-muted"></i>
+                <i class="fab fa-amazon-pay fa-2x text-muted"></i>
+              </div>
+            </div>
+            <div class="alert alert-warning mb-0">
+              <i class="fas fa-shield-alt me-2"></i> Payments are disabled in this demo.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Summary & Total -->
+        <div class="col-lg-5">
+          <div class="card border-0 shadow-lg summary-card rounded-4 p-4">
+            <div class="d-flex mb-4 border-bottom pb-4">
+              <img [src]="p.primary_image || p.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200'" 
+                   class="rounded-3" style="width: 100px; height: 100px; object-fit: cover;" [alt]="p.title">
+              <div class="ms-3">
+                <span class="badge bg-light text-dark border mb-1">{{ p.property_type | titlecase }}</span>
+                <h6 class="fw-bold text-dark mb-1">{{ p.title }}</h6>
+                <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ p.city }}</small>
+              </div>
+            </div>
+            
+            <h5 class="fw-bold mb-3">Price Details</h5>
+            
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">₹{{ p.rent_amount | number }} x {{ leaseMonths() }} months</span>
+              <span>₹{{ totalRent() | number }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-3 border-bottom pb-3">
+              <span class="text-muted">Security Deposit</span>
+              <span>₹{{ p.security_deposit | number }}</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-4">
+              <span class="fw-bold fs-5">Total (INR)</span>
+              <span class="fw-bold fs-5">₹{{ totalAmount() | number }}</span>
+            </div>
+
+            <button class="btn btn-primary btn-lg w-100 fw-bold rounded-pill p-3" 
+                    (click)="confirmBooking()" 
+                    [disabled]="isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing...
+              } @else {
+                Request Booking
+              }
+            </button>
+            <p class="text-center text-muted small mt-3 mb-0">
+              You will only be charged after the owner accepts.
+            </p>
+          </div>
+        </div>
+      </div>
+      </ng-container>
+    }
+  </div>
+</main>
+<app-footer></app-footer>

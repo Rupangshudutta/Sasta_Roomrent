@@ -7,43 +7,26 @@ import { Property } from '../../models/models';
   selector: 'app-property-card',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  template: `
-    <div class="property-card card position-relative h-100">
-      <img
-        [src]="property.primary_image || property.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'"
-        class="card-img-top"
-        [alt]="property.title"
-        loading="lazy"
-      >
-      <span class="property-type-badge">{{ property.property_type | titlecase }}</span>
-      @if (property.is_featured) {
-        <span class="featured-badge" style="position: absolute; top: 12px; right: 12px; background: #f59e0b; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-star me-1"></i>Featured</span>
-      }
-
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h5 class="card-title mb-0 text-truncate" style="max-width:70%">{{ property.title }}</h5>
-          @if (property.rating_count > 0) {
-            <span class="rating">{{ property.rating_avg | number:'1.1-1' }} <i class="fas fa-star"></i></span>
-          }
-        </div>
-        <p class="text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ property.city }}, {{ property.state }}</p>
-        <div class="amenities mb-3">
-          <small class="d-block"><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</small>
-          <small class="d-block"><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</small>
-          <small class="d-block"><i class="fas fa-couch"></i> {{ property.furnishing }}</small>
-        </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="price">₹{{ property.rent_amount | number }}<small>/month</small></span>
-          <a [routerLink]="['/properties', property.id]" class="btn btn-sm btn-outline-primary">
-            View Details
-          </a>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './property-card.component.html',
   styles: [`
-    /* Relying on global styles.scss for .property-card, .price, .rating, etc. */
+    .hover-lift {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .property-action-btn {
+      background: linear-gradient(135deg, #e3342f, #c71f1b);
+      border: none;
+      transition: all 0.3s ease;
+    }
+    .property-action-btn:hover {
+      background: linear-gradient(135deg, #c71f1b, #a51a17);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(227, 52, 47, 0.3) !important;
+    }
+    /* Relying on global styles.scss for other tokens */
   `],
 })
 export class PropertyCardComponent {

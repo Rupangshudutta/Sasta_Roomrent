@@ -1,0 +1,177 @@
+<app-navbar></app-navbar>
+
+<main class="bg-light pb-5">
+  @if (loading()) {
+    <div class="container py-5 text-center">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-3 text-muted">Loading property details...</p>
+    </div>
+  } @else if (error()) {
+    <div class="container py-5 text-center">
+      <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+      <h4 class="text-danger">Error</h4>
+      <p class="text-muted">{{ error() }}</p>
+      <a routerLink="/properties" class="btn btn-outline-secondary mt-3">Back to Properties</a>
+    </div>
+  } @else if (property()) {
+    <ng-container *ngIf="property() as p">
+    <!-- Hero Image Gallery -->
+    <div class="container pt-4 mb-4">
+      <div class="row g-2">
+        <div class="col-md-8">
+          <img 
+            [src]="p.primary_image || p.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200'" 
+            class="gallery-img" 
+            fetchpriority="high"
+            [alt]="p.title">
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-2">
+          @if (p.images && p.images.length > 1) {
+            <img [src]="p.images[1].image_url" class="gallery-img flex-grow-1" style="height: 195px;" loading="lazy" alt="Property Image 2">
+            @if (p.images.length > 2) {
+              <div class="position-relative flex-grow-1" style="height: 195px;">
+                <img [src]="p.images[2].image_url" class="gallery-img h-100" loading="lazy" alt="Property Image 3">
+                @if (p.images.length > 3) {
+                  <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center text-white" style="border-radius: 12px; cursor: pointer;">
+                    <span class="fs-4 fw-bold">+{{ p.images.length - 3 }} Photos</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <img [src]="p.primary_image || 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600'" class="gallery-img flex-grow-1" style="height: 195px;" loading="lazy" alt="Placeholder">
+            }
+          } @else {
+            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600" class="gallery-img flex-grow-1" style="height: 195px;" loading="lazy" alt="Placeholder">
+            <img src="https://images.unsplash.com/photo-1502672260266-1c1c24240f38?w=600" class="gallery-img flex-grow-1" style="height: 195px;" loading="lazy" alt="Placeholder">
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row g-5">
+        <!-- Left Column: Details -->
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h1 class="fw-bold mb-0 text-dark">{{ p.title }}</h1>
+            <span class="badge bg-primary fs-6 py-2 px-3">{{ p.property_type | titlecase }}</span>
+          </div>
+          
+          <p class="text-muted fs-5 mb-4">
+            <i class="fas fa-map-marker-alt text-danger me-2"></i> {{ p.address_line1 }}, {{ p.city }}, {{ p.state }}
+          </p>
+
+          <hr class="my-4">
+
+          <h4 class="fw-bold mb-3">Overview</h4>
+          <div class="row g-3 mb-4">
+            <div class="col-sm-4 col-6">
+              <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                <i class="fas fa-bed fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0 fw-bold">{{ p.bedrooms }}</h5>
+                <small class="text-muted">Bedrooms</small>
+              </div>
+            </div>
+            <div class="col-sm-4 col-6">
+              <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                <i class="fas fa-bath fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0 fw-bold">{{ p.bathrooms }}</h5>
+                <small class="text-muted">Bathrooms</small>
+              </div>
+            </div>
+            <div class="col-sm-4 col-6">
+              <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                <i class="fas fa-couch fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0 fw-bold text-capitalize">{{ p.furnishing }}</h5>
+                <small class="text-muted">Furnishing</small>
+              </div>
+            </div>
+            <div class="col-sm-4 col-6">
+              <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                <h5 class="mb-0 fw-bold">{{ p.max_occupancy }}</h5>
+                <small class="text-muted">Max Occupancy</small>
+              </div>
+            </div>
+          </div>
+
+          <h4 class="fw-bold mb-3">About this space</h4>
+          <p class="text-secondary" style="line-height: 1.8; white-space: pre-line;">
+            {{ p.description || 'No description provided by the owner.' }}
+          </p>
+
+          <hr class="my-4">
+
+          <h4 class="fw-bold mb-3">Amenities</h4>
+          @if (p.amenities && p.amenities.length > 0) {
+            <div class="row g-3">
+              @for (amenity of p.amenities; track amenity) {
+                <div class="col-md-4 col-6">
+                  <div class="d-flex align-items-center text-secondary">
+                    <i class="fas fa-check-circle text-success me-2"></i> {{ amenity | titlecase }}
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-muted">No amenities listed.</p>
+          }
+          
+          <hr class="my-4">
+          
+          <h4 class="fw-bold mb-3">Owner Details</h4>
+          <div class="d-flex align-items-center mb-4">
+            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 20px;">
+              {{ p.owner_name?.charAt(0) || 'O' }}
+            </div>
+            <div>
+              <h5 class="mb-0">{{ p.owner_name || 'Property Owner' }}</h5>
+              <small class="text-muted">Hosted by verified owner</small>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Booking Card -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-lg rounded-4 sticky-card p-4">
+            <div class="mb-4">
+              <span class="fs-2 fw-bold text-dark">₹{{ p.rent_amount | number }}</span>
+              <span class="text-muted"> / month</span>
+            </div>
+            
+            <div class="alert alert-info rounded-3 mb-4">
+              <div class="d-flex w-100 justify-content-between">
+                <strong>Security Deposit:</strong>
+                <span>₹{{ p.security_deposit | number }}</span>
+              </div>
+              <div class="d-flex w-100 justify-content-between mt-2">
+                <strong>Available From:</strong>
+                <span>{{ p.available_from ? (p.available_from | date:'mediumDate') : 'Immediately' }}</span>
+              </div>
+            </div>
+
+            <a [routerLink]="['/properties', p.id, 'book']" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill py-3 shadow-sm mb-3 text-white" style="background: linear-gradient(135deg, #e3342f, #c71f1b); border: none;">
+              Reserve This Room
+            </a>
+            
+            <p class="text-center text-muted small mb-0">You won't be charged yet</p>
+            
+            <hr class="my-4">
+            <div class="d-flex justify-content-between text-secondary">
+              <span>Total viewing this property:</span>
+              <strong>{{ p.views_count || 12 }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </ng-container>
+  }
+</main>
+@defer (on viewport) {
+  <app-footer></app-footer>
+} @placeholder {
+  <div class="py-4 text-center text-muted small">Loading footer...</div>
+}

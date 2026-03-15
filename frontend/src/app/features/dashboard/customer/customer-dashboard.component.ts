@@ -14,78 +14,7 @@ import { environment } from '../../../../environments/environment';
   selector: 'app-customer-dashboard',
   standalone: true,
   imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
-  template: `
-    <app-navbar></app-navbar>
-    <div class="dashboard-page">
-      <div class="dashboard-header py-4">
-        <div class="container">
-          <h2 class="fw-bold mb-0">Welcome, {{ auth.user()?.first_name }}!</h2>
-          <p class="text-muted">Manage your bookings and favorites</p>
-        </div>
-      </div>
-
-      <div class="container py-4">
-        <!-- Stats -->
-        <div class="row g-3 mb-5">
-          <div class="col-md-3">
-            <div class="stat-card bg-primary text-white">
-              <i class="fas fa-calendar-check fa-2x mb-2"></i>
-              <h3>{{ stats.total }}</h3><p>Total Bookings</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-success text-white">
-              <i class="fas fa-home fa-2x mb-2"></i>
-              <h3>{{ stats.active }}</h3><p>Active Stays</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-info text-white">
-              <i class="fas fa-heart fa-2x mb-2"></i>
-              <h3>{{ stats.favoritesCount }}</h3><p>Saved Properties</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-warning text-white">
-              <i class="fas fa-clock fa-2x mb-2"></i>
-              <h3>{{ stats.completed }}</h3><p>Completed Stays</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- My Bookings -->
-        <h4 class="fw-bold mb-3">My Bookings</h4>
-        @if (loading) {
-          <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
-        } @else if (bookings.length > 0) {
-          <div class="row g-3">
-            @for (booking of bookings; track booking.id) {
-              <div class="col-md-6">
-                <div class="booking-card p-4 rounded-3 border bg-white">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="mb-0">{{ booking.property_title }}</h5>
-                    <span class="badge" [ngClass]="getStatusClass(booking.status)">{{ booking.status }}</span>
-                  </div>
-                  <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i>{{ booking.property_city }}</p>
-                  <div class="d-flex justify-content-between">
-                    <span><i class="fas fa-calendar me-1"></i>{{ booking.check_in_date | date:'mediumDate' }}</span>
-                    <span class="fw-bold text-primary">₹{{ booking.monthly_rent | number }}/mo</span>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="text-center py-5">
-            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
-            <h5>No bookings yet</h5>
-            <a routerLink="/properties" class="btn btn-primary mt-2">Browse Properties</a>
-          </div>
-        }
-      </div>
-    </div>
-    <app-footer></app-footer>
-  `,
+  templateUrl: './customer-dashboard.component.html',
   styles: [`
     .dashboard-header { background: linear-gradient(135deg, #EE2E24, #c0392b); color: white; }
     .stat-card { padding: 24px; border-radius: 16px; text-align: center; }

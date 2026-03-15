@@ -5,62 +5,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-footer',
   standalone: true,
   imports: [RouterLink],
-  template: `
-    <footer class="footer mt-auto">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 mb-4">
-            <h5 class="mb-3"><i class="fas fa-home me-2"></i>Sasta Room</h5>
-            <p class="text-white-50">Your trusted partner for finding the best long-term accommodations across India. Affordable, verified, and comfortable stays for everyone.</p>
-            <div class="mt-3">
-              <a href="#" class="btn btn-outline-light btn-sm me-2"><i class="fab fa-facebook-f"></i></a>
-              <a href="#" class="btn btn-outline-light btn-sm me-2"><i class="fab fa-twitter"></i></a>
-              <a href="#" class="btn btn-outline-light btn-sm"><i class="fab fa-instagram"></i></a>
-            </div>
-          </div>
-          
-          <div class="col-lg-2 col-md-6 mb-4">
-            <h5 class="mb-3">Quick Links</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2"><a routerLink="/" class="text-white-50 text-decoration-none hover-white">Home</a></li>
-              <li class="mb-2"><a routerLink="/properties" class="text-white-50 text-decoration-none hover-white">Properties</a></li>
-              <li class="mb-2"><a routerLink="/about" class="text-white-50 text-decoration-none hover-white">About Us</a></li>
-              <li class="mb-2"><a routerLink="/contact" class="text-white-50 text-decoration-none hover-white">Contact</a></li>
-            </ul>
-          </div>
-          
-          <div class="col-lg-3 col-md-6 mb-4">
-            <h5 class="mb-3">Support</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Help Center</a></li>
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Terms of Service</a></li>
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Privacy Policy</a></li>
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Safety Guidelines</a></li>
-            </ul>
-          </div>
-          
-          <div class="col-lg-3 col-md-6 mb-4">
-            <h5 class="mb-3">For Property Owners</h5>
-            <ul class="list-unstyled">
-              <li class="mb-2"><a routerLink="/auth/register" class="text-white-50 text-decoration-none hover-white">List Your Property</a></li>
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Owner Guidelines</a></li>
-              <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-white">Success Stories</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <hr class="border-secondary mt-4 mb-4">
-        
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start text-white-50 mb-3 mb-md-0">
-            &copy; 2024 Sasta Room. All rights reserved.
-          </div>
-          <div class="col-md-6 text-center text-md-end text-white-50">
-            Made with <i class="fas fa-heart text-danger"></i> in India
-          </div>
-        </div>
-      </div>
-    </footer>
-  `,
+  templateUrl: './footer.component.html',
 })
 export class FooterComponent {}

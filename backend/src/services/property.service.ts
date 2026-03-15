@@ -6,6 +6,9 @@ import { createError } from '../middleware/error.middleware';
 // List & Search
 // ---------------------------------------------------------------------------
 export async function getProperties(filters: PropertyFilters): Promise<{ properties: PropertyListItem[]; total: number }> {
+  console.log('\n[Backend] --------------------------------------------------');
+  console.log('[Backend] 📥 getProperties called with filters:', filters);
+  
   const conditions: string[] = ['p.status = "active"'];
   const params: unknown[] = [];
 
@@ -27,6 +30,10 @@ export async function getProperties(filters: PropertyFilters): Promise<{ propert
   const limit  = Math.min(Number(filters.limit || 12), 50);
   const offset = (page - 1) * limit;
 
+  console.log(`[Backend] 🔍 Constructed WHERE clause: ${where}`);
+  console.log(`[Backend] 🔢 Pagination: page=${page}, limit=${limit}, offset=${offset}`);
+  console.log(`[Backend] 🎯 Query Params array:`, params);
+
   const [countRow] = await query<{ total: number }>(
     `SELECT COUNT(*) AS total FROM properties p WHERE ${where}`,
     params
@@ -43,6 +50,9 @@ export async function getProperties(filters: PropertyFilters): Promise<{ propert
      LIMIT ${limit} OFFSET ${offset}`,
     params
   );
+
+  console.log(`[Backend] ✅ Fetched ${properties.length} properties. Total in DB: ${countRow?.total || 0}`);
+  console.log('[Backend] --------------------------------------------------\n');
 
   return { properties, total: countRow?.total || 0 };
 }

@@ -13,6 +13,15 @@ export const routes: Routes = [
     path: 'properties',
     loadComponent: () => import('./features/properties/property-list/property-list.component').then(m => m.PropertyListComponent),
   },
+  {
+    path: 'properties/:id',
+    loadComponent: () => import('./features/properties/property-details/property-details.component').then(m => m.PropertyDetailsComponent),
+  },
+  {
+    path: 'properties/:id/book',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/bookings/booking-checkout/booking-checkout.component').then(m => m.BookingCheckoutComponent),
+  },
 
   // Auth
   {

@@ -4,7 +4,7 @@
   "description": "Sasta Room Rent - Express + TypeScript Backend",
   "main": "dist/app.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev": "tsc && node dist/app.js",
     "build": "tsc",
     "start": "node dist/app.js",
     "lint": "eslint src/**/*.ts"

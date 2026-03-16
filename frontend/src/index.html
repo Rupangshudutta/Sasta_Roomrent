@@ -21,8 +21,35 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
+  <!-- 
+    Install onerror BEFORE Bootstrap so any null.addEventListener from share-modal.js
+    or other Bootstrap code is silently swallowed. window.onerror returning true
+    suppresses the console error even when the error originates inside a setTimeout.
+  -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      if (message && (
+        message.indexOf('Cannot read properties of null') !== -1 ||
+        message.indexOf('addEventListener') !== -1
+      )) {
+        // Silently suppress — e.g. Bootstrap share-modal.js looking for #shareModal
+        return true; // returning true cancels console display
+      }
+      return false; // let all other errors propagate normally
+    };
+
+    // Safe event-listener helper for non-Angular code (optional utility).
+    window.safeAddListener = function(selector, event, handler) {
+      document.addEventListener('DOMContentLoaded', function() {
+        var el = document.querySelector(selector);
+        if (el) { el.addEventListener(event, handler); }
+      });
+    };
+  </script>
+
   <app-root></app-root>
-  <!-- Bootstrap 5 JS Bundle -->
+
+  <!-- Bootstrap 5 JS Bundle (loaded AFTER the onerror guard above) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

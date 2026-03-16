@@ -27,12 +27,12 @@
       <span class="d-flex align-items-center gap-1"><i class="fas fa-couch"></i> {{ property.furnishing === 'unfurnished' ? 'Unfurnished' : (property.furnishing === 'furnished' ? 'Furnished' : 'Semi') }}</span>
     </div>
     
-    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-      <div>
+    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center gap-2">
+      <div class="text-truncate">
         <span class="fs-5 fw-bold text-primary">₹{{ property.rent_amount | number }}</span>
-        <span class="text-muted small">/month</span>
+        <span class="text-muted small">/m</span>
       </div>
-      <a [routerLink]="['/properties', property.id]" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm property-action-btn">
+      <a [routerLink]="['/properties', property.id]" class="btn btn-primary rounded-pill px-3 fw-semibold shadow-sm property-action-btn text-nowrap">
         View Details
       </a>
     </div>

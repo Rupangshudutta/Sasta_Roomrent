@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
@@ -6,7 +7,8 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
 @Component({
   selector: 'app-privacy',
   standalone: true,
-  imports: [RouterLink, NavbarComponent, FooterComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './privacy.component.html',
   styles: [`
     .page-hero { background: linear-gradient(135deg, #0f3460, #16213e); color: white; padding: 60px 0; }

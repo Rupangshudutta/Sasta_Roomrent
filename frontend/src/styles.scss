@@ -16,8 +16,11 @@
   --dark-grey: #5F6368;
   --border: #dee2e6;
 }
-
 * { box-sizing: border-box; }
+
+html {
+  font-size: 90%; /* Scales everything (fonts, paddings, margins, grid spans) down by 10% universally */
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -86,7 +89,7 @@ body {
 .btn-view {
     background: var(--primary);
     color: white;
-    border: none;
+  border: none;
     padding: 8px 20px;
     border-radius: 6px;
     font-weight: 500;
@@ -184,7 +187,7 @@ body {
     border: 2px solid var(--neutral);
     border-radius: 10px;
     text-align: center;
-    cursor: pointer;
+  cursor: pointer;
     transition: all 0.3s;
 }
 
@@ -245,7 +248,7 @@ body {
     font-size: 0.8rem;
     display: inline-flex;
     align-items: center;
-}
+    }
 
 .price {
     color: var(--primary);
@@ -296,7 +299,7 @@ body {
     color: var(--dark-grey);
     font-size: 0.9rem;
     margin-bottom: 12px;
-}
+    }
 
 .property-amenities {
     display: flex;
@@ -330,7 +333,7 @@ body {
 }
 .list-view .property-content {
     flex: 1 1 60%;
-    padding: 16px;
+  padding: 16px;
 }
 
 @media (max-width: 767.98px) {

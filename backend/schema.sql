@@ -189,6 +189,39 @@ CREATE TABLE IF NOT EXISTS inquiries (
   INDEX idx_inquiries_property (property_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+-- ============================================================
+-- HELP ARTICLES
+-- ============================================================
+CREATE TABLE IF NOT EXISTS help_articles (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  category    VARCHAR(100) NOT NULL,
+  title       VARCHAR(255) NOT NULL,
+  content     TEXT NOT NULL,
+  is_popular  TINYINT(1) DEFAULT 0,
+  read_time   INT DEFAULT 5,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_help_category (category),
+  FULLTEXT idx_help_search (title, content)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ============================================================
+-- SEED: Help Articles
+-- ============================================================
+INSERT INTO help_articles (category, title, content, is_popular, read_time)
+VALUES 
+('Finding a Room', 'How to search for rooms in a specific city', 'To search for a room in a specific city, go to the homepage and use the search bar. Enter the city name and click search. You can also use the "City" filter on the properties page to narrow down your results.', 1, 3),
+('Bookings', 'Understanding the booking process', 'Booking a room on Sasta Room is simple. Once you find a property you like, click "View Details", then click "Book Now". You will need to select your check-in date and duration. After payment, your booking is confirmed.', 1, 5),
+('Safety & Trust', 'How to verify a property before booking', 'We recommend visiting the property in person if possible. Check the host reviews and ratings. Sasta Room also performs basic verification on all listings, look for the "Verified" badge.', 0, 4),
+('Payments & Pricing', 'Cancellation and refund policy explained', 'Cancellations made 48 hours before check-in are eligible for a full refund. Cancellations made within 24 hours may incur a fee. Please check the specific property policy on the listing page.', 1, 6),
+('Safety & Trust', 'How to report a fraudulent listing', 'If you encounter a listing that seems fishy or fraudulent, click the "Report" button on the property page or contact our support team immediately at support@sastaroom.com.', 0, 5),
+('Payments & Pricing', 'Setting up payment methods securely', 'You can pay using UPI, Credit/Debit cards, or Net Banking. All payments are processed through our secure partner, Razorpay. We never store your card details.', 0, 4),
+('Listing a Property', 'How to upload photos for your listing', 'Clear, high-quality photos increase your chances of getting tenants. Upload at least 5 photos showing the bedroom, bathroom, and common areas. Make sure the lighting is good.', 0, 3),
+('Listing a Property', 'What documents are required for listing?', 'For property owners, we require a valid ID proof (Aadhar/PAN) and proof of property ownership (Utility bill or Tax receipt). These documents help us maintain trust in the community.', 1, 5),
+('Account & Profile', 'How to update my phone number?', 'To update your phone number, go to your Profile settings. Click on the "Edit" icon next to your phone number, enter the new number, and verify it with the OTP sent to your new number.', 0, 2),
+('Account & Profile', 'Deleting your Sasta Room account', 'We are sorry to see you go. To delete your account, please contact our support team. Note that this action is permanent and will remove all your data, including booking history and active listings.', 0, 4);
+
 -- ============================================================
 -- SEED: Default Admin User
 -- Password: Admin@123 (bcrypt hash — change after first login)

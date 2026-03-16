@@ -17,6 +17,7 @@ import reviewRoutes from './routes/review.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import inquiryRoutes from './routes/inquiry.routes';
 import contactRoutes from './routes/contact.routes';
+import helpRoutes from './routes/help.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,19 +32,15 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 // CORS — allow Angular dev server and production domain
 const allowedOrigins = [
   'http://localhost:4200',
+  'http://localhost:4201',
+  'http://127.0.0.1:4200',
   process.env.FRONTEND_URL,
   process.env.PROD_FRONTEND_URL,
 ].filter(Boolean) as string[];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
@@ -76,6 +73,7 @@ app.use('/api/reviews',   reviewRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/contact',   contactRoutes);
+app.use('/api/help',      helpRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
@@ -107,7 +105,7 @@ if (process.env.VERCEL !== '1') {
       console.error('Make sure you have created your .env file and added your TiDB Cloud credentials.');
       console.error('The server will still run, but API calls will fail until the database is connected.\n');
     }
-    app.listen(PORT, () => {
+    app.listen(PORT as number, '0.0.0.0', () => {
       console.log(`🚀 Sasta Room API running on http://localhost:${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     });

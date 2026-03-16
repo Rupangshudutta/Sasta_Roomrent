@@ -68,6 +68,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/help/help.component').then(m => m.HelpComponent),
   },
   {
+    path: 'help/messages/:category',
+    loadComponent: () => import('./features/help/help-messages/help-messages.component').then(m => m.HelpMessagesComponent),
+  },
+  {
     path: 'terms',
     loadComponent: () => import('./features/terms/terms.component').then(m => m.TermsComponent),
   },

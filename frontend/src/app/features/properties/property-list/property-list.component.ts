@@ -23,8 +23,48 @@ import { Property } from '../../../shared/models/models';
   templateUrl: './property-list.component.html',
   styles: [`
     .page-header { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-bottom: 1px solid #dee2e6; }
-    .filter-sidebar { position: sticky; top: 80px; }
+    .filter-sidebar { position: sticky; top: 20px; }
     .page-link { cursor: pointer; }
+    .filter-panel {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      overflow: hidden;
+      opacity: 1;
+    }
+    .filter-panel.closed {
+      width: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      opacity: 0;
+      border: none;
+    }
+    .transition-all {
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .drawer-toggle-btn {
+      position: absolute;
+      left: -16px;
+      top: 20px;
+      z-index: 100;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, background 0.3s;
+    }
+    .drawer-toggle-btn:hover {
+      background: #d42a20;
+      transform: scale(1.1);
+    }
+    .grid-wrapper {
+      position: relative;
+    }
   `],
 })
 export class PropertyListComponent implements OnInit, OnDestroy {
@@ -41,6 +81,7 @@ export class PropertyListComponent implements OnInit, OnDestroy {
   total = signal(0);
   currentPage = signal(1);
   totalPages = signal(1);
+  isFilterOpen = signal(true);
   readonly LIMIT = 12;
 
   filters: PropertyFilters = {};

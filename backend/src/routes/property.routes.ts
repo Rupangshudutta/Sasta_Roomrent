@@ -60,23 +60,48 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   } catch (err) { next(err); }
 });
 
-// POST /api/properties — owner/admin only
+// POST /api/properties — owner/admin only with image upload
 router.post(
   '/',
   authMiddleware,
   requireRole('owner', 'admin'),
+  uploadMultiple,
   [
     body('title').trim().notEmpty().withMessage('Title is required'),
+    body('description').trim().notEmpty().withMessage('Description is required'),
     body('property_type').isIn(['pg', 'shared_room', 'single_room', 'flat']),
     body('rent_amount').isFloat({ min: 1 }).withMessage('Rent amount must be positive'),
     body('address_line1').trim().notEmpty(),
     body('city').trim().notEmpty(),
     body('state').trim().notEmpty(),
+    body('pincode').matches(/^[1-9][0-9]{5}$/).withMessage('Invalid pincode'),
+    body('bedrooms').optional().isInt({ min: 1, max: 10 }),
+    body('bathrooms').optional().isInt({ min: 1, max: 10 }),
+    body('max_occupancy').optional().isInt({ min: 1, max: 10 }),
+    body('furnishing').optional().isIn(['furnished', 'semi-furnished', 'unfurnished']),
+    body('available_from').optional().isISO8601().toDate(),
+    body('min_lease_months').optional().isInt({ min: 1, max: 24 }),
+    body('security_deposit').optional().isFloat({ min: 0 }),
+    body('latitude').optional().isFloat({ min: -90, max: 90 }),
+    body('longitude').optional().isFloat({ min: -180, max: 180 }),
   ],
   validateRequest,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const property = await propertyService.createProperty(req.user!.id, req.body);
+      const files = req.files as Express.Multer.File[];
+      const amenities = JSON.parse(req.body.amenities || '[]');
+      const primaryImageIndex = parseInt(req.body.primary_image_index || '0');
+      
+      const propertyData = {
+        ...req.body,
+        amenities,
+        images: files?.map((file, index) => ({
+          url: `/uploads/${path.basename(file.path)}`,
+          isPrimary: index === primaryImageIndex
+        })) || []
+      };
+      
+      const property = await propertyService.createPropertyWithImages(req.user!.id, propertyData);
       res.status(201).json({ success: true, message: 'Property created', data: { property } });
     } catch (err) { next(err); }
   }

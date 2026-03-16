@@ -43,17 +43,30 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void { this.loadProperties(); }
 
   loadProperties(filters = {}): void {
+    console.log('[Home Component] 📡 Loading properties with filters:', filters);
     this.loading.set(true);
     this.propertyService.getProperties({ limit: 6, ...filters }).subscribe({
       next: (res: any) => {
+        console.log('[Home Component] ✅ API Response received:', res);
         if (res.success && res.data) {
+          console.log('[Home Component] 🏠 Setting properties:', res.data.properties?.length || 0, 'items');
           this.properties.set(res.data.properties);
+        } else {
+          console.warn('[Home Component] ⚠️ Invalid response format:', res);
         }
       },
-      error: () => {
+      error: (error: any) => {
+        console.error('[Home Component] ❌ Error loading properties:', error);
+        console.error('[Home Component] 📊 Error details:', {
+          status: error.status,
+          statusText: error.statusText,
+          message: error.message,
+          url: error.url
+        });
         this.loading.set(false);
       },
       complete: () => {
+        console.log('[Home Component] ✅ Property loading completed');
         this.loading.set(false);
       },
     });

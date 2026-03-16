@@ -9,52 +9,62 @@ export async function getProperties(filters: PropertyFilters): Promise<{ propert
   console.log('\n[Backend] --------------------------------------------------');
   console.log('[Backend] 📥 getProperties called with filters:', filters);
   
-  const conditions: string[] = ['p.status = "active"'];
-  const params: unknown[] = [];
+  try {
+    const conditions: string[] = ['p.status = "active"'];
+    const params: unknown[] = [];
 
-  if (filters.city) { conditions.push('p.city LIKE ?'); params.push(`%${filters.city}%`); }
-  if (filters.state) { conditions.push('p.state = ?'); params.push(filters.state); }
-  if (filters.property_type) { conditions.push('p.property_type = ?'); params.push(filters.property_type); }
-  if (filters.min_rent) { conditions.push('p.rent_amount >= ?'); params.push(filters.min_rent); }
-  if (filters.max_rent) { conditions.push('p.rent_amount <= ?'); params.push(filters.max_rent); }
-  if (filters.furnishing) { conditions.push('p.furnishing = ?'); params.push(filters.furnishing); }
-  if (filters.bedrooms) { conditions.push('p.bedrooms >= ?'); params.push(filters.bedrooms); }
-  if (filters.search) {
-    conditions.push('(p.title LIKE ? OR p.address_line1 LIKE ? OR p.city LIKE ?)');
-    const s = `%${filters.search}%`;
-    params.push(s, s, s);
+    if (filters.city) { conditions.push('p.city LIKE ?'); params.push(`%${filters.city}%`); }
+    if (filters.state) { conditions.push('p.state = ?'); params.push(filters.state); }
+    if (filters.property_type) { conditions.push('p.property_type = ?'); params.push(filters.property_type); }
+    if (filters.min_rent) { conditions.push('p.rent_amount >= ?'); params.push(filters.min_rent); }
+    if (filters.max_rent) { conditions.push('p.rent_amount <= ?'); params.push(filters.max_rent); }
+    if (filters.furnishing) { conditions.push('p.furnishing = ?'); params.push(filters.furnishing); }
+    if (filters.bedrooms) { conditions.push('p.bedrooms >= ?'); params.push(filters.bedrooms); }
+    if (filters.search) {
+      conditions.push('(p.title LIKE ? OR p.address_line1 LIKE ? OR p.city LIKE ?)');
+      const s = `%${filters.search}%`;
+      params.push(s, s, s);
+    }
+
+    const where = conditions.join(' AND ');
+    const page   = Number(filters.page  || 1);
+    const limit  = Math.min(Number(filters.limit || 12), 50);
+    const offset = (page - 1) * limit;
+
+    console.log(`[Backend] 🔍 Constructed WHERE clause: ${where}`);
+    console.log(`[Backend] 🔢 Pagination: page=${page}, limit=${limit}, offset=${offset}`);
+    console.log(`[Backend] 🎯 Query Params array:`, params);
+
+    const [countRow] = await query<{ total: number }>(
+      `SELECT COUNT(*) AS total FROM properties p WHERE ${where}`,
+      params
+    );
+
+    const properties = await query<PropertyListItem>(
+      `SELECT p.*, 
+         CONCAT(u.first_name, ' ', u.last_name) AS owner_name,
+         (SELECT pi.image_url FROM property_images pi WHERE pi.property_id = p.id AND pi.is_primary = 1 LIMIT 1) AS primary_image
+       FROM properties p
+       LEFT JOIN users u ON u.id = p.owner_id
+       WHERE ${where}
+       ORDER BY p.is_featured DESC, p.created_at DESC
+       LIMIT ${limit} OFFSET ${offset}`,
+      params
+    );
+
+    console.log(`[Backend] ✅ Fetched ${properties.length} properties. Total in DB: ${countRow?.total || 0}`);
+    console.log('[Backend] --------------------------------------------------\n');
+
+    return { properties, total: countRow?.total || 0 };
+  } catch (error: any) {
+    console.error('[Backend] ❌ Error in getProperties:', error);
+    console.error('[Backend] 📊 Error details:', {
+      message: error.message,
+      stack: error.stack,
+      filters: filters
+    });
+    throw error;
   }
-
-  const where = conditions.join(' AND ');
-  const page   = Number(filters.page  || 1);
-  const limit  = Math.min(Number(filters.limit || 12), 50);
-  const offset = (page - 1) * limit;
-
-  console.log(`[Backend] 🔍 Constructed WHERE clause: ${where}`);
-  console.log(`[Backend] 🔢 Pagination: page=${page}, limit=${limit}, offset=${offset}`);
-  console.log(`[Backend] 🎯 Query Params array:`, params);
-
-  const [countRow] = await query<{ total: number }>(
-    `SELECT COUNT(*) AS total FROM properties p WHERE ${where}`,
-    params
-  );
-
-  const properties = await query<PropertyListItem>(
-    `SELECT p.*, 
-       CONCAT(u.first_name, ' ', u.last_name) AS owner_name,
-       (SELECT pi.image_url FROM property_images pi WHERE pi.property_id = p.id AND pi.is_primary = 1 LIMIT 1) AS primary_image
-     FROM properties p
-     LEFT JOIN users u ON u.id = p.owner_id
-     WHERE ${where}
-     ORDER BY p.is_featured DESC, p.created_at DESC
-     LIMIT ${limit} OFFSET ${offset}`,
-    params
-  );
-
-  console.log(`[Backend] ✅ Fetched ${properties.length} properties. Total in DB: ${countRow?.total || 0}`);
-  console.log('[Backend] --------------------------------------------------\n');
-
-  return { properties, total: countRow?.total || 0 };
 }
 
 // ---------------------------------------------------------------------------
@@ -103,7 +113,53 @@ export async function getOwnerProperties(ownerId: number): Promise<Property[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Create
+// Create with Images
+// ---------------------------------------------------------------------------
+export async function createPropertyWithImages(ownerId: number, data: any): Promise<Property> {
+  const { images, amenities, ...propertyData } = data;
+  
+  const result = await execute(
+    `INSERT INTO properties
+       (owner_id, title, description, property_type, rent_amount, security_deposit,
+        address_line1, address_line2, city, state, pincode, latitude, longitude,
+        bedrooms, bathrooms, furnishing, available_from, min_lease_months, max_occupancy, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+    [
+      ownerId, propertyData.title, propertyData.description || null, propertyData.property_type,
+      propertyData.rent_amount, propertyData.security_deposit || 0,
+      propertyData.address_line1, propertyData.address_line2 || null,
+      propertyData.city, propertyData.state, propertyData.pincode || null,
+      propertyData.latitude || null, propertyData.longitude || null,
+      propertyData.bedrooms || 1, propertyData.bathrooms || 1, propertyData.furnishing || 'unfurnished',
+      propertyData.available_from || null, propertyData.min_lease_months || 1, propertyData.max_occupancy || 1,
+    ]
+  );
+
+  const propertyId = result.insertId;
+
+  // Add amenities
+  if (amenities && amenities.length > 0) {
+    for (const amenity of amenities) {
+      await execute('INSERT INTO property_amenities (property_id, amenity) VALUES (?, ?)', [propertyId, amenity]);
+    }
+  }
+
+  // Add images
+  if (images && images.length > 0) {
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      await execute(
+        'INSERT INTO property_images (property_id, image_url, is_primary, sort_order) VALUES (?, ?, ?, ?)',
+        [propertyId, image.url, image.isPrimary ? 1 : 0, i]
+      );
+    }
+  }
+
+  return getPropertyById(propertyId);
+}
+
+// ---------------------------------------------------------------------------
+// Create (Legacy)
 // ---------------------------------------------------------------------------
 export async function createProperty(ownerId: number, dto: CreatePropertyDto): Promise<Property> {
   const result = await execute(

@@ -5,32 +5,33 @@
   <div class="container">
     <h1 class="display-4 fw-bold mb-3">How can we help you?</h1>
     <p class="lead mb-5 opacity-75">Find answers to your questions about Sasta Room</p>
-    <input
-      type="text"
-      class="search-hero-input"
-      placeholder="Search for help articles, e.g. 'how to book a room'..."
-      [(ngModel)]="searchQuery"
-    />
+      <input
+        type="text"
+        class="search-hero-input"
+        placeholder="Search for help articles, e.g. 'how to book a room'..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearch()"
+      />
   </div>
 </section>
 
 <!-- Categories -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <h2 class="text-center fw-bold mb-5">Browse by Category</h2>
-    <div class="row g-4">
+  <section class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center fw-bold mb-5">Browse by Category</h2>
+      <div class="row g-4">
       @for (cat of categories; track cat.title) {
-        <div class="col-md-4 col-lg-2">
-          <div class="category-card">
-            <i [class]="cat.icon"></i>
-            <h5>{{ cat.title }}</h5>
-            <p class="text-muted small mb-0">{{ cat.count }} articles</p>
+          <div class="col-md-4 col-lg-2">
+            <div class="category-card" [routerLink]="['/help/messages', cat.title]">
+              <i [class]="cat.icon"></i>
+              <h5>{{ cat.title }}</h5>
+              <p class="text-muted small mb-0">{{ cat.count }} articles</p>
+            </div>
           </div>
-        </div>
-      }
+        }
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
 <!-- Popular Articles -->
 <section class="py-5">
@@ -40,15 +41,15 @@
         <h2 class="fw-bold mb-4">Popular Articles</h2>
         @for (article of articles; track article.title) {
           <div class="article-item">
-            <i class="fas fa-file-alt"></i>
-            <div>
+              <i class="fas fa-file-alt"></i>
+              <div>
               <a [href]="article.href" class="article-title">{{ article.title }}</a>
               @if (article.popular) {
-                <span class="popular-tag">Popular</span>
-              }
+                  <span class="popular-tag">Popular</span>
+                }
               <p class="text-muted small mb-0 mt-1">Updated 2 days ago · 5 min read</p>
             </div>
-          </div>
+        </div>
         }
       </div>
       <div class="col-lg-4">
@@ -58,7 +59,7 @@
           <a routerLink="/contact" class="btn btn-danger w-100 mb-3">
             <i class="fas fa-envelope me-2"></i>Email Support
           </a>
-          <a href="tel:+918000000000" class="btn btn-outline-danger w-100">
+          <a href="tel:+916294347052" class="btn btn-outline-danger w-100">
             <i class="fas fa-phone me-2"></i>Call Us
           </a>
         </div>
@@ -77,7 +78,7 @@
 </section>
 
 @defer (on viewport) {
-  <app-footer></app-footer>
+<app-footer></app-footer>
 } @placeholder {
   <div class="py-4"></div>
 }

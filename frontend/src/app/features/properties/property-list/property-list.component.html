@@ -3,27 +3,28 @@
     <div class="page-header py-4">
       <div class="container">
         <h1 class="fw-bold mb-0">Find Your Stay</h1>
-        <p class="text-muted">{{ total }} properties available across India</p>
+        <p class="text-muted">{{ total() }} properties available across India</p>
       </div>
     </div>
 
     <section class="py-4">
       <div class="container">
-        <div class="row g-4">
+        <div class="row g-4 position-relative">
+
           <!-- Filters Sidebar -->
-          <div class="col-lg-3">
-            <div class="filter-sidebar p-4 rounded-3 shadow-sm bg-white">
-              <h5 class="fw-bold mb-4"><i class="fas fa-sliders-h me-2 text-primary"></i>Filters</h5>
+          <div class="col-lg-3 filter-panel" [class.closed]="!isFilterOpen()">
+            <div class="filter-sidebar p-3 rounded-3 shadow-sm bg-white border">
+              <h6 class="fw-bold mb-3 d-flex align-items-center"><i class="fas fa-sliders-h me-2 text-primary"></i> Filters</h6>
 
               <div class="mb-3">
-                <label class="form-label fw-semibold">Search</label>
-                <input type="text" class="form-control" placeholder="City, area, landmark..."
+                <label class="form-label fw-semibold small text-muted mb-1">Search</label>
+                <input type="text" class="form-control form-control-sm" placeholder="City, area, landmark..."
                   [(ngModel)]="filters.search" (keyup.enter)="applyFilters()">
               </div>
 
               <div class="mb-3">
-                <label class="form-label fw-semibold">Property Type</label>
-                <select class="form-select" [(ngModel)]="filters.property_type" (change)="applyFilters()">
+                <label class="form-label fw-semibold small text-muted mb-1">Property Type</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.property_type" (change)="applyFilters()">
                   <option value="">All Types</option>
                   <option value="pg">PG</option>
                   <option value="shared_room">Shared Room</option>
@@ -33,17 +34,17 @@
               </div>
 
               <div class="mb-3">
-                <label class="form-label fw-semibold">Min Rent (₹)</label>
-                <input type="number" class="form-control" placeholder="0" [(ngModel)]="filters.min_rent">
+                <label class="form-label fw-semibold small text-muted mb-1">Min Rent (₹)</label>
+                <input type="number" class="form-control form-control-sm" placeholder="0" [(ngModel)]="filters.min_rent">
               </div>
               <div class="mb-3">
-                <label class="form-label fw-semibold">Max Rent (₹)</label>
-                <input type="number" class="form-control" placeholder="100000" [(ngModel)]="filters.max_rent">
+                <label class="form-label fw-semibold small text-muted mb-1">Max Rent (₹)</label>
+                <input type="number" class="form-control form-control-sm" placeholder="100000" [(ngModel)]="filters.max_rent">
               </div>
 
               <div class="mb-3">
-                <label class="form-label fw-semibold">Furnishing</label>
-                <select class="form-select" [(ngModel)]="filters.furnishing" (change)="applyFilters()">
+                <label class="form-label fw-semibold small text-muted mb-1">Furnishing</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.furnishing" (change)="applyFilters()">
                   <option value="">Any</option>
                   <option value="furnished">Furnished</option>
                   <option value="semi-furnished">Semi-Furnished</option>
@@ -51,9 +52,9 @@
                 </select>
               </div>
 
-              <div class="mb-4">
-                <label class="form-label fw-semibold">Min Bedrooms</label>
-                <select class="form-select" [(ngModel)]="filters.bedrooms" (change)="applyFilters()">
+              <div class="mb-3">
+                <label class="form-label fw-semibold small text-muted mb-1">Min Bedrooms</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.bedrooms" (change)="applyFilters()">
                   <option [ngValue]="undefined">Any</option>
                   <option [ngValue]="1">1+</option>
                   <option [ngValue]="2">2+</option>
@@ -61,18 +62,29 @@
                 </select>
               </div>
 
-              <button class="btn btn-primary w-100 mb-2" (click)="applyFilters()">
-                <i class="fas fa-search me-2"></i>Apply Filters
+              <button class="btn btn-primary btn-sm w-100 mb-2 mt-2 px-3 fw-semibold" (click)="applyFilters()">
+                <i class="fas fa-search me-2"></i>Apply
               </button>
-              <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">Clear</button>
+              <button class="btn btn-outline-secondary btn-sm w-100 px-3" (click)="clearFilters()">Clear</button>
             </div>
           </div>
 
           <!-- Property Grid -->
-          <div class="col-lg-9">
+          <div class="transition-all grid-wrapper" [ngClass]="isFilterOpen() ? 'col-lg-9' : 'col-lg-12'">
+            <!-- Drawer Toggle Button -->
+            <button class="drawer-toggle-btn shadow-sm" (click)="isFilterOpen.set(!isFilterOpen())" [title]="isFilterOpen() ? 'Hide Filters' : 'Show Filters'">
+              <i class="fas" [ngClass]="isFilterOpen() ? 'fa-chevron-left' : 'fa-chevron-right'"></i>
+            </button>
+            
             @if (loading()) {
               <!-- Skeleton shimmer while loading -->
-              <app-skeleton-list [count]="6" colClass="col-md-6 col-xl-4"></app-skeleton-list>
+              <div class="row g-4">
+                @for (i of [1,2,3,4,5,6]; track i) {
+                  <div class="col-sm-6" [ngClass]="isFilterOpen() ? 'col-lg-6 col-xl-4' : 'col-lg-4 col-xl-4'">
+                    <app-skeleton-list [count]="1" colClass="col-12"></app-skeleton-list>
+                  </div>
+                }
+              </div>
             } @else if (error()) {
                <div class="text-center py-5 w-100">
                  <i class="fas fa-exclamation-circle text-danger fa-2x mb-3 d-block"></i>
@@ -82,7 +94,7 @@
             } @else if (properties().length > 0) {
               <div class="row g-4 fade-in">
                 @for (property of properties(); track trackByPropertyId($index, property)) {
-                  <div class="col-md-6 col-xl-4">
+                  <div class="col-sm-6" [ngClass]="isFilterOpen() ? 'col-lg-6 col-xl-4' : 'col-lg-4 col-xl-4'">
                     <app-property-card [property]="property"></app-property-card>
                   </div>
                 }

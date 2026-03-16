@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Property, ApiResponse } from '../../shared/models/models';
 
@@ -29,7 +30,26 @@ export class PropertyService {
         params = params.set(key, String(val));
       }
     }
-    return this.http.get<ApiResponse<{ properties: Property[]; total: number }>>(this.base, { params });
+    
+    console.log('[Frontend] 📡 Fetching properties with filters:', filters);
+    console.log('[Frontend] 🔗 API URL:', `${this.base}?${params.toString()}`);
+    
+    return this.http.get<ApiResponse<{ properties: Property[]; total: number }>>(this.base, { params })
+      .pipe(
+        tap((response: ApiResponse<{ properties: Property[]; total: number }>) => {
+          console.log('[Frontend] ✅ Properties fetched successfully:', response.data?.properties?.length || 0);
+        }),
+        catchError((error: any) => {
+          console.error('[Frontend] ❌ Error fetching properties:', error);
+          console.error('[Frontend] 📊 Error details:', {
+            status: error.status,
+            statusText: error.statusText,
+            message: error.message,
+            url: error.url
+          });
+          throw error;
+        })
+      );
   }
 
   getPropertyById(id: number): Observable<ApiResponse<{ property: Property }>> {

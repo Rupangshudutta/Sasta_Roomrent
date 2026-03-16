@@ -1,70 +1,205 @@
-    <app-navbar></app-navbar>
-    <div class="dashboard-page">
-      <div class="dashboard-header py-4">
-        <div class="container">
-          <h2 class="fw-bold mb-0">Welcome, {{ auth.user()?.first_name }}!</h2>
-          <p class="text-muted">Manage your bookings and favorites</p>
-        </div>
+<app-navbar></app-navbar>
+
+<div class="premium-header">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-4">
+      <div class="profile-avatar rounded-circle d-flex align-items-center justify-content-center shadow-lg">
+        {{ auth.user()?.first_name?.charAt(0) }}
       </div>
-
-      <div class="container py-4">
-        <!-- Stats -->
-        <div class="row g-3 mb-5">
-          <div class="col-md-3">
-            <div class="stat-card bg-primary text-white">
-              <i class="fas fa-calendar-check fa-2x mb-2"></i>
-              <h3>{{ stats.total }}</h3><p>Total Bookings</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-success text-white">
-              <i class="fas fa-home fa-2x mb-2"></i>
-              <h3>{{ stats.active }}</h3><p>Active Stays</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-info text-white">
-              <i class="fas fa-heart fa-2x mb-2"></i>
-              <h3>{{ stats.favoritesCount }}</h3><p>Saved Properties</p>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="stat-card bg-warning text-white">
-              <i class="fas fa-clock fa-2x mb-2"></i>
-              <h3>{{ stats.completed }}</h3><p>Completed Stays</p>
-            </div>
-          </div>
+      <div>
+        <h1 class="h2 fw-bold mb-1">Stay tuned, {{ auth.user()?.first_name }}!</h1>
+        <div class="d-flex align-items-center gap-2 opacity-75">
+          <i class="fas fa-crown text-warning"></i>
+          <span>{{ membership().type }} · {{ membership().level }} Member</span>
         </div>
-
-        <!-- My Bookings -->
-        <h4 class="fw-bold mb-3">My Bookings</h4>
-        @if (loading) {
-          <div class="text-center py-4"><div class="spinner-border text-primary"></div></div>
-        } @else if (bookings.length > 0) {
-          <div class="row g-3">
-            @for (booking of bookings; track booking.id) {
-              <div class="col-md-6">
-                <div class="booking-card p-4 rounded-3 border bg-white">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="mb-0">{{ booking.property_title }}</h5>
-                    <span class="badge" [ngClass]="getStatusClass(booking.status)">{{ booking.status }}</span>
-                  </div>
-                  <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt me-1"></i>{{ booking.property_city }}</p>
-                  <div class="d-flex justify-content-between">
-                    <span><i class="fas fa-calendar me-1"></i>{{ booking.check_in_date | date:'mediumDate' }}</span>
-                    <span class="fw-bold text-primary">₹{{ booking.monthly_rent | number }}/mo</span>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="text-center py-5">
-            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
-            <h5>No bookings yet</h5>
-            <a routerLink="/properties" class="btn btn-primary mt-2">Browse Properties</a>
-          </div>
-        }
       </div>
     </div>
-    <app-footer></app-footer>
+    <div class="d-none d-md-block text-end">
+      <div class="small opacity-75 mb-1">Account Balance</div>
+      <div class="h3 fw-bold mb-0">₹{{ walletBalance() | number }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5" style="position: relative; z-index: 10; margin-top: -40px;">
+  <!-- Top Row Grid -->
+  <div class="row g-4 mb-5">
+    <!-- Wallet and Membership for Mobile -->
+    <div class="col-12 d-md-none">
+      <div class="glass-card p-4 d-flex justify-content-between">
+        <div>
+          <small class="text-muted d-block mb-1">Wallet Balance</small>
+          <span class="h4 fw-bold mb-0">₹{{ walletBalance() | number }}</span>
+        </div>
+        <button class="btn btn-outline-primary btn-sm align-self-center">Add Money</button>
+      </div>
+    </div>
+
+    <!-- Quick Stats & Actions -->
+    <div class="col-lg-8">
+      <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="fw-bold mb-0">Your Quick Stats</h4>
+          <button class="btn btn-sm btn-light border">View Analytics</button>
+        </div>
+        <div class="row text-center g-3">
+          <div class="col-3">
+            <div class="h3 fw-bold mb-0 text-primary">{{ stats().total }}</div>
+            <div class="small text-muted">Total</div>
+          </div>
+          <div class="col-3 border-start">
+            <div class="h3 fw-bold mb-0 text-success">{{ stats().active }}</div>
+            <div class="small text-muted">Active</div>
+          </div>
+          <div class="col-3 border-start">
+            <div class="h3 fw-bold mb-0 text-info">{{ stats().favoritesCount }}</div>
+            <div class="small text-muted">Saved</div>
+          </div>
+          <div class="col-3 border-start">
+            <div class="h3 fw-bold mb-0 text-warning">{{ stats().completed }}</div>
+            <div class="small text-muted">Past</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invite Card -->
+    <div class="col-lg-4">
+      <div class="glass-card reward-card p-4 h-100 position-relative overflow-hidden">
+        <div class="z-1 position-relative">
+          <h5 class="fw-bold mb-2">Invite & Earn ₹250</h5>
+          <p class="small mb-4 opacity-75">Share Sasta Room with friends and earn credits for your next stay.</p>
+          <button class="btn btn-dark btn-sm rounded-pill px-4">Refer Now</button>
+        </div>
+        <i class="fas fa-gift position-absolute end-0 bottom-0 mb-n3 me-n2 opacity-25" style="font-size: 8rem;"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="row g-4">
+    <!-- Left Column: Bookings and History -->
+    <div class="col-lg-8">
+      <!-- Tabs -->
+      <div class="d-flex gap-2 mb-4 bg-white p-2 rounded-3 shadow-sm" style="width: fit-content;">
+        <div class="nav-tab" [class.active]="activeTab() === 'active'" (click)="switchTab('active')">Ongoing</div>
+        <div class="nav-tab" [class.active]="activeTab() === 'history'" (click)="switchTab('history')">History</div>
+        <div class="nav-tab" [class.active]="activeTab() === 'saved'" (click)="switchTab('saved')">Saved</div>
+      </div>
+
+      <!-- Bookings Content -->
+      @if (loading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2 text-muted">Loading your dashboard...</p>
+        </div>
+      } @else {
+        <div class="tab-content transition-all">
+          @if (activeTab() === 'active') {
+            @if (bookings().length > 0) {
+              <div class="d-flex flex-column gap-3">
+                @for (booking of bookings(); track booking.id) {
+                  <div class="glass-card booking-card-premium d-flex p-0">
+                    <img [src]="'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300'" class="property-thumb d-none d-sm-block" alt="thumb">
+                    <div class="p-4 flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <h5 class="fw-bold mb-1">{{ booking.property_title }}</h5>
+                          <div class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ booking.property_city }}</div>
+                        </div>
+                        <span class="badge rounded-pill px-3 py-2" [ngClass]="getStatusClass(booking.status)">
+                          {{ booking.status | uppercase }}
+                        </span>
+                      </div>
+                      <div class="row mt-3 align-items-center">
+                        <div class="col-sm-6 mb-2 mb-sm-0">
+                          <div class="small text-muted mb-1">Check-in Date</div>
+                          <div class="fw-bold">{{ booking.check_in_date | date:'mediumDate' }}</div>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                          <button class="btn btn-outline-dark btn-sm me-2">View Pass</button>
+                          <button class="btn btn-primary btn-sm">Support</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-5 bg-white rounded-4 border dashed">
+                <i class="fas fa-bed fa-3x text-muted mb-3 opacity-25"></i>
+                <h5>No active bookings</h5>
+                <p class="text-muted">You don't have any stays planned right now.</p>
+                <a routerLink="/properties" class="btn btn-primary btn-sm">Start Searching</a>
+              </div>
+            }
+          }
+
+          @if (activeTab() === 'history') {
+             <div class="text-center py-5 bg-white rounded-4 border dashed">
+                <p class="text-muted mb-0">History is temporarily empty.</p>
+             </div>
+          }
+
+          @if (activeTab() === 'saved') {
+            <div class="text-center py-5 bg-white rounded-4 border dashed">
+                <p class="text-muted mb-0">Explore properties to save them for later.</p>
+                <a routerLink="/properties" class="btn btn-outline-primary btn-sm mt-3">Browse Now</a>
+             </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Right Column: Sidebar -->
+    <div class="col-lg-4">
+      <!-- Membership Details -->
+      <div class="glass-card p-4 mb-4" style="background: white;">
+        <h5 class="fw-bold mb-4">Your Membership</h5>
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="bg-light rounded-circle p-3 text-warning fs-3">
+             <i class="fas fa-gem"></i>
+          </div>
+          <div>
+            <div class="fw-bold">{{ membership().type }}</div>
+            <div class="small text-muted">Expires {{ membership().expiry }}</div>
+          </div>
+        </div>
+        <div class="bg-light rounded-3 p-3 mb-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="small font-bold">Progress to Gold</span>
+            <span class="small fw-bold">75%</span>
+          </div>
+          <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: 75%"></div>
+          </div>
+        </div>
+        <button class="btn btn-outline-dark w-100 btn-sm">Explore Benefits</button>
+      </div>
+
+      <!-- Picked For You -->
+      <div class="glass-card p-4" style="background: white;">
+        <h5 class="fw-bold mb-4">Picked for you</h5>
+        <div class="d-flex flex-column gap-3">
+          @for (rec of recommendations(); track rec.id) {
+            <div class="d-flex gap-3 align-items-center cursor-pointer p-2 rounded-3 hover-bg-light transition-all" [routerLink]="['/properties', rec.id]">
+              <img [src]="rec.image" class="rounded-3" style="width: 60px; height: 60px; object-fit: cover;">
+              <div class="flex-grow-1 overflow-hidden">
+                <div class="fw-bold text-truncate mb-0" style="font-size: 0.9rem;">{{ rec.title }}</div>
+                <div class="small text-muted">{{ rec.city }} · ₹{{ rec.price }}/mo</div>
+              </div>
+              <i class="fas fa-chevron-right text-muted small"></i>
+            </div>
+          }
+        </div>
+        <hr>
+        <div class="bg-white border text-center p-3 rounded-3 mt-3">
+           <p class="small text-muted mb-0">Help us find your better match</p>
+           <button class="btn btn-link btn-sm text-primary text-decoration-none fw-bold">Update Preferences</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

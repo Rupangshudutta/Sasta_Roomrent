@@ -14,7 +14,7 @@ requests, owners accept and the two sides connect directly.
 | API | Node 18+, Express 4, TypeScript, `mysql2`, JWT auth, `bcryptjs`, `sharp` for photo resizing |
 | Database | MySQL 8 / MariaDB / TiDB Cloud Serverless (schema in `backend/sql/schema.sql`) |
 | Hosting | Vercel (one project: static app + `/api` serverless function). Hostinger guide in `hostinger-deploy/` |
-| CI | GitHub Actions: build, MySQL-backed end-to-end smoke test, production migration, live-site smoke test |
+| CI | GitHub Actions: build, MySQL-backed API smoke test, Playwright browser flow, production migration, live-site smoke test |
 
 ## Repository layout
 
@@ -28,7 +28,10 @@ backend/
   src/services/           business logic (property, booking, auth, image storage, mailer)
   src/db/migrate.ts       idempotent migration + seeds (help articles, admin user)
   sql/schema.sql          CREATE TABLE IF NOT EXISTS for every table
-  scripts/smoke.mjs       end-to-end smoke test (owner → admin → customer loop)
+  scripts/smoke.mjs       API smoke test (owner → admin → customer loop, 44 checks)
+e2e/
+  ui-flow.mjs             Playwright test driving the real Angular build through the same loop
+  spa-server.js           tiny static + /api proxy server that mimics Vercel locally
 frontend/
   src/app/features/       pages (home, properties, auth, dashboards, list-property, help, …)
   src/app/core/           services, guards, interceptors, utils (client-side image compression)
@@ -44,7 +47,16 @@ npm ci && npm run build && npm run migrate && npm start   # http://localhost:300
 cd ../frontend && npm ci && npm start                      # http://localhost:4200
 ```
 
-End-to-end check: `BASE_URL=http://localhost:3000 SMOKE_ADMIN_EMAIL=… SMOKE_ADMIN_PASSWORD=… npm run smoke --prefix backend`
+End-to-end checks:
+
+```bash
+# API loop (any base URL)
+BASE_URL=http://localhost:3000 SMOKE_ADMIN_EMAIL=… SMOKE_ADMIN_PASSWORD=… npm run smoke --prefix backend
+# Browser loop against the production bundle (API on :3000)
+npm run build --prefix frontend && npm ci --prefix e2e && (cd e2e && npx playwright install chromium)
+node e2e/spa-server.js frontend/dist/sasta-room-frontend/browser 4300 &
+UI_ADMIN_EMAIL=… UI_ADMIN_PASSWORD=… node e2e/ui-flow.mjs
+```
 
 ## API overview
 

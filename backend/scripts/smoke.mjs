@@ -80,6 +80,13 @@ async function register(role, i) {
 
   const badLogin = await call('POST', '/api/auth/login', { body: { email: owner.email, password: 'wrong-password' } });
   expect(badLogin.status === 401, 'wrong password → 401');
+
+  // Browsers send an Origin header on same-origin POSTs; the server must never
+  // turn that into a 403 (CORS is enforced by the browser, not the API).
+  for (const origin of [BASE, 'https://not-allowed.example']) {
+    const r = await fetch(`${BASE}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify({ email: owner.email, password: 'wrong-password' }) });
+    expect(r.status === 401, `POST with Origin ${origin === BASE ? '(same-origin)' : '(foreign)'} is not rejected server-side → ${r.status}`);
+  }
   const me = await call('GET', '/api/auth/me', { token: owner.token });
   expect(me.status === 200 && me.data?.data?.user?.email === owner.email, 'GET /auth/me with token');
 

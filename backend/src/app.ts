@@ -37,13 +37,14 @@ app.use(helmet({
 app.use(compression());
 app.use(morgan(env.isProduction ? 'combined' : 'dev'));
 
+// CORS: allow-listed origins get the Access-Control-* headers. Any other
+// origin gets no headers, which the *browser* then blocks for cross-origin
+// calls. We never reject the request server-side: browsers also send an
+// Origin header on same-origin POSTs (e.g. the Angular app on the same
+// domain calling /api/auth/login), and those must always succeed.
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // Same-origin requests (no Origin header) and allow-listed origins pass.
-      if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error(`Origin ${origin} not allowed by CORS`));
-    },
+    origin: (origin, cb) => cb(null, !origin || env.corsOrigins.includes(origin)),
     credentials: true,
   })
 );

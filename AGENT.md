@@ -31,7 +31,10 @@ that are easy to get wrong:
 - **Email** (`backend/src/services/mailer.service.ts`) is optional and
   best-effort: never let a send failure fail a request.
 - **Verification:** `backend/scripts/smoke.mjs` exercises the full product
-  loop against any base URL. CI runs it against a MySQL service on every
-  push. Run it locally before changing API behaviour.
+  loop against any base URL, and `e2e/ui-flow.mjs` drives the real Angular
+  build through the same loop in Chromium (it caught a CORS bug the API
+  test could not: browsers send `Origin` on same-origin POSTs). CI runs
+  both against a MySQL service on every push. Run them before changing API
+  or page behaviour.
 - **Angular version is 17.3**: no `@let`, no `output()` helpers, etc.
 - Do not commit `.env`, `node_modules`, or `dist`.

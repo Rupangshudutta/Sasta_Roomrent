@@ -21,7 +21,6 @@ export function errorMiddleware(err: AppError, _req: Request, res: Response, _ne
   else if (err.code === 'LIMIT_FILE_COUNT') { statusCode = 400; message = 'Too many images (max 10)'; }
   else if (err.code === 'LIMIT_UNEXPECTED_FILE') { statusCode = 400; message = 'Unexpected upload field'; }
   else if (err.message?.startsWith('Only JPEG')) { statusCode = 400; message = err.message; }
-  else if (err.message?.includes('not allowed by CORS')) { statusCode = 403; message = err.message; }
   else if (['ECONNREFUSED', 'ETIMEDOUT', 'ENOTFOUND', 'ER_ACCESS_DENIED_ERROR', 'ER_BAD_DB_ERROR'].includes(err.code || '')) {
     statusCode = 503; message = 'Database is unavailable. Please try again shortly.';
   }

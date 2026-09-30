@@ -74,7 +74,7 @@ Three workflows live in `.github/workflows/`:
 
 | Workflow | When | What it does |
 |----------|------|--------------|
-| **CI** | every push / PR | builds both apps, boots a MySQL, runs migration twice, runs the full smoke test |
+| **CI** | every push / PR | builds both apps, boots a MySQL, runs migration twice, runs the API smoke test and the Playwright browser flow |
 | **Database migrate (production)** | manual | runs the migration against the real database; can also seed 6 demo listings or clean up smoke-test data |
 | **Smoke test (live site)** | manual + after each successful Vercel production deploy | runs the 42-check loop against the live URL |
 

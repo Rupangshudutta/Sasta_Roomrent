@@ -39,7 +39,7 @@ Same domain, no CORS, one set of environment variables.
 
    | Name | Value |
    |------|-------|
-   | `NODE_ENV` | `production` |
+   | `NODE_ENV` | `production` (safe: the install step always includes build tooling) |
    | `DB_HOST` | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` |
    | `DB_PORT` | `4000` |
    | `DB_NAME` | `sasta_room` |

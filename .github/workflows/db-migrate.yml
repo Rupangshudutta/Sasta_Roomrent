@@ -37,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci --prefix backend
+      - run: npm ci --include=dev --prefix backend
       - run: npm run build --prefix backend
       - name: Migrate
         run: npm run migrate --prefix backend

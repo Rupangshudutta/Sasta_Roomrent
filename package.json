@@ -1,0 +1,19 @@
+{
+  "name": "sasta-roomrent",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Sasta Room — long-term room rental marketplace (Angular 17 + Express/TypeScript + MySQL/TiDB)",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "install:all": "npm ci --prefix backend && npm ci --prefix frontend",
+    "build:api": "npm run build --prefix backend",
+    "build:web": "npm run build --prefix frontend",
+    "migrate": "npm run migrate --prefix backend",
+    "build": "npm run build:api && (npm run migrate || echo '⚠️  migration skipped: database not reachable during build') && npm run build:web",
+    "dev:api": "npm run dev --prefix backend",
+    "dev:web": "npm start --prefix frontend",
+    "smoke": "npm run smoke --prefix backend"
+  }
+}

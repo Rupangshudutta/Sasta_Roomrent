@@ -1,0 +1,47 @@
+name: Smoke test (live site)
+
+# Hits a deployed site with the end-to-end smoke test.
+#   - manual: Actions tab → "Smoke test (live site)" → Run workflow
+#   - automatic: after every successful Vercel production deployment
+#
+# Optional repository secrets for the full owner→admin→customer loop:
+#   ADMIN_EMAIL, ADMIN_PASSWORD  (same values used by the migration)
+# Optional repository variable:
+#   SITE_URL  e.g. https://sasta-roomrent.vercel.app
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Site URL (defaults to the SITE_URL repository variable)"
+        required: false
+  deployment_status:
+
+jobs:
+  smoke:
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Resolve target URL
+        id: target
+        run: |
+          URL="${{ inputs.base_url }}"
+          if [ -z "$URL" ]; then URL="${{ vars.SITE_URL }}"; fi
+          if [ -z "$URL" ]; then URL="${{ github.event.deployment_status.environment_url || github.event.deployment_status.target_url }}"; fi
+          if [ -z "$URL" ]; then echo "No URL to test" && exit 1; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Testing $URL"
+      - name: Wait for site
+        run: |
+          for i in $(seq 1 30); do curl -sf "${{ steps.target.outputs.url }}/api/health" && exit 0 || sleep 5; done
+          echo "site did not become healthy"; curl -s "${{ steps.target.outputs.url }}/api/health" || true; exit 1
+      - name: Run smoke test
+        env:
+          BASE_URL: ${{ steps.target.outputs.url }}
+          SMOKE_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          SMOKE_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: node backend/scripts/smoke.mjs

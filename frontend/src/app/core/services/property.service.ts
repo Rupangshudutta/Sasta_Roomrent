@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Property, ApiResponse } from '../../shared/models/models';
 
@@ -17,6 +16,8 @@ export interface PropertyFilters {
   limit?: number;
 }
 
+export type PropertyStatus = 'active' | 'inactive' | 'pending';
+
 @Injectable({ providedIn: 'root' })
 export class PropertyService {
   private base = `${environment.apiUrl}/properties`;
@@ -30,41 +31,34 @@ export class PropertyService {
         params = params.set(key, String(val));
       }
     }
-    
-    console.log('[Frontend] 📡 Fetching properties with filters:', filters);
-    console.log('[Frontend] 🔗 API URL:', `${this.base}?${params.toString()}`);
-    
-    return this.http.get<ApiResponse<{ properties: Property[]; total: number }>>(this.base, { params })
-      .pipe(
-        tap((response: ApiResponse<{ properties: Property[]; total: number }>) => {
-          console.log('[Frontend] ✅ Properties fetched successfully:', response.data?.properties?.length || 0);
-        }),
-        catchError((error: any) => {
-          console.error('[Frontend] ❌ Error fetching properties:', error);
-          console.error('[Frontend] 📊 Error details:', {
-            status: error.status,
-            statusText: error.statusText,
-            message: error.message,
-            url: error.url
-          });
-          throw error;
-        })
-      );
+    return this.http.get<ApiResponse<{ properties: Property[]; total: number }>>(this.base, { params });
   }
 
   getPropertyById(id: number): Observable<ApiResponse<{ property: Property }>> {
     return this.http.get<ApiResponse<{ property: Property }>>(`${this.base}/${id}`);
   }
 
+  /** Owner: every listing they own, including pending / inactive ones. */
   getMyProperties(): Observable<ApiResponse<{ properties: Property[] }>> {
     return this.http.get<ApiResponse<{ properties: Property[] }>>(`${this.base}/my`);
+  }
+
+  /** Admin: listings awaiting approval. */
+  getPending(): Observable<ApiResponse<{ properties: Property[] }>> {
+    return this.http.get<ApiResponse<{ properties: Property[] }>>(`${this.base}/pending`);
+  }
+
+  /** Admin: approve (active) or reject (inactive) a listing. */
+  setStatus(id: number, status: PropertyStatus): Observable<ApiResponse<{ property: Property }>> {
+    return this.http.patch<ApiResponse<{ property: Property }>>(`${this.base}/${id}/status`, { status });
   }
 
   getFavorites(): Observable<ApiResponse<{ properties: Property[] }>> {
     return this.http.get<ApiResponse<{ properties: Property[] }>>(`${this.base}/favorites`);
   }
 
-  createProperty(data: Partial<Property>): Observable<ApiResponse<{ property: Property }>> {
+  /** Creates the listing record (JSON). Photos are uploaded afterwards with uploadImage(). */
+  createProperty(data: Record<string, unknown>): Observable<ApiResponse<{ property: Property }>> {
     return this.http.post<ApiResponse<{ property: Property }>>(this.base, data);
   }
 
@@ -80,9 +74,11 @@ export class PropertyService {
     return this.http.post<ApiResponse<{ added: boolean }>>(`${this.base}/${id}/toggle-favorite`, {});
   }
 
-  uploadImages(propertyId: number, files: File[]): Observable<ApiResponse> {
+  /** Uploads one photo. One request per photo keeps every request small. */
+  uploadImage(propertyId: number, file: File, isPrimary = false): Observable<ApiResponse<{ images: { id: number; url: string }[] }>> {
     const form = new FormData();
-    files.forEach((f) => form.append('images', f));
-    return this.http.post<ApiResponse>(`${this.base}/${propertyId}/images`, form);
+    form.append('images', file, file.name);
+    form.append('is_primary', isPrimary ? '1' : '0');
+    return this.http.post<ApiResponse<{ images: { id: number; url: string }[] }>>(`${this.base}/${propertyId}/images`, form);
   }
 }

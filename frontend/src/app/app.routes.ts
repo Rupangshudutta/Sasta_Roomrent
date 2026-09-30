@@ -87,7 +87,7 @@ export const routes: Routes = [
   // Owner pages
   {
     path: 'list-property',
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard(['owner', 'admin'])],
     loadComponent: () => import('./features/list-property/list-property.component').then(m => m.ListPropertyComponent),
   },
   {

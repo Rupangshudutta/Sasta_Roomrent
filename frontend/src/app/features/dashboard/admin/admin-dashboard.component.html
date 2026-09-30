@@ -1,98 +1,144 @@
-    <app-navbar></app-navbar>
-    <div class="dashboard-page">
-      <div class="dashboard-header py-4">
-        <div class="container">
-          <h2 class="fw-bold mb-0"><i class="fas fa-chart-line me-2"></i>Admin Panel</h2>
-          <p class="mb-0 opacity-75">Platform Overview</p>
-        </div>
-      </div>
+<app-navbar></app-navbar>
+<div class="dashboard-page">
+  <div class="dashboard-header py-4">
+    <div class="container">
+      <h2 class="fw-bold mb-0"><i class="fas fa-chart-line me-2"></i>Admin Panel</h2>
+      <p class="mb-0 opacity-75">Platform Overview</p>
+    </div>
+  </div>
 
-      <div class="container py-4">
-        @if (loading) {
-          <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
-        } @else {
-          <!-- Platform Stats -->
-          <div class="row g-3 mb-5">
-            <div class="col-md-3">
-              <div class="stat-card bg-primary text-white">
-                <i class="fas fa-users fa-2x mb-2"></i>
-                <h3>{{ data.userStats?.total_users || 0 }}</h3><p>Total Users</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stat-card bg-success text-white">
-                <i class="fas fa-building fa-2x mb-2"></i>
-                <h3>{{ data.propertyStats?.total_properties || 0 }}</h3><p>Properties</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stat-card bg-info text-white">
-                <i class="fas fa-calendar-check fa-2x mb-2"></i>
-                <h3>{{ data.bookingStats?.total_bookings || 0 }}</h3><p>Total Bookings</p>
-              </div>
-            </div>
-            <div class="col-md-3">
-              <div class="stat-card" style="background: #f59e0b;">
-                <i class="fas fa-rupee-sign fa-2x mb-2 text-white"></i>
-                <h3 class="text-white">₹{{ data.revenueStats?.total_revenue | number }}</h3>
-                <p class="text-white">Revenue</p>
-              </div>
-            </div>
-          </div>
+  <div class="container py-4">
+    @if (error()) {
+      <div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>{{ error() }}</div>
+    }
 
-          <div class="row g-4">
-            <!-- Recent Properties -->
-            <div class="col-md-6">
-              <div class="bg-white rounded-3 shadow-sm p-4">
-                <h5 class="fw-bold mb-3">Recent Properties</h5>
-                @for (p of data.recentProperties; track p['id']) {
-                  <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                    <div>
-                      <div class="fw-semibold">{{ p['title'] }}</div>
-                      <small class="text-muted">{{ p['owner_name'] }} · {{ p['city'] }}</small>
-                    </div>
-                    <span class="badge" [ngClass]="p['status'] === 'active' ? 'bg-success' : 'bg-warning'">{{ p['status'] }}</span>
-                  </div>
-                }
+    <!-- Moderation queue: the one thing that must be done daily -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-bold mb-0">Listings Awaiting Approval <span class="badge bg-warning text-dark ms-2">{{ pending().length }}</span></h4>
+      <button class="btn btn-sm btn-outline-secondary" (click)="loadPending()"><i class="fas fa-sync me-1"></i>Refresh</button>
+    </div>
+    @if (pending().length > 0) {
+      <div class="bg-white rounded-3 shadow-sm p-3 mb-5">
+        @for (p of pending(); track p.id) {
+          <div class="d-flex gap-3 align-items-center py-3 border-bottom flex-wrap">
+            <img class="thumb" [src]="p.primary_image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200'" alt="">
+            <div class="flex-grow-1">
+              <div class="fw-bold">{{ p.title }} <span class="badge bg-light text-dark border ms-1">{{ p.property_type | titlecase }}</span></div>
+              <div class="small text-muted">{{ p.city }}, {{ p.state }} · ₹{{ p.rent_amount | number }}/mo · deposit ₹{{ p.security_deposit | number }}</div>
+              <div class="small">
+                <i class="fas fa-user me-1"></i>{{ p.owner_name }}
+                @if (p.owner_phone) { · <a [href]="'tel:' + p.owner_phone">{{ p.owner_phone }}</a> }
+                @if (p.owner_email) { · <a [href]="'mailto:' + p.owner_email">{{ p.owner_email }}</a> }
               </div>
             </div>
-
-            <!-- Recent Bookings -->
-            <div class="col-md-6">
-              <div class="bg-white rounded-3 shadow-sm p-4">
-                <h5 class="fw-bold mb-3">Recent Bookings</h5>
-                @for (b of data.recentBookings; track b['id']) {
-                  <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                    <div>
-                      <div class="fw-semibold">{{ b['customer_name'] }}</div>
-                      <small class="text-muted">{{ b['property_title'] }}</small>
-                    </div>
-                    <span class="fw-bold text-primary">₹{{ b['monthly_rent'] | number }}/mo</span>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          <!-- Breakdown Row -->
-          <div class="row g-3 mt-2">
-            <div class="col-md-4">
-              <div class="bg-white rounded-3 shadow-sm p-3 text-center">
-                <h6 class="text-muted">Customers</h6><h4>{{ data.userStats?.total_customers || 0 }}</h4>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="bg-white rounded-3 shadow-sm p-3 text-center">
-                <h6 class="text-muted">Property Owners</h6><h4>{{ data.userStats?.total_owners || 0 }}</h4>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="bg-white rounded-3 shadow-sm p-3 text-center">
-                <h6 class="text-muted">Pending Approvals</h6><h4>{{ data.propertyStats?.pending_properties || 0 }}</h4>
-              </div>
+            <div class="text-nowrap">
+              <a [routerLink]="['/properties', p.id]" target="_blank" class="btn btn-sm btn-outline-secondary me-1">Preview</a>
+              <button class="btn btn-sm btn-success me-1" (click)="approve(p)" [disabled]="busyId() === p.id"><i class="fas fa-check me-1"></i>Approve</button>
+              <button class="btn btn-sm btn-outline-danger" (click)="reject(p)" [disabled]="busyId() === p.id">Reject</button>
             </div>
           </div>
         }
       </div>
-    </div>
-    <app-footer></app-footer>
+    } @else {
+      <div class="bg-white rounded-3 shadow-sm p-4 text-center text-muted mb-5">
+        <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
+        <div>No listings waiting. New owner submissions appear here for approval.</div>
+      </div>
+    }
+
+    @if (loading()) {
+      <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+    } @else {
+      <!-- Platform Stats -->
+      <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+          <div class="stat-card bg-primary text-white">
+            <i class="fas fa-users fa-2x mb-2"></i>
+            <h3>{{ data().userStats?.total_users || 0 }}</h3><p>Users</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card bg-success text-white">
+            <i class="fas fa-building fa-2x mb-2"></i>
+            <h3>{{ data().propertyStats?.active_properties || 0 }}</h3><p>Live Listings</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card bg-info text-white">
+            <i class="fas fa-calendar-check fa-2x mb-2"></i>
+            <h3>{{ data().bookingStats?.total_bookings || 0 }}</h3><p>Booking Requests</p>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-card text-white" style="background: #f59e0b;">
+            <i class="fas fa-user-tie fa-2x mb-2"></i>
+            <h3>{{ data().userStats?.total_owners || 0 }}</h3><p>Owners</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mb-5">
+        <div class="col-md-6">
+          <div class="bg-white rounded-3 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3">Recent Properties</h5>
+            @for (p of data().recentProperties; track p['id']) {
+              <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                <div>
+                  <a [routerLink]="['/properties', p['id']]" class="fw-semibold text-decoration-none text-dark">{{ p['title'] }}</a>
+                  <br><small class="text-muted">{{ p['owner_name'] }} · {{ p['city'] }}</small>
+                </div>
+                <span class="badge" [ngClass]="p['status'] === 'active' ? 'bg-success' : (p['status'] === 'pending' ? 'bg-warning text-dark' : 'bg-secondary')">{{ p['status'] }}</span>
+              </div>
+            } @empty {
+              <p class="text-muted mb-0">No properties yet.</p>
+            }
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="bg-white rounded-3 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3">Recent Booking Requests</h5>
+            @for (b of data().recentBookings; track b['id']) {
+              <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                <div>
+                  <div class="fw-semibold">{{ b['customer_name'] }}</div>
+                  <small class="text-muted">{{ b['property_title'] }} · {{ b['status'] }}</small>
+                </div>
+                <span class="fw-bold text-primary">₹{{ b['monthly_rent'] | number }}/mo</span>
+              </div>
+            } @empty {
+              <p class="text-muted mb-0">No booking requests yet.</p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Contact inbox -->
+    <h4 class="fw-bold mb-3">Contact Messages <span class="badge bg-secondary ms-1">{{ messages().length }}</span></h4>
+    @if (messages().length > 0) {
+      <div class="d-flex flex-column gap-2 mb-5">
+        @for (m of messages(); track m.id) {
+          <div class="bg-white rounded-3 shadow-sm p-3 msg" [class.read]="m.is_read">
+            <div class="d-flex justify-content-between flex-wrap gap-2">
+              <div>
+                <strong>{{ m.subject }}</strong>
+                <div class="small text-muted">
+                  {{ m.name }} · <a [href]="'mailto:' + m.email">{{ m.email }}</a>
+                  @if (m.phone) { · <a [href]="'tel:' + m.phone">{{ m.phone }}</a> }
+                  · {{ m.created_at | date:'medium' }}
+                </div>
+              </div>
+              @if (!m.is_read) {
+                <button class="btn btn-sm btn-outline-secondary" (click)="markRead(m)">Mark handled</button>
+              }
+            </div>
+            <p class="mb-0 mt-2" style="white-space: pre-line;">{{ m.message }}</p>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="bg-white rounded-3 shadow-sm p-4 text-center text-muted mb-5">No messages from the contact form yet.</div>
+    }
+  </div>
+</div>
+<app-footer></app-footer>

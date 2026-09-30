@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { firstValueFrom } from 'rxjs';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { FooterComponent } from '../../shared/components/footer/footer.component';
-import { environment } from '../../../environments/environment';
+import { PropertyService } from '../../core/services/property.service';
+import { compressImage } from '../../core/utils/image-compress';
 
 @Component({
   selector: 'app-list-property',
@@ -38,13 +39,17 @@ import { environment } from '../../../environments/environment';
 })
 export class ListPropertyComponent {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
+  private propertyService = inject(PropertyService);
   private sanitizer = inject(DomSanitizer);
 
   currentStep = signal(1);
   totalSteps = 3;
   submitting = signal(false);
   submitted = signal(false);
+  error = signal('');
+  progress = signal('');          // e.g. "Uploading photo 2 of 5"
+  processingPhotos = signal(false); // true while photos are being compressed
+  createdPropertyId = signal<number | null>(null);
 
   step1Form: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(10)]],
@@ -81,25 +86,33 @@ export class ListPropertyComponent {
     else this.selectedAmenities.splice(idx, 1);
   }
 
-  onImageUpload(event: any) {
-    const files = event.target.files;
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      // Validate file type and size
-      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
-        alert('Only JPEG, PNG, and WebP images are allowed');
-        continue;
+  async onImageUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files || []);
+    input.value = ''; // allow re-selecting the same files later
+    this.error.set('');
+    this.processingPhotos.set(true);
+    try {
+      for (const file of files) {
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+          this.error.set('Only JPEG, PNG and WebP photos are allowed.');
+          continue;
+        }
+        if (file.size > 20 * 1024 * 1024) {
+          this.error.set('Each photo must be under 20 MB.');
+          continue;
+        }
+        if (this.uploadedImages.length >= 10) {
+          this.error.set('You can add up to 10 photos.');
+          break;
+        }
+        // Shrink in the browser so uploads are fast and always under the
+        // server limit, even straight from a phone camera.
+        this.uploadedImages.push(await compressImage(file));
       }
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
-        continue;
-      }
-      if (this.uploadedImages.length < 10) {
-        this.uploadedImages.push(file);
-      }
+    } finally {
+      this.processingPhotos.set(false);
     }
-    // Clear input to allow re-uploading same files
-    event.target.value = '';
   }
 
   removeImage(index: number) {
@@ -140,29 +153,59 @@ export class ListPropertyComponent {
     return '';
   }
 
-  submitListing() {
-    const formData = new FormData();
-    
-    // Add form fields
-    Object.keys(this.step1Form.value).forEach(key => {
-      formData.append(key, this.step1Form.value[key]);
-    });
-    
-    // Add amenities
-    formData.append('amenities', JSON.stringify(this.selectedAmenities));
-    
-    // Add images
-    this.uploadedImages.forEach((file, index) => {
-      formData.append(`images`, file);
-      if (index === this.primaryImageIndex) {
-        formData.append('primary_image_index', index.toString());
-      }
-    });
-    
+  /**
+   * Two-phase submit:
+   *   1. POST the listing as JSON → get its id
+   *   2. upload photos one request at a time (primary first)
+   * Keeping photos out of the first request means the listing is never lost
+   * because one large upload timed out; a failed photo can be retried later.
+   */
+  async submitListing() {
+    if (this.submitting()) return;
     this.submitting.set(true);
-    this.http.post(`${environment.apiUrl}/properties`, formData).subscribe({
-      next: () => { this.submitted.set(true); this.submitting.set(false); },
-      error: () => { this.submitting.set(false); },
-    });
+    this.error.set('');
+    this.progress.set('Saving listing…');
+
+    const values = this.step1Form.value as Record<string, unknown>;
+    const payload: Record<string, unknown> = { amenities: this.selectedAmenities };
+    for (const [key, val] of Object.entries(values)) {
+      if (val !== '' && val !== null && val !== undefined) payload[key] = val; // drop blank optionals
+    }
+
+    let propertyId: number;
+    try {
+      const res = await firstValueFrom(this.propertyService.createProperty(payload));
+      if (!res.success || !res.data) throw new Error(res.message || 'Could not save the listing');
+      propertyId = res.data.property.id;
+      this.createdPropertyId.set(propertyId);
+    } catch (err: any) {
+      const details = err?.error?.errors?.map((e: { field: string; message: string }) => `${e.field}: ${e.message}`).join(', ');
+      this.error.set(details || err?.error?.message || err?.message || 'Could not save the listing. Please try again.');
+      this.submitting.set(false);
+      this.progress.set('');
+      return;
+    }
+
+    // Primary photo goes first so it becomes the cover image.
+    const ordered = [
+      ...this.uploadedImages.filter((_, i) => i === this.primaryImageIndex),
+      ...this.uploadedImages.filter((_, i) => i !== this.primaryImageIndex),
+    ];
+    let failed = 0;
+    for (let i = 0; i < ordered.length; i++) {
+      this.progress.set(`Uploading photo ${i + 1} of ${ordered.length}…`);
+      try {
+        await firstValueFrom(this.propertyService.uploadImage(propertyId, ordered[i], i === 0));
+      } catch {
+        failed++;
+      }
+    }
+
+    this.submitting.set(false);
+    this.progress.set('');
+    this.submitted.set(true);
+    if (failed > 0) {
+      this.error.set(`${failed} photo(s) could not be uploaded. Your listing was saved; you can add photos later from your dashboard.`);
+    }
   }
 }

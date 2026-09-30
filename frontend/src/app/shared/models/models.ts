@@ -51,6 +51,8 @@ export interface Property {
   images?: PropertyImage[];
   amenities?: string[];
   owner_name?: string;
+  owner_email?: string;   // admin moderation queue only
+  owner_phone?: string;   // admin moderation queue only
   primary_image?: string;
 }
 
@@ -64,9 +66,27 @@ export interface Booking {
   security_deposit: number;
   total_amount: number;
   status: BookingStatus;
+  cancellation_reason?: string;
+  notes?: string;
   property_title?: string;
   property_city?: string;
   customer_name?: string;
+  customer_email?: string;  // visible to owner/admin
+  customer_phone?: string;  // visible to owner/admin
+  owner_name?: string;
+  owner_email?: string;     // visible to customer once confirmed
+  owner_phone?: string;     // visible to customer once confirmed
+  created_at: string;
+}
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+  is_read: boolean;
   created_at: string;
 }
 

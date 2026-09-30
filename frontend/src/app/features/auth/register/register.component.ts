@@ -175,7 +175,7 @@ export class RegisterComponent {
       email: this.f['email'].value!,
       phone: this.f['phone'].value || '',
       password: this.f['password'].value!,
-      role: this.selectedRole === 'owner' ? 'room_owner' : 'customer',
+      role: this.selectedRole, // API accepts 'customer' | 'owner'
     };
 
     this.auth.register(payload).subscribe({

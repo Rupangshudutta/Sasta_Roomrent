@@ -19,7 +19,11 @@ export interface Booking {
   property_title?: string;
   property_city?: string;
   customer_name?: string;
+  customer_email?: string;
+  customer_phone?: string;
   owner_name?: string;
+  owner_email?: string;
+  owner_phone?: string;
 }
 
 export interface CreateBookingDto {

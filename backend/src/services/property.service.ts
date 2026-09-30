@@ -6,9 +6,6 @@ import { createError } from '../middleware/error.middleware';
 // List & Search
 // ---------------------------------------------------------------------------
 export async function getProperties(filters: PropertyFilters): Promise<{ properties: PropertyListItem[]; total: number }> {
-  console.log('\n[Backend] --------------------------------------------------');
-  console.log('[Backend] 📥 getProperties called with filters:', filters);
-  
   try {
     const conditions: string[] = ['p.status = "active"'];
     const params: unknown[] = [];
@@ -31,10 +28,6 @@ export async function getProperties(filters: PropertyFilters): Promise<{ propert
     const limit  = Math.min(Number(filters.limit || 12), 50);
     const offset = (page - 1) * limit;
 
-    console.log(`[Backend] 🔍 Constructed WHERE clause: ${where}`);
-    console.log(`[Backend] 🔢 Pagination: page=${page}, limit=${limit}, offset=${offset}`);
-    console.log(`[Backend] 🎯 Query Params array:`, params);
-
     const [countRow] = await query<{ total: number }>(
       `SELECT COUNT(*) AS total FROM properties p WHERE ${where}`,
       params
@@ -52,17 +45,9 @@ export async function getProperties(filters: PropertyFilters): Promise<{ propert
       params
     );
 
-    console.log(`[Backend] ✅ Fetched ${properties.length} properties. Total in DB: ${countRow?.total || 0}`);
-    console.log('[Backend] --------------------------------------------------\n');
-
     return { properties, total: countRow?.total || 0 };
   } catch (error: any) {
-    console.error('[Backend] ❌ Error in getProperties:', error);
-    console.error('[Backend] 📊 Error details:', {
-      message: error.message,
-      stack: error.stack,
-      filters: filters
-    });
+    console.error('[properties] getProperties failed:', error?.message || error);
     throw error;
   }
 }
@@ -113,53 +98,7 @@ export async function getOwnerProperties(ownerId: number): Promise<Property[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Create with Images
-// ---------------------------------------------------------------------------
-export async function createPropertyWithImages(ownerId: number, data: any): Promise<Property> {
-  const { images, amenities, ...propertyData } = data;
-  
-  const result = await execute(
-    `INSERT INTO properties
-       (owner_id, title, description, property_type, rent_amount, security_deposit,
-        address_line1, address_line2, city, state, pincode, latitude, longitude,
-        bedrooms, bathrooms, furnishing, available_from, min_lease_months, max_occupancy, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-    [
-      ownerId, propertyData.title, propertyData.description || null, propertyData.property_type,
-      propertyData.rent_amount, propertyData.security_deposit || 0,
-      propertyData.address_line1, propertyData.address_line2 || null,
-      propertyData.city, propertyData.state, propertyData.pincode || null,
-      propertyData.latitude || null, propertyData.longitude || null,
-      propertyData.bedrooms || 1, propertyData.bathrooms || 1, propertyData.furnishing || 'unfurnished',
-      propertyData.available_from || null, propertyData.min_lease_months || 1, propertyData.max_occupancy || 1,
-    ]
-  );
-
-  const propertyId = result.insertId;
-
-  // Add amenities
-  if (amenities && amenities.length > 0) {
-    for (const amenity of amenities) {
-      await execute('INSERT INTO property_amenities (property_id, amenity) VALUES (?, ?)', [propertyId, amenity]);
-    }
-  }
-
-  // Add images
-  if (images && images.length > 0) {
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
-      await execute(
-        'INSERT INTO property_images (property_id, image_url, is_primary, sort_order) VALUES (?, ?, ?, ?)',
-        [propertyId, image.url, image.isPrimary ? 1 : 0, i]
-      );
-    }
-  }
-
-  return getPropertyById(propertyId);
-}
-
-// ---------------------------------------------------------------------------
-// Create (Legacy)
+// Create
 // ---------------------------------------------------------------------------
 export async function createProperty(ownerId: number, dto: CreatePropertyDto): Promise<Property> {
   const result = await execute(
@@ -191,10 +130,9 @@ export async function createProperty(ownerId: number, dto: CreatePropertyDto): P
 // ---------------------------------------------------------------------------
 // Update
 // ---------------------------------------------------------------------------
-export async function updateProperty(id: number, ownerId: number, dto: Partial<CreatePropertyDto>): Promise<Property> {
-  const [existing] = await query<Property>('SELECT id, owner_id FROM properties WHERE id = ?', [id]);
+export async function updateProperty(id: number, dto: Partial<CreatePropertyDto>): Promise<Property> {
+  const [existing] = await query<Property>('SELECT id FROM properties WHERE id = ?', [id]);
   if (!existing) throw createError('Property not found', 404);
-  if (existing.owner_id !== ownerId) throw createError('Unauthorized', 403);
 
   const allowed = [
     'title', 'description', 'rent_amount', 'security_deposit',
@@ -250,6 +188,40 @@ export async function addPropertyImage(propertyId: number, imageUrl: string, isP
     'INSERT INTO property_images (property_id, image_url, is_primary, sort_order) VALUES (?, ?, ?, ?)',
     [propertyId, imageUrl, isPrimary || noPrimary ? 1 : 0, count?.c || 0]
   );
+}
+
+// ---------------------------------------------------------------------------
+// Moderation & ownership helpers
+// ---------------------------------------------------------------------------
+export async function getPropertyOwnerId(id: number): Promise<number | null> {
+  const [row] = await query<{ owner_id: number }>('SELECT owner_id FROM properties WHERE id = ?', [id]);
+  return row ? row.owner_id : null;
+}
+
+export async function getPropertyOwnerContact(id: number): Promise<{ first_name: string; email: string; phone?: string } | null> {
+  const [row] = await query<{ first_name: string; email: string; phone?: string }>(
+    'SELECT u.first_name, u.email, u.phone FROM properties p JOIN users u ON u.id = p.owner_id WHERE p.id = ?',
+    [id]
+  );
+  return row || null;
+}
+
+export async function getPendingProperties(): Promise<PropertyListItem[]> {
+  return query<PropertyListItem>(
+    `SELECT p.*, CONCAT(u.first_name, ' ', u.last_name) AS owner_name, u.email AS owner_email, u.phone AS owner_phone,
+       (SELECT pi.image_url FROM property_images pi WHERE pi.property_id = p.id AND pi.is_primary = 1 LIMIT 1) AS primary_image
+     FROM properties p
+     LEFT JOIN users u ON u.id = p.owner_id
+     WHERE p.status = 'pending'
+     ORDER BY p.created_at ASC`
+  );
+}
+
+export async function setPropertyStatus(id: number, status: 'active' | 'inactive' | 'pending'): Promise<Property> {
+  const result = await execute('UPDATE properties SET status = ? WHERE id = ?', [status, id]);
+  if (result.affectedRows === 0) throw createError('Property not found', 404);
+  const [property] = await query<Property>('SELECT * FROM properties WHERE id = ?', [id]);
+  return property;
 }
 
 // ---------------------------------------------------------------------------

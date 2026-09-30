@@ -14,7 +14,10 @@ router.post(
     body('last_name').trim().notEmpty().withMessage('Last name is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('role').optional().isIn(['customer', 'owner']).withMessage('Role must be customer or owner'),
+    body('phone').optional({ values: 'falsy' }).matches(/^[6-9]\d{9}$/).withMessage('Phone must be a 10-digit Indian mobile number'),
+    // Older clients sent "room_owner"; normalise it before validating.
+    body('role').optional().customSanitizer((v) => (v === 'room_owner' ? 'owner' : v))
+      .isIn(['customer', 'owner']).withMessage('Role must be customer or owner'),
   ],
   validateRequest,
   async (req: Request, res: Response, next: NextFunction) => {

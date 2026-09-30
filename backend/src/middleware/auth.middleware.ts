@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AuthPayload } from '../models/user.model';
+import { env } from '../config/env';
 
 // Augment Express Request to carry the decoded JWT payload
 declare global {
@@ -22,8 +23,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   const token = authHeader.split(' ')[1];
 
   try {
-    const secret = process.env.JWT_SECRET!;
-    const decoded = jwt.verify(token, secret) as AuthPayload;
+    const decoded = jwt.verify(token, env.jwt.secret) as AuthPayload;
     req.user = decoded;
     next();
   } catch {

@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query, execute } from '../config/database';
 import { User, PublicUser, CreateUserDto, LoginDto, AuthPayload } from '../models/user.model';

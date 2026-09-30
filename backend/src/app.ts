@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import { env, missingConfig } from './config/env';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
-import { testConnection } from './config/database';
+import { testConnection, pingDatabase } from './config/database';
 import { errorMiddleware } from './middleware/error.middleware';
 
 // Route imports
@@ -18,70 +18,95 @@ import dashboardRoutes from './routes/dashboard.routes';
 import inquiryRoutes from './routes/inquiry.routes';
 import contactRoutes from './routes/contact.routes';
 import helpRoutes from './routes/help.routes';
+import imageRoutes from './routes/image.routes';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+// Behind Vercel / Hostinger / any reverse proxy the client IP arrives in
+// X-Forwarded-For. Without this, every visitor shares the proxy's IP and the
+// rate limiter would block the whole site after 100 requests.
+app.set('trust proxy', 1);
 
 // ---------------------------------------------------------------------------
 // Security & utility middleware
 // ---------------------------------------------------------------------------
-app.use(helmet());
+app.use(helmet({
+  // Photos are embedded by the Angular app, which may live on another origin.
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use(compression());
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-
-// CORS — allow Angular dev server and production domain
-const allowedOrigins = [
-  'http://localhost:4200',
-  'http://localhost:4201',
-  'http://127.0.0.1:4200',
-  process.env.FRONTEND_URL,
-  process.env.PROD_FRONTEND_URL,
-].filter(Boolean) as string[];
+app.use(morgan(env.isProduction ? 'combined' : 'dev'));
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, cb) => {
+      // Same-origin requests (no Origin header) and allow-listed origins pass.
+      if (!origin || env.corsOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error(`Origin ${origin} not allowed by CORS`));
+    },
     credentials: true,
   })
 );
 
-// Rate limiting — 100 requests per 15 minutes per IP
+// General limit: generous enough for a SPA that makes several calls per page.
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: { success: false, message: 'Too many requests, please try again later' },
+    max: 600,
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req) => req.path.startsWith('/api/images') || req.path === '/api/health',
+    message: { success: false, message: 'Too many requests, please try again later' },
   })
 );
 
-// Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Tighter limit on credential endpoints to slow down brute-force attempts.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many login attempts, please wait 15 minutes' },
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
-// Serve uploaded files statically
+// Body parsing
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+
+// Legacy: photos uploaded by older builds to a local ./uploads folder.
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ---------------------------------------------------------------------------
 // API Routes
 // ---------------------------------------------------------------------------
-app.use('/api/auth',      authRoutes);
+app.use('/api/auth',       authRoutes);
 app.use('/api/properties', propertyRoutes);
-app.use('/api/bookings',  bookingRoutes);
-app.use('/api/reviews',   reviewRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/inquiries', inquiryRoutes);
-app.use('/api/contact',   contactRoutes);
-app.use('/api/help',      helpRoutes);
+app.use('/api/bookings',   bookingRoutes);
+app.use('/api/reviews',    reviewRoutes);
+app.use('/api/dashboard',  dashboardRoutes);
+app.use('/api/inquiries',  inquiryRoutes);
+app.use('/api/contact',    contactRoutes);
+app.use('/api/help',       helpRoutes);
+app.use('/api/images',     imageRoutes);
 
-// Health check
-app.get('/api/health', (_req, res) => {
-  res.json({
-    success: true,
-    message: 'Sasta Room API is running',
+// Health check — also reports DB reachability and missing config so a bad
+// deploy is diagnosable from a single URL. Values are never included.
+app.get('/api/health', async (_req, res) => {
+  const db = await pingDatabase();
+  const missing = missingConfig();
+  const healthy = db.ok && missing.length === 0;
+  res.status(healthy ? 200 : 503).json({
+    success: healthy,
+    message: healthy ? 'Sasta Room API is running' : 'Sasta Room API is degraded',
     timestamp: new Date().toISOString(),
-    version: '1.0.0',
+    version: '1.1.0',
+    environment: env.nodeEnv,
+    serverless: env.isServerless,
+    db,
+    missingConfig: missing,
+    emailEnabled: !!env.smtp.host,
   });
 });
 
@@ -94,20 +119,21 @@ app.use((_req, res) => {
 app.use(errorMiddleware);
 
 // ---------------------------------------------------------------------------
-// Connect & Start (Only if not on Vercel Serverless)
+// Connect & Start (only when running as a normal Node process; on Vercel the
+// exported app is wrapped by api/index.js instead)
 // ---------------------------------------------------------------------------
-if (process.env.VERCEL !== '1') {
+if (!env.isServerless) {
   (async () => {
     try {
       await testConnection();
     } catch (error) {
       console.error('\n❌ DATABASE CONNECTION FAILED!');
-      console.error('Make sure you have created your .env file and added your TiDB Cloud credentials.');
+      console.error('Check DB_HOST / DB_USER / DB_PASSWORD / DB_SSL in your environment.');
       console.error('The server will still run, but API calls will fail until the database is connected.\n');
     }
-    app.listen(PORT as number, '0.0.0.0', () => {
-      console.log(`🚀 Sasta Room API running on http://localhost:${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+    app.listen(env.port, '0.0.0.0', () => {
+      console.log(`🚀 Sasta Room API running on http://localhost:${env.port}`);
+      console.log(`📊 Environment: ${env.nodeEnv}`);
     });
   })();
 }

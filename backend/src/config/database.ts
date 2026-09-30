@@ -1,31 +1,26 @@
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { env } from './env';
 
 // ---------------------------------------------------------------------------
 // Connection pool — reused across the entire application.
-// mysql2/promise gives us async/await support out of the box.
+// On serverless (Vercel) each function instance gets its own small pool, so
+// keep the limit low to stay inside TiDB Cloud's connection quota.
 // ---------------------------------------------------------------------------
 export const pool = mysql.createPool({
-  host:               process.env.DB_HOST     || 'localhost',
-  port:               Number(process.env.DB_PORT) || 3306,
-  database:           process.env.DB_NAME     || 'sasta_room',
-  user:               process.env.DB_USER     || 'root',
-  password:           process.env.DB_PASSWORD || '',
+  host: env.db.host,
+  port: env.db.port,
+  database: env.db.name,
+  user: env.db.user,
+  password: env.db.password,
   waitForConnections: true,
-  connectionLimit:    10,
-  queueLimit:         0,
-  timezone:           '+05:30',  // IST
-  charset:            'utf8mb4',
-  // Keep connections alive to reduce TiDB Cloud idle drops
-  enableKeepAlive:    true,
+  connectionLimit: env.isServerless ? 3 : 10,
+  queueLimit: 0,
+  timezone: '+05:30', // IST
+  charset: 'utf8mb4',
+  enableKeepAlive: true,
   keepAliveInitialDelay: 0,
-  // Required for Cloud databases like TiDB Serverless
-  ssl: {
-    minVersion: 'TLSv1.2',
-    rejectUnauthorized: true
-  }
+  connectTimeout: 15000,
+  ...(env.db.ssl ? { ssl: { minVersion: 'TLSv1.2', rejectUnauthorized: true } } : {}),
 });
 
 // ---------------------------------------------------------------------------
@@ -55,14 +50,8 @@ function isStaleConnection(err: any): boolean {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Helper: Parameterized SELECT query → typed rows.
-// Retries once on stale / dropped-connection errors from TiDB Cloud.
-// ---------------------------------------------------------------------------
-export async function query<T = mysql.RowDataPacket>(
-  sql: string,
-  params?: any[]
-): Promise<T[]> {
+/** Parameterized SELECT → typed rows. Retries once on a dropped connection. */
+export async function query<T = mysql.RowDataPacket>(sql: string, params?: any[]): Promise<T[]> {
   try {
     const [rows] = await pool.execute(sql, params);
     return rows as T[];
@@ -76,14 +65,8 @@ export async function query<T = mysql.RowDataPacket>(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helper: Write query (INSERT / UPDATE / DELETE) → ResultSetHeader.
-// Retries once on stale / dropped-connection errors from TiDB Cloud.
-// ---------------------------------------------------------------------------
-export async function execute(
-  sql: string,
-  params?: any[]
-): Promise<mysql.ResultSetHeader> {
+/** INSERT / UPDATE / DELETE → ResultSetHeader. Retries once on a dropped connection. */
+export async function execute(sql: string, params?: any[]): Promise<mysql.ResultSetHeader> {
   try {
     const [result] = await pool.execute(sql, params);
     return result as mysql.ResultSetHeader;
@@ -97,11 +80,23 @@ export async function execute(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Test the connection on startup.
-// ---------------------------------------------------------------------------
+/** Throws if the database cannot be reached. Used at startup. */
 export async function testConnection(): Promise<void> {
   const conn = await pool.getConnection();
   conn.release();
   console.log('✅ MySQL connected successfully');
+}
+
+/**
+ * Non-throwing connectivity probe for /api/health.
+ * Returns latency in ms on success, or the error code on failure.
+ */
+export async function pingDatabase(): Promise<{ ok: boolean; latencyMs?: number; error?: string }> {
+  const started = Date.now();
+  try {
+    await pool.query('SELECT 1');
+    return { ok: true, latencyMs: Date.now() - started };
+  } catch (err: any) {
+    return { ok: false, error: err?.code || err?.message || 'unknown' };
+  }
 }

@@ -40,13 +40,23 @@ router.post(
   }
 );
 
-// PUT /api/bookings/:id
-router.put('/:id', authMiddleware, validateRequest, async (req: Request, res: Response, next: NextFunction) => {
+// PUT /api/bookings/:id — owner/admin change status; customer may edit notes
+router.put(
+  '/:id',
+  authMiddleware,
+  [
+    body('status').optional().isIn(['confirmed', 'cancelled', 'active', 'completed']).withMessage('Invalid status'),
+    body('cancellation_reason').optional().trim().isLength({ max: 255 }),
+    body('notes').optional().trim().isLength({ max: 2000 }),
+  ],
+  validateRequest,
+  async (req: Request, res: Response, next: NextFunction) => {
   try {
     const booking = await bookingService.updateBooking(Number(req.params.id), req.user!.id, req.user!.role, req.body);
     res.json({ success: true, message: 'Booking updated', data: { booking } });
   } catch (err) { next(err); }
-});
+  }
+);
 
 // DELETE /api/bookings/:id (cancel)
 router.delete('/:id', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {

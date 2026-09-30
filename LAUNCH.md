@@ -2,8 +2,9 @@
 
 This is the shortest path from this repository to a live site with a working
 owner → admin → customer loop. Everything below has been verified end-to-end
-against a real MySQL database by the automated smoke test
-(`backend/scripts/smoke.mjs`, 42 checks).
+against a real MySQL database by the API smoke test
+(`backend/scripts/smoke.mjs`, 44 checks) and by a Playwright test that drives
+the real Angular build through the same loop in Chromium (`e2e/ui-flow.mjs`).
 
 ---
 
@@ -76,7 +77,7 @@ Three workflows live in `.github/workflows/`:
 |----------|------|--------------|
 | **CI** | every push / PR | builds both apps, boots a MySQL, runs migration twice, runs the API smoke test and the Playwright browser flow |
 | **Database migrate (production)** | manual | runs the migration against the real database; can also seed 6 demo listings or clean up smoke-test data |
-| **Smoke test (live site)** | manual + after each successful Vercel production deploy | runs the 42-check loop against the live URL |
+| **Smoke test (live site)** | manual + after each successful Vercel production deploy | runs the 44-check API loop against the live URL |
 
 Set these in GitHub → *Settings* → *Secrets and variables* → *Actions*:
 

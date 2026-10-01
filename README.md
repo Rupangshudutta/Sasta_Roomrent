@@ -4,17 +4,17 @@ Broker-free PGs, shared rooms, single rooms and flats for long-term stays in Ind
 
 ## Stack
 
-| Layer | Tech |
-|---|---|
+| Layer              | Tech                                        |
+| ------------------ | ------------------------------------------- |
 | Frontend + Backend | Next.js 16, React, TypeScript, Tailwind CSS |
-| API | Next.js Route Handlers + Server Actions |
-| Database | Supabase PostgreSQL |
-| Auth | Supabase Auth |
-| Storage | Supabase Storage |
-| Payments | Razorpay |
-| Deployment | Netlify |
-| DNS / Security | Cloudflare |
-| Repository / CI | GitHub + GitHub Actions |
+| API                | Next.js Route Handlers + Server Actions     |
+| Database           | Supabase PostgreSQL                         |
+| Auth               | Supabase Auth                               |
+| Storage            | Supabase Storage                            |
+| Payments           | Razorpay                                    |
+| Deployment         | Netlify                                     |
+| DNS / Security     | Cloudflare                                  |
+| Repository / CI    | GitHub + GitHub Actions                     |
 
 ## Repository Layout
 

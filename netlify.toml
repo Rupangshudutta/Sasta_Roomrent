@@ -1,0 +1,19 @@
+# Netlify build configuration.
+# The Next.js runtime (@netlify/plugin-nextjs) is auto-installed by Netlify; do not pin it.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Dev dependencies (TypeScript, Tailwind) are needed to build.
+  NPM_FLAGS = "--include=dev"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"

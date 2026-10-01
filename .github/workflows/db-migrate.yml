@@ -1,0 +1,50 @@
+name: Database migrate
+
+# Applies supabase/migrations to the linked Supabase project.
+# Runs automatically when a migration lands on the integration or production
+# branch, and can be run by hand. Requires repository secrets:
+#   SUPABASE_ACCESS_TOKEN  (supabase.com -> Account -> Access Tokens)
+#   SUPABASE_DB_PASSWORD   (project database password)
+# and the repository variable SUPABASE_PROJECT_REF.
+
+on:
+  push:
+    branches: [Rupangshu-Dev, main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/seed.sql"
+  workflow_dispatch:
+    inputs:
+      include_seed:
+        description: "Also run supabase/seed.sql (reference data only; idempotent)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: db-migrate
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    environment: production-db
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF || 'zwnfcvpqxdnvdqrdihed' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Verify secrets are present
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN" || { echo "::error::SUPABASE_ACCESS_TOKEN secret missing"; exit 1; }
+          test -n "$SUPABASE_DB_PASSWORD" || { echo "::error::SUPABASE_DB_PASSWORD secret missing"; exit 1; }
+      - run: supabase link --project-ref "$PROJECT_REF"
+      - name: Show pending migrations
+        run: supabase migration list
+      - run: supabase db push
+      - name: Seed reference data
+        if: ${{ inputs.include_seed }}
+        run: supabase db push --include-seed

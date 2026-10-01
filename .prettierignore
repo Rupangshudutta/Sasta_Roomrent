@@ -1,0 +1,7 @@
+.next
+node_modules
+docs/prototype
+playwright-report
+test-results
+types/database.types.ts
+package-lock.json

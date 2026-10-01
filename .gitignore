@@ -1,5 +1,29 @@
-node_modules/
-.env
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# tests
+/coverage
+/playwright-report
+/test-results
+/playwright/.cache
+
+# env files: only the example is committed
+.env*
 !.env.example
+
+# supabase local state
+/supabase/.temp
+/supabase/.branches
+
+# misc
+.DS_Store
+*.pem
 *.log
-.sf/
+.netlify

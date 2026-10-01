@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens ported from the hand-written prototype (docs/prototype/*.html).
+ * Tailwind v4 reads this @theme block and generates utilities such as
+ * bg-primary, text-ink, rounded-card, so every component uses the same
+ * vocabulary instead of raw hex values.
+ */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-primary: #ee2e24;
+  --color-primary-dark: #d42a20;
+  --color-secondary: #1a73e8;
+  --color-background: #ffffff;
+  --color-ink: #202124;
+  --color-muted: #5f6368;
+  --color-surface: #f8f9fa;
+  --color-border: #e8eaed;
+  --color-success: #34a853;
+  --color-warning: #ffc107;
+  --color-danger: #dc3545;
+  --color-tint: #e8f0fe;
+
+  --radius-card: 15px;
+  --radius-card-sm: 12px;
+  --radius-pill: 25px;
+}
+
+@layer base {
+  body {
+    background: var(--color-background);
+    color: var(--color-ink);
+  }
+}

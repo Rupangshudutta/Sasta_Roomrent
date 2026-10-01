@@ -428,6 +428,19 @@ isOneToOne: false
                         Relationships: [
                     
                   ]
+                },"public_reviews": {
+                  Row: {
+                    "comment": string | null,"created_at": string | null,"id": string | null,"property_id": string | null,"rating": number | null,"reviewer_first_name": string | null,"reviewer_last_initial": string | null,"title": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reviews_property_id_fkey"
+      columns: ["property_id"]
+isOneToOne: false
+      referencedRelation: "properties"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Functions: {
@@ -546,6 +559,11 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"search_properties":
+{ Args: { "p_amenities"?: (string)[],"p_city"?: string,"p_furnishing"?: (Database["public"]['Enums']["furnishing"])[],"p_gender"?: Database["public"]['Enums']["gender_preference"],"p_limit"?: number,"p_max_rent"?: number,"p_min_rating"?: number,"p_min_rent"?: number,"p_offset"?: number,"p_q"?: string,"p_sort"?: string,"p_types"?: (Database["public"]['Enums']["property_type"])[] }; Returns: {
+              "property_id": string,"total_count": number
+            }[]
+                           },
 "set_listing_featured":
 { Args: { "p_featured": boolean,"p_property_id": string }; Returns: undefined
                            },

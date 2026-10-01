@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { publicEnv } from "@/lib/config/public-env";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
   },
   description:
     "Discover PGs, shared rooms, single rooms and flats for long-term stays at unbeatable prices. Zero brokerage, verified listings.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(publicEnv.NEXT_PUBLIC_SITE_URL),
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

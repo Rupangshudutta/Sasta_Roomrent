@@ -12,7 +12,7 @@ concurrency:
 env:
   # Build-time public config. Real values come from repository variables when set;
   # the fallbacks keep CI green on forks and before secrets exist.
-  NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000' }}
+  NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://sastaroomrent.netlify.app' }}
   NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://zwnfcvpqxdnvdqrdihed.supabase.co' }}
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_ci_placeholder' }}
 
@@ -63,7 +63,8 @@ jobs:
           git diff --exit-code -- types/database.types.ts || {
             echo "::error::types/database.types.ts is stale. Run 'npm run db:test && npm run db:types' and commit."; exit 1; }
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasta_room_test
+          # The Supabase CLI defaults to TLS; the CI service container is plaintext.
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasta_room_test?sslmode=disable
 
   build-and-e2e:
     name: Build and end-to-end tests
@@ -77,12 +78,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Fail if the client bundle references localhost or a secret key
-        run: |
-          set -euo pipefail
-          if grep -rIl --include='*.js' -e 'localhost:3000' -e 'sb_secret_' .next/static; then
-            echo "::error::Forbidden string found in client bundle"; exit 1
-          fi
+      - name: Fail if the client bundle references localhost or contains a secret key value
+        # supabase-js legitimately mentions the "sb_secret_" prefix in a warning string, so the
+        # scan looks for an actual key value (prefix + 20 or more key characters).
+        run: bash scripts/ci/scan-bundle.sh
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
         env:

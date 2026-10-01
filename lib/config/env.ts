@@ -16,7 +16,9 @@ const booleanFromString = z
   .transform((value) => value === "true");
 
 const publicSchema = z.object({
-  NEXT_PUBLIC_SITE_URL: z.url().default("http://localhost:3000"),
+  // No default on purpose: a literal localhost URL would be inlined into the client
+  // bundle and the CI bundle scan treats that as a misconfiguration.
+  NEXT_PUBLIC_SITE_URL: z.url(),
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
   NEXT_PUBLIC_RAZORPAY_KEY_ID: z.string().optional(),

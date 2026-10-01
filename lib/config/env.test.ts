@@ -3,23 +3,27 @@ import { describe, expect, it } from "vitest";
 import { EnvValidationError, missingForCapability, parsePublicEnv, parseServerEnv } from "./env";
 
 const validPublic = {
+  NEXT_PUBLIC_SITE_URL: "https://sastaroomrent.netlify.app",
   NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test",
 };
 
 describe("parsePublicEnv", () => {
-  it("accepts a minimal valid configuration and applies defaults", () => {
+  it("accepts a minimal valid configuration", () => {
     const env = parsePublicEnv(validPublic);
-    expect(env.NEXT_PUBLIC_SITE_URL).toBe("http://localhost:3000");
+    expect(env.NEXT_PUBLIC_SITE_URL).toBe("https://sastaroomrent.netlify.app");
     expect(env.NEXT_PUBLIC_SUPABASE_URL).toBe(validPublic.NEXT_PUBLIC_SUPABASE_URL);
   });
 
   it("rejects a missing Supabase URL with a readable message", () => {
-    expect(() => parsePublicEnv({ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "x" })).toThrow(
-      EnvValidationError,
-    );
-    expect(() => parsePublicEnv({ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "x" })).toThrow(
-      /NEXT_PUBLIC_SUPABASE_URL/,
+    const partial = { ...validPublic, NEXT_PUBLIC_SUPABASE_URL: undefined };
+    expect(() => parsePublicEnv(partial)).toThrow(EnvValidationError);
+    expect(() => parsePublicEnv(partial)).toThrow(/NEXT_PUBLIC_SUPABASE_URL/);
+  });
+
+  it("requires the site URL explicitly (no localhost default leaks into bundles)", () => {
+    expect(() => parsePublicEnv({ ...validPublic, NEXT_PUBLIC_SITE_URL: undefined })).toThrow(
+      /NEXT_PUBLIC_SITE_URL/,
     );
   });
 

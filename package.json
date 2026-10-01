@@ -17,7 +17,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test",
-    "db:types": "supabase gen types typescript --db-url \"${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/sasta_room_test}\" --schema public > types/database.types.ts",
+    "db:types": "supabase gen types typescript --db-url \"${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/sasta_room_test?sslmode=disable}\" --schema public > types/database.types.ts",
     "prepare": "echo skip",
     "db:test": "bash scripts/db/test.sh"
   },

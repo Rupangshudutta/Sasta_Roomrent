@@ -34,6 +34,9 @@ export default async function TenantBookingDetailPage({
           respond; most owners reply within a day.
         </Alert>
       ) : null}
+      {query.reviewed === "1" ? (
+        <Alert tone="success">Thanks! Your review is live on the listing.</Alert>
+      ) : null}
       <BookingDetail
         booking={booking}
         names={names.get(booking.id)}

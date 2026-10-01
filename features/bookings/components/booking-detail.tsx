@@ -209,7 +209,8 @@ export function BookingDetail({ booking, names, contacts, audience }: Props) {
           <CardHeader title="Actions" />
           <CardBody>
             <DecisionForm bookingId={booking.id} status={booking.status} audience={audience} />
-            {booking.status === "completed" && audience === "tenant" ? (
+            {(booking.status === "completed" || booking.status === "active") &&
+            audience === "tenant" ? (
               <Link
                 href={`/dashboard/bookings/${booking.id}/review`}
                 className="rounded-pill bg-primary hover:bg-primary-dark mt-3 inline-block px-5 py-2 text-sm font-semibold text-white"

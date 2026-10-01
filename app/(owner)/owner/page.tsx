@@ -1,23 +1,31 @@
-import { Building2, CalendarCheck, CheckCircle2, Clock, Plus } from "lucide-react";
+import { Building2, CalendarCheck, CheckCircle2, Clock, Plus, Star } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { ButtonLink } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { StatTile } from "@/components/ui/stat-tile";
+import { BookingList } from "@/features/bookings/components/booking-list";
+import { getMyBookings, getPartyNames } from "@/features/bookings/queries";
 import {
   getOwnerListingCounts,
   getOwnerPendingRequestCount,
 } from "@/features/listings/owner-queries";
+import { getOwnerRecentReviews } from "@/features/reviews/queries";
 import { getCurrentUser } from "@/lib/auth/session";
+import { formatDate } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Owner dashboard" };
 
 export default async function OwnerDashboardPage() {
-  const [user, counts, pendingRequests] = await Promise.all([
+  const [user, counts, pendingRequests, pending, reviews] = await Promise.all([
     getCurrentUser(),
     getOwnerListingCounts(),
     getOwnerPendingRequestCount(),
+    getMyBookings("pending"),
+    getOwnerRecentReviews(5),
   ]);
+  const names = await getPartyNames(pending.slice(0, 5).map((b) => b.id));
 
   return (
     <section className="space-y-6">
@@ -36,7 +44,7 @@ export default async function OwnerDashboardPage() {
         <StatTile label="Live" value={counts.approved} Icon={CheckCircle2} tone="success" />
         <StatTile label="In review" value={counts.pending} Icon={Clock} tone="warning" />
         <StatTile
-          label="Pending requests"
+          label="New requests"
           value={pendingRequests}
           Icon={CalendarCheck}
           tone="secondary"
@@ -61,6 +69,57 @@ export default async function OwnerDashboardPage() {
           </CardBody>
         </Card>
       ) : null}
+
+      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+        <Card>
+          <CardHeader
+            title="New booking requests"
+            description="Respond quickly: tenants usually message several owners."
+            action={
+              <ButtonLink href="/owner/bookings" size="sm" variant="outline">
+                All requests
+              </ButtonLink>
+            }
+          />
+          <CardBody>
+            {pending.length === 0 ? (
+              <p className="text-muted text-sm">No new requests right now.</p>
+            ) : (
+              <BookingList bookings={pending.slice(0, 5)} names={names} audience="owner" />
+            )}
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader title="Recent reviews" />
+          <CardBody className="p-0">
+            {reviews.length === 0 ? (
+              <p className="text-muted px-6 py-6 text-sm">
+                No reviews yet. Tenants can review after their stay starts.
+              </p>
+            ) : (
+              <ul className="divide-border/60 divide-y text-sm">
+                {reviews.map((r) => (
+                  <li key={r.id} className="px-6 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <Link
+                        href={`/owner/properties/${r.property_id}`}
+                        className="hover:text-primary line-clamp-1 font-medium"
+                      >
+                        {r.property?.title}
+                      </Link>
+                      <span className="rounded-pill bg-success inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-white">
+                        {r.rating} <Star className="h-3 w-3 fill-current" aria-hidden />
+                      </span>
+                    </div>
+                    {r.comment ? <p className="text-muted mt-1 line-clamp-2">{r.comment}</p> : null}
+                    <p className="text-muted mt-1 text-xs">{formatDate(r.created_at)}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardBody>
+        </Card>
+      </div>
     </section>
   );
 }

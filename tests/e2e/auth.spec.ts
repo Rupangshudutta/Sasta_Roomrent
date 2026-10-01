@@ -43,7 +43,15 @@ test.describe("auth pages", () => {
 });
 
 test.describe("route guards", () => {
-  for (const area of ["/dashboard", "/owner", "/admin", "/admin/listings"] as const) {
+  for (const area of [
+    "/dashboard",
+    "/owner",
+    "/admin",
+    "/admin/listings",
+    "/notifications",
+    "/dashboard/profile",
+    "/owner/profile",
+  ] as const) {
     test(`${area} redirects anonymous visitors to login with next=`, async ({ page }) => {
       await page.goto(area);
       await expect(page).toHaveURL(new RegExp(`/login\\?next=${encodeURIComponent(area)}`));

@@ -47,7 +47,8 @@ export async function updateSession(request: NextRequest) {
   const needsAuth =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/owner") ||
-    pathname.startsWith("/admin");
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/notifications");
 
   if (needsAuth && !isAuthenticated) {
     const url = request.nextUrl.clone();

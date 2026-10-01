@@ -9,15 +9,20 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  --color-primary: #ee2e24;
-  --color-primary-dark: #d42a20;
+  /* Brand red (#EE2E24) measures 4.16:1 on white, below WCAG AA. It is kept for
+     gradients and large decorative surfaces as --color-brand; text, links and solid
+     buttons use --color-primary (#D42A20, 5.06:1), with a darker hover. */
+  --color-brand: #ee2e24;
+  --color-primary: #d42a20;
+  --color-primary-dark: #b81f17;
   --color-secondary: #1a73e8;
   --color-background: #ffffff;
   --color-ink: #202124;
   --color-muted: #5f6368;
   --color-surface: #f8f9fa;
   --color-border: #e8eaed;
-  --color-success: #34a853;
+  --color-success: #188038; /* 5.3:1 with white text */
+  --color-success-bright: #34a853;
   --color-warning: #ffc107;
   --color-danger: #dc3545;
   --color-tint: #e8f0fe;

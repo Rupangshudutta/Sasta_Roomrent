@@ -16,7 +16,7 @@ export function AuthShell({ heading, bullets, children }: AuthShellProps) {
   return (
     <main className="from-surface to-tint flex flex-1 items-center justify-center bg-gradient-to-br px-4 py-10">
       <div className="rounded-card grid w-full max-w-5xl overflow-hidden bg-white shadow-xl md:grid-cols-[2fr_3fr]">
-        <aside className="from-primary to-primary-dark hidden flex-col justify-between bg-gradient-to-br p-10 text-white md:flex">
+        <aside className="from-brand to-primary hidden flex-col justify-between bg-gradient-to-br p-10 text-white md:flex">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold">
             <Home className="h-6 w-6" aria-hidden />
             Sasta Room

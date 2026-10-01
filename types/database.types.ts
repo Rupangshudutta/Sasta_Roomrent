@@ -88,13 +88,13 @@ isOneToOne: false
                   ]
                 },"cities": {
                   Row: {
-                    "created_at": string,"id": number,"is_active": boolean,"name": string,"slug": string,"sort_order": number,"state": string
+                    "created_at": string,"id": number,"image_url": string | null,"is_active": boolean,"name": string,"slug": string,"sort_order": number,"state": string,"tagline": string | null
                   }
                   Insert: {
-                    "created_at"?: string,"id"?: number,"is_active"?: boolean,"name": string,"slug": string,"sort_order"?: number,"state": string
+                    "created_at"?: string,"id"?: number,"image_url"?: string | null,"is_active"?: boolean,"name": string,"slug": string,"sort_order"?: number,"state": string,"tagline"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"id"?: number,"is_active"?: boolean,"name"?: string,"slug"?: string,"sort_order"?: number,"state"?: string
+                    "created_at"?: string,"id"?: number,"image_url"?: string | null,"is_active"?: boolean,"name"?: string,"slug"?: string,"sort_order"?: number,"state"?: string,"tagline"?: string | null
                   }
                   Relationships: [
                     
@@ -172,6 +172,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "cities"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "localities_city_id_fkey"
+      columns: ["city_id"]
+isOneToOne: false
+      referencedRelation: "city_listing_stats"
+      referencedColumns: ["city_id"]
     }
                   ]
                 },"notifications": {
@@ -280,6 +286,12 @@ isOneToOne: false
       referencedRelation: "cities"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "properties_city_id_fkey"
+      columns: ["city_id"]
+isOneToOne: false
+      referencedRelation: "city_listing_stats"
+      referencedColumns: ["city_id"]
+    },{
       foreignKeyName: "properties_owner_id_fkey"
       columns: ["owner_id"]
 isOneToOne: false
@@ -377,7 +389,33 @@ isOneToOne: false
                 }
           }
           Views: {
-            "owner_public_profiles": {
+            "city_listing_stats": {
+                  Row: {
+                    "avg_rating": number | null,"city_id": number | null,"image_url": string | null,"listing_count": number | null,"min_rent": number | null,"name": string | null,"slug": string | null,"sort_order": number | null,"state": string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"locality_listing_stats": {
+                  Row: {
+                    "city_id": number | null,"is_popular": boolean | null,"listing_count": number | null,"locality_id": number | null,"name": string | null,"slug": string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "localities_city_id_fkey"
+      columns: ["city_id"]
+isOneToOne: false
+      referencedRelation: "cities"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "localities_city_id_fkey"
+      columns: ["city_id"]
+isOneToOne: false
+      referencedRelation: "city_listing_stats"
+      referencedColumns: ["city_id"]
+    }
+                  ]
+                },"owner_public_profiles": {
                   Row: {
                     "avatar_url": string | null,"first_name": string | null,"id": string | null,"last_name": string | null,"member_since": string | null
                   }

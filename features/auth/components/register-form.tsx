@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { InputField, SelectField } from "@/components/ui/field";
 
 import { registerAction, type RegisterResult } from "../actions";
@@ -27,9 +27,9 @@ export function RegisterForm({ initialRole }: { initialRole: SignupRole }) {
           We sent a confirmation link to <strong>{state.data.email}</strong>. Click it to activate
           your account, then sign in.
         </Alert>
-        <Button variant="outline" fullWidth>
-          <Link href="/login">Go to sign in</Link>
-        </Button>
+        <ButtonLink href="/login" variant="outline" fullWidth>
+          Go to sign in
+        </ButtonLink>
       </div>
     );
   }

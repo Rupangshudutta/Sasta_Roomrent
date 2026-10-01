@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
-import type { ButtonHTMLAttributes } from "react";
+import Link from "next/link";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils/cn";
 
@@ -53,6 +54,34 @@ export function Button({
       {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : null}
       {children}
     </button>
+  );
+}
+
+/**
+ * A link that looks like a button. Use this instead of nesting <Link> inside
+ * <Button>: nested interactive elements are invalid HTML and an accessibility
+ * violation (axe "nested-interactive").
+ */
+export type ButtonLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> &
+  VariantProps<typeof buttonVariants> & { href: string };
+
+export function ButtonLink({
+  className,
+  variant,
+  size,
+  fullWidth,
+  href,
+  children,
+  ...props
+}: ButtonLinkProps) {
+  return (
+    <Link
+      href={href}
+      className={cn(buttonVariants({ variant, size, fullWidth }), className)}
+      {...props}
+    >
+      {children}
+    </Link>
   );
 }
 

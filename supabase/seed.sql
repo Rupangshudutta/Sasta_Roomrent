@@ -1,15 +1,16 @@
 -- Reference data. Idempotent: safe to re-run on any environment.
 -- Values come from the prototype (docs/prototype/locations.html, register.html, owner dashboard).
 
-insert into public.cities (slug, name, state, sort_order) values
-  ('bangalore', 'Bangalore', 'Karnataka', 10),
-  ('mumbai', 'Mumbai', 'Maharashtra', 20),
-  ('delhi', 'Delhi NCR', 'Delhi', 30),
-  ('pune', 'Pune', 'Maharashtra', 40),
-  ('hyderabad', 'Hyderabad', 'Telangana', 50),
-  ('chennai', 'Chennai', 'Tamil Nadu', 60),
-  ('kolkata', 'Kolkata', 'West Bengal', 70)
-on conflict (slug) do update set name = excluded.name, state = excluded.state, sort_order = excluded.sort_order;
+insert into public.cities (slug, name, state, sort_order, image_url) values
+  ('bangalore', 'Bangalore', 'Karnataka', 10, 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=70'),
+  ('mumbai', 'Mumbai', 'Maharashtra', 20, 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?auto=format&fit=crop&w=1200&q=70'),
+  ('delhi', 'Delhi NCR', 'National Capital Region', 30, 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=70'),
+  ('pune', 'Pune', 'Maharashtra', 40, 'https://images.unsplash.com/photo-1572782252655-9c8771392601?auto=format&fit=crop&w=1200&q=70'),
+  ('hyderabad', 'Hyderabad', 'Telangana', 50, 'https://images.unsplash.com/photo-1551161242-b5af797b7233?auto=format&fit=crop&w=1200&q=70'),
+  ('chennai', 'Chennai', 'Tamil Nadu', 60, 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=70'),
+  ('kolkata', 'Kolkata', 'West Bengal', 70, 'https://images.unsplash.com/photo-1558431382-27e303142255?auto=format&fit=crop&w=1200&q=70')
+on conflict (slug) do update
+  set name = excluded.name, state = excluded.state, sort_order = excluded.sort_order, image_url = excluded.image_url;
 
 insert into public.localities (city_id, slug, name, is_popular)
 select c.id, l.slug, l.name, true

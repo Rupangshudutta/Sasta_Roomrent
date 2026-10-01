@@ -28,7 +28,7 @@ const roleLabel: Record<CurrentUser["role"], string> = {
 export function DashboardShell({ user, areaLabel, nav, children }: DashboardShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="from-primary to-primary-dark bg-gradient-to-r text-white">
+      <header className="from-brand to-primary bg-gradient-to-r text-white">
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold">
             <Home className="h-5 w-5" aria-hidden />

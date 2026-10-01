@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      // City and hero imagery used by the marketing pages (from the prototype).
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };

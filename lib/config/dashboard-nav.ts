@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import {
   Bell,
   Building2,
@@ -14,7 +15,7 @@ import {
 
 import type { UserRole } from "@/lib/auth/session";
 
-export type NavItem = { href: string; label: string; Icon: LucideIcon };
+export type NavItem = { href: Route; label: string; Icon: LucideIcon };
 
 export const dashboardNav: Record<UserRole, { areaLabel: string; items: readonly NavItem[] }> = {
   tenant: {

@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { BadgeCheck, CalendarDays, Eye, MapPin, ShieldCheck, Star, UserRound } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -60,9 +61,11 @@ export default async function ListingDetailPage({ params }: PageProps<"/properti
   const amenities = listing.amenities
     .map((a) => a.amenity)
     .filter((a): a is NonNullable<typeof a> => a !== null);
-  const requestHref = user
-    ? `/properties/${listing.id}/request`
-    : `/login?next=${encodeURIComponent(`/properties/${listing.id}/request`)}`;
+  const requestPath = `/properties/${listing.id}/request` as const;
+  // Each branch is a known route; typed separately so typedRoutes validates both
+  // instead of a widened string union.
+  const loginHref: Route<"/login"> = `/login?next=${encodeURIComponent(requestPath)}`;
+  const requestHref = user ? requestPath : loginHref;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8">

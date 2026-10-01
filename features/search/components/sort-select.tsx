@@ -1,5 +1,7 @@
 "use client";
 
+import type { Route } from "next";
+
 import { useRouter } from "next/navigation";
 
 import { sortLabels, sortValues, type SortValue } from "../schema";
@@ -17,7 +19,7 @@ export function SortSelect({ current, baseParams }: { current: SortValue; basePa
           params.delete("page");
           if (e.target.value === "relevance") params.delete("sort");
           else params.set("sort", e.target.value);
-          router.push(`/properties${params.toString() ? `?${params}` : ""}`);
+          router.push(`/properties${params.toString() ? `?${params}` : ""}` as Route);
         }}
         className="rounded-card-sm border-border focus:border-primary border bg-white px-3 py-1.5 text-sm focus:outline-none"
       >

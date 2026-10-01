@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Eye, Handshake, Home, Map, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -209,7 +210,7 @@ export default async function HomePage() {
   );
 }
 
-function Pill({ href, children }: { href: string; children: React.ReactNode }) {
+function Pill({ href, children }: { href: Route; children: React.ReactNode }) {
   return (
     <Link
       href={href}

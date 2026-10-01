@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { LayoutGrid, List, SearchX } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -40,7 +41,7 @@ export default async function PropertiesPage({ searchParams }: PageProps<"/prope
   const baseParams = filterToSearchParams(filter).toString();
   const currentPath = `/properties${baseParams ? `?${baseParams}` : ""}`;
   const viewHref = (view: "grid" | "list") =>
-    `/properties?${filterToSearchParams({ ...filter, view, page: 1 }).toString()}`;
+    `/properties?${filterToSearchParams({ ...filter, view, page: 1 }).toString()}` as Route;
   const activeCount = countActiveFilters(filter);
   const cityName = cities.find((c) => c.slug === filter.city)?.name;
 

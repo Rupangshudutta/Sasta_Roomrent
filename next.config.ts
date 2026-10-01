@@ -3,9 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  // typedRoutes is re-enabled in launch hardening once every route exists; until then it
-  // rejects links to pages that are still being built and dynamic redirect() strings.
-  typedRoutes: false,
+  // Typed routes: <Link href> and redirect() targets are checked against real routes.
+  typedRoutes: true,
   images: {
     remotePatterns: [
       {

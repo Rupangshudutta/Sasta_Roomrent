@@ -104,4 +104,4 @@ Development and MVP infrastructure should remain on free tiers until usage requi
 
 Build the MVP first: **search → listing → booking request → owner approval → direct connection**. Add advanced features such as maps, chat, subscriptions, recommendations and automated verification after the core flow is stable.
 
-**Launch guide:** `LAUNCH.md`
+**Launch guide:** [`LAUNCH.md`](./LAUNCH.md)

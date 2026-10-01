@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Home } from "lucide-react";
 import Link from "next/link";
 
@@ -86,7 +87,7 @@ function FooterColumn({
   className,
 }: {
   title: string;
-  items: ReadonlyArray<{ href: string; label: string }>;
+  items: ReadonlyArray<{ href: Route; label: string }>;
   className?: string;
 }) {
   return (

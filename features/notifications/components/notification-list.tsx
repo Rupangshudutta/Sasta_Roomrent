@@ -1,5 +1,7 @@
 "use client";
 
+import type { Route } from "next";
+
 import { Bell, CheckCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -66,7 +68,7 @@ export function NotificationList({ notifications }: { notifications: Notificatio
           return (
             <li key={n.id} className={cn("px-5 py-4", !n.read_at && "bg-primary/[0.03]")}>
               {n.href ? (
-                <Link href={n.href} onClick={onOpen} className="hover:text-primary block">
+                <Link href={n.href as Route} onClick={onOpen} className="hover:text-primary block">
                   {content}
                 </Link>
               ) : (

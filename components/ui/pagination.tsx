@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 /** Minimal previous/next pagination driven by a `page` search param. */
@@ -10,7 +11,7 @@ export function Pagination({
   page: number;
   pageSize: number;
   total: number;
-  makeHref: (page: number) => string;
+  makeHref: (page: number) => Route;
 }) {
   const pages = Math.max(1, Math.ceil(total / pageSize));
   if (pages <= 1) return null;

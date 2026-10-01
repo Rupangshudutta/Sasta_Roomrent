@@ -1,0 +1,38 @@
+name: Production smoke
+
+# Netlify deploys are not GitHub events, so this runs on a schedule and on demand.
+# It checks the health endpoint, an anonymous search render and the sitemap.
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Site to probe
+        default: https://sastaroomrent.netlify.app
+        required: true
+  schedule:
+    - cron: "17 */6 * * *"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE_URL: ${{ inputs.base_url || vars.SITE_URL || 'https://sastaroomrent.netlify.app' }}
+    steps:
+      - name: Health
+        run: |
+          body=$(curl -fsS --max-time 20 "$BASE_URL/api/health") || { echo "health not 2xx"; exit 1; }
+          echo "$body" | jq -e '.status == "ok"' >/dev/null || { echo "$body"; exit 1; }
+      - name: Anonymous search renders
+        run: |
+          curl -fsS --max-time 20 "$BASE_URL/properties" | grep -qi "Sasta Room" || { echo "properties page missing brand"; exit 1; }
+      - name: Sitemap and robots
+        run: |
+          curl -fsS --max-time 20 "$BASE_URL/robots.txt" | grep -q "Sitemap:" || exit 1
+          curl -fsS --max-time 20 "$BASE_URL/sitemap.xml" | grep -q "<urlset" || exit 1
+      - name: Security headers present
+        run: |
+          h=$(curl -sSI --max-time 20 "$BASE_URL/")
+          for n in strict-transport-security content-security-policy x-content-type-options; do
+            echo "$h" | grep -qi "^$n:" || { echo "missing header $n"; exit 1; }
+          done

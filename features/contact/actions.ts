@@ -5,6 +5,7 @@ import { getPlatformSettings } from "@/features/catalog/queries";
 import { serverEnv } from "@/lib/config/server-env";
 import { escapeHtml, sendEmail } from "@/lib/email/send";
 import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitedMessage, rateLimitRules } from "@/lib/security/rate-limit";
 
 import { contactInterestOptions, contactMessageSchema } from "./schema";
 
@@ -27,6 +28,8 @@ export async function sendContactMessageAction(
     // Honeypot tripped: pretend success so bots learn nothing.
     return ok({ reference: 0 });
   }
+  if (!(await checkRateLimit(rateLimitRules.contact)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const supabase = await createClient();
   const { data, error } = await supabase

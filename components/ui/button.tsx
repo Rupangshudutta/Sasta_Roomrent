@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -62,10 +63,14 @@ export function Button({
  * <Button>: nested interactive elements are invalid HTML and an accessibility
  * violation (axe "nested-interactive").
  */
-export type ButtonLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> &
-  VariantProps<typeof buttonVariants> & { href: string };
+export type ButtonLinkProps<T extends string = string> = Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  "href"
+> &
+  VariantProps<typeof buttonVariants> & { href: Route<T> };
 
-export function ButtonLink({
+// Generic so `/properties/${id}` template literals are validated as dynamic routes.
+export function ButtonLink<T extends string>({
   className,
   variant,
   size,
@@ -73,7 +78,7 @@ export function ButtonLink({
   href,
   children,
   ...props
-}: ButtonLinkProps) {
+}: ButtonLinkProps<T>) {
   return (
     <Link
       href={href}

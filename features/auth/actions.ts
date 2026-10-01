@@ -1,11 +1,14 @@
 "use server";
 
+import type { Route } from "next";
+
 import { redirect } from "next/navigation";
 
 import { fail, formDataToObject, fromZodError, ok, type ActionResult } from "@/lib/actions/result";
 import { getCurrentUser, homePathForRole } from "@/lib/auth/session";
 import { publicEnv } from "@/lib/config/public-env";
 import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit, rateLimitedMessage, rateLimitRules } from "@/lib/security/rate-limit";
 
 import {
   forgotPasswordSchema,
@@ -32,6 +35,8 @@ export async function registerAction(
   const parsed = registerSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) return fromZodError(parsed.error);
   const input = parsed.data;
+  if (!(await checkRateLimit(rateLimitRules.register)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -94,6 +99,8 @@ export async function loginAction(
 ): Promise<LoginResult> {
   const parsed = loginSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) return fromZodError(parsed.error);
+  if (!(await checkRateLimit(rateLimitRules.login)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
@@ -125,7 +132,7 @@ export async function loginAction(
     return fail("forbidden", "This account has been suspended. Please contact support.");
   }
 
-  redirect(safeNextPath(parsed.data.next, homePathForRole(user.role)));
+  redirect(safeNextPath(parsed.data.next, homePathForRole(user.role)) as Route);
 }
 
 export async function signOutAction(): Promise<void> {
@@ -142,6 +149,8 @@ export async function forgotPasswordAction(
 ): Promise<ForgotPasswordResult> {
   const parsed = forgotPasswordSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) return fromZodError(parsed.error);
+  if (!(await checkRateLimit(rateLimitRules.forgotPassword)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {

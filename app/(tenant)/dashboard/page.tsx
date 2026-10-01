@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Bell, CalendarCheck, CheckCircle2, Heart, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -137,7 +138,7 @@ export default async function TenantDashboardPage() {
                 {activity.map((n) => (
                   <li key={n.id} className="px-6 py-3">
                     <Link
-                      href={n.href ?? "/notifications"}
+                      href={(n.href ?? "/notifications") as Route}
                       className="hover:text-primary font-medium"
                     >
                       {n.title}

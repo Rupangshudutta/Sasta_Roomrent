@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Search } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -37,7 +38,7 @@ export default async function AdminListingsPage({ searchParams }: PageProps<"/ad
     if (next.q) params.set("q", next.q);
     if (next.page > 1) params.set("page", String(next.page));
     const qs = params.toString();
-    return `/admin/listings${qs ? `?${qs}` : ""}`;
+    return `/admin/listings${qs ? `?${qs}` : ""}` as Route;
   };
 
   return (

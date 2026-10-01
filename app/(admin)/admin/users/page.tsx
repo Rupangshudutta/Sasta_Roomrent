@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import { Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -38,7 +39,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
     if (next.q) params.set("q", next.q);
     if (next.page > 1) params.set("page", String(next.page));
     const qs = params.toString();
-    return `/admin/users${qs ? `?${qs}` : ""}`;
+    return `/admin/users${qs ? `?${qs}` : ""}` as Route;
   };
 
   const pill = (active: boolean) =>

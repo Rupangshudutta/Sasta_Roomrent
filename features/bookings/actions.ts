@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { fail, formDataToObject, fromZodError, ok, type ActionResult } from "@/lib/actions/result";
 import { getCurrentUser } from "@/lib/auth/session";
+import { checkRateLimit, rateLimitedMessage, rateLimitRules } from "@/lib/security/rate-limit";
 import { publicEnv } from "@/lib/config/public-env";
 import { sendEmail } from "@/lib/email/send";
 import {
@@ -55,6 +56,9 @@ export async function requestBookingAction(
   const parsed = requestBookingSchema.safeParse(formDataToObject(formData));
   if (!parsed.success) return fromZodError(parsed.error);
   const input = parsed.data;
+  // Per account, not per IP: a signed-in tenant spamming owners is the abuse case.
+  if (!(await checkRateLimit(rateLimitRules.bookingRequest, user.id)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const supabase = await createClient();
   const { data, error } = await supabase

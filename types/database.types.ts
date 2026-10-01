@@ -411,6 +411,19 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"rate_limits": {
+                  Row: {
+                    "hits": number,"key": string,"updated_at": string,"window_start": string
+                  }
+                  Insert: {
+                    "hits"?: number,"key": string,"updated_at"?: string,"window_start"?: string
+                  }
+                  Update: {
+                    "hits"?: number,"key"?: string,"updated_at"?: string,"window_start"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"reviews": {
                   Row: {
                     "booking_id": string,"comment": string | null,"created_at": string,"hidden_reason": string | null,"id": string,"is_visible": boolean,"property_id": string,"rating": number,"tenant_id": string,"title": string | null,"updated_at": string
@@ -565,6 +578,9 @@ isOneToOne: false
         isOneToOne: true
         isSetofReturn: false
       } },
+"consume_rate_limit":
+{ Args: { "p_key": string,"p_limit": number,"p_window_seconds": number }; Returns: boolean
+                           },
 "current_user_role":
 { Args: Record<PropertyKey, never>; Returns: Database["public"]['Enums']["user_role"]
                            },
@@ -587,6 +603,9 @@ isOneToOne: false
                            },
 "notify_user":
 { Args: { "p_body"?: string,"p_href"?: string,"p_title": string,"p_type": Database["public"]['Enums']["notification_type"],"p_user_id": string }; Returns: undefined
+                           },
+"purge_rate_limits":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "reject_listing":
 { Args: { "p_property_id": string,"p_reason": string }; Returns: {

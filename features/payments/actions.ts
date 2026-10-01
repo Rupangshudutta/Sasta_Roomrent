@@ -6,6 +6,7 @@ import { getBookingById } from "@/features/bookings/queries";
 import { getPlatformSettings } from "@/features/catalog/queries";
 import { fail, ok, type ActionResult } from "@/lib/actions/result";
 import { getCurrentUser } from "@/lib/auth/session";
+import { checkRateLimit, rateLimitedMessage, rateLimitRules } from "@/lib/security/rate-limit";
 import { publicEnv } from "@/lib/config/public-env";
 import { serverEnv } from "@/lib/config/server-env";
 import { getRazorpay, paymentsAvailable, toPaise } from "@/lib/razorpay/client";
@@ -36,6 +37,9 @@ export async function createBookingTokenOrderAction(bookingId: string): Promise<
   if (!paymentsAvailable()) return fail("forbidden", "Online payments are not available yet.");
   const user = await getCurrentUser();
   if (!user) return fail("unauthenticated", "Please sign in again.");
+  // Each call creates a Razorpay order; cap it so a stuck client cannot mint hundreds.
+  if (!(await checkRateLimit(rateLimitRules.paymentOrder, user.id)))
+    return fail("rate_limited", rateLimitedMessage);
 
   const booking = await getBookingById(bookingId);
   if (!booking || booking.tenant_id !== user.id) return fail("not_found", "Booking not found.");

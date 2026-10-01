@@ -1,5 +1,7 @@
 "use client";
 
+import type { Route } from "next";
+
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,8 +10,8 @@ import { useId, useState } from "react";
 import { signOutAction } from "@/features/auth/actions";
 
 type MobileNavProps = {
-  items: ReadonlyArray<{ href: string; label: string }>;
-  user: { firstName: string; dashboardHref: string } | null;
+  items: ReadonlyArray<{ href: Route; label: string }>;
+  user: { firstName: string; dashboardHref: Route } | null;
 };
 
 /** Collapsible menu for small screens (the Bootstrap "navbar-toggler" in the prototype). */

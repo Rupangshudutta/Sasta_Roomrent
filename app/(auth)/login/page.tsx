@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -26,7 +27,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         : undefined;
 
   const user = await getCurrentUser();
-  if (user) redirect(next || homePathForRole(user.role));
+  // `next` is validated same-origin by safeNextPath; typedRoutes cannot check runtime strings.
+  if (user) redirect(next ? (next as Route) : homePathForRole(user.role));
 
   return (
     <AuthShell heading="Welcome Back!" bullets={bullets}>

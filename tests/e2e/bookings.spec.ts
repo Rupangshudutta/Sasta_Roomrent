@@ -16,3 +16,16 @@ test.describe("booking request guards", () => {
     });
   }
 });
+
+test.describe("payments webhook", () => {
+  test("rejects GET and unsigned POSTs", async ({ request }) => {
+    const get = await request.get("/api/payments/webhook");
+    expect(get.status()).toBe(405);
+    const post = await request.post("/api/payments/webhook", {
+      data: { event: "payment.captured" },
+      headers: { "x-razorpay-signature": "deadbeef" },
+    });
+    // 503 when the webhook secret is not configured (local/CI), 400 for a bad signature when it is.
+    expect([400, 503]).toContain(post.status());
+  });
+});

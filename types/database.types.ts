@@ -230,6 +230,68 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"payment_events": {
+                  Row: {
+                    "created_at": string,"event_id": string,"event_type": string,"id": number,"outcome": string | null,"payload": NonNullable<Json>,"razorpay_order_id": string | null,"razorpay_payment_id": string | null
+                  }
+                  Insert: {
+                    "created_at"?: string,"event_id": string,"event_type": string,"id"?: never,"outcome"?: string | null,"payload": NonNullable<Json>,"razorpay_order_id"?: string | null,"razorpay_payment_id"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"event_id"?: string,"event_type"?: string,"id"?: never,"outcome"?: string | null,"payload"?: NonNullable<Json>,"razorpay_order_id"?: string | null,"razorpay_payment_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount": number,"booking_id": string,"created_at": string,"currency": string,"failure_reason": string | null,"id": string,"paid_at": string | null,"payee_id": string,"payer_id": string,"purpose": Database["public"]['Enums']["payment_purpose"],"raw": Json | null,"razorpay_order_id": string,"razorpay_payment_id": string | null,"razorpay_signature": string | null,"refunded_at": string | null,"status": Database["public"]['Enums']["payment_status"],"updated_at": string
+                  }
+                  Insert: {
+                    "amount": number,"booking_id": string,"created_at"?: string,"currency"?: string,"failure_reason"?: string | null,"id"?: string,"paid_at"?: string | null,"payee_id": string,"payer_id": string,"purpose": Database["public"]['Enums']["payment_purpose"],"raw"?: Json | null,"razorpay_order_id": string,"razorpay_payment_id"?: string | null,"razorpay_signature"?: string | null,"refunded_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                  }
+                  Update: {
+                    "amount"?: number,"booking_id"?: string,"created_at"?: string,"currency"?: string,"failure_reason"?: string | null,"id"?: string,"paid_at"?: string | null,"payee_id"?: string,"payer_id"?: string,"purpose"?: Database["public"]['Enums']["payment_purpose"],"raw"?: Json | null,"razorpay_order_id"?: string,"razorpay_payment_id"?: string | null,"razorpay_signature"?: string | null,"refunded_at"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_booking_id_fkey"
+      columns: ["booking_id"]
+isOneToOne: false
+      referencedRelation: "booking_party_names"
+      referencedColumns: ["booking_id"]
+    },{
+      foreignKeyName: "payments_booking_id_fkey"
+      columns: ["booking_id"]
+isOneToOne: false
+      referencedRelation: "bookings"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_payee_id_fkey"
+      columns: ["payee_id"]
+isOneToOne: false
+      referencedRelation: "owner_public_profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_payee_id_fkey"
+      columns: ["payee_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_payer_id_fkey"
+      columns: ["payer_id"]
+isOneToOne: false
+      referencedRelation: "owner_public_profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_payer_id_fkey"
+      columns: ["payer_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"platform_settings": {
                   Row: {
                     "auto_approve_listings": boolean,"booking_token_amount": number,"commission_rate": number,"id": number,"max_photos_per_listing": number,"office_address": string,"platform_name": string,"support_email": string,"support_phone": string,"updated_at": string,"whatsapp_number": string,"working_hours": string
@@ -594,7 +656,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "booking_status": "pending"|"accepted"|"rejected"|"cancelled"|"active"|"completed","business_type": "individual"|"company"|"agency"|"broker","contact_interest": "pg"|"shared"|"single"|"flat"|"owner"|"other","furnishing": "furnished"|"semi_furnished"|"unfurnished","gender_preference": "any"|"male"|"female","listing_status": "draft"|"pending"|"approved"|"rejected"|"inactive","notification_type": "listing_approved"|"listing_rejected"|"booking_requested"|"booking_accepted"|"booking_rejected"|"booking_cancelled"|"booking_activated"|"booking_completed"|"review_received"|"system","property_type": "pg"|"shared_room"|"single_room"|"flat"|"hostel","user_role": "tenant"|"owner"|"admin","verification_status": "pending"|"verified"|"rejected"
+            "booking_status": "pending"|"accepted"|"rejected"|"cancelled"|"active"|"completed","business_type": "individual"|"company"|"agency"|"broker","contact_interest": "pg"|"shared"|"single"|"flat"|"owner"|"other","furnishing": "furnished"|"semi_furnished"|"unfurnished","gender_preference": "any"|"male"|"female","listing_status": "draft"|"pending"|"approved"|"rejected"|"inactive","notification_type": "listing_approved"|"listing_rejected"|"booking_requested"|"booking_accepted"|"booking_rejected"|"booking_cancelled"|"booking_activated"|"booking_completed"|"review_received"|"system","payment_purpose": "booking_token"|"security_deposit"|"rent","payment_status": "created"|"paid"|"failed"|"refunded","property_type": "pg"|"shared_room"|"single_room"|"flat"|"hostel","user_role": "tenant"|"owner"|"admin","verification_status": "pending"|"verified"|"rejected"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -710,7 +772,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "booking_status": ["pending", "accepted", "rejected", "cancelled", "active", "completed"],"business_type": ["individual", "company", "agency", "broker"],"contact_interest": ["pg", "shared", "single", "flat", "owner", "other"],"furnishing": ["furnished", "semi_furnished", "unfurnished"],"gender_preference": ["any", "male", "female"],"listing_status": ["draft", "pending", "approved", "rejected", "inactive"],"notification_type": ["listing_approved", "listing_rejected", "booking_requested", "booking_accepted", "booking_rejected", "booking_cancelled", "booking_activated", "booking_completed", "review_received", "system"],"property_type": ["pg", "shared_room", "single_room", "flat", "hostel"],"user_role": ["tenant", "owner", "admin"],"verification_status": ["pending", "verified", "rejected"]
+            "booking_status": ["pending", "accepted", "rejected", "cancelled", "active", "completed"],"business_type": ["individual", "company", "agency", "broker"],"contact_interest": ["pg", "shared", "single", "flat", "owner", "other"],"furnishing": ["furnished", "semi_furnished", "unfurnished"],"gender_preference": ["any", "male", "female"],"listing_status": ["draft", "pending", "approved", "rejected", "inactive"],"notification_type": ["listing_approved", "listing_rejected", "booking_requested", "booking_accepted", "booking_rejected", "booking_cancelled", "booking_activated", "booking_completed", "review_received", "system"],"payment_purpose": ["booking_token", "security_deposit", "rent"],"payment_status": ["created", "paid", "failed", "refunded"],"property_type": ["pg", "shared_room", "single_room", "flat", "hostel"],"user_role": ["tenant", "owner", "admin"],"verification_status": ["pending", "verified", "rejected"]
           }
         }
 } as const

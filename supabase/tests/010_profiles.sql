@@ -10,6 +10,9 @@ update public.profiles set role = 'admin' where id = :'admin_id';
 -- bootstrap
 select tests.assert((select role from public.profiles where id = :'tenant_id') = 'tenant', 'default role is tenant');
 select tests.assert((select phone from public.profiles where id = :'tenant_id') = '9876543210', 'phone copied from metadata');
+select tests.assert((select email from public.profiles where id = :'tenant_id') = 'tenant1@test.local', 'email copied from auth.users');
+update auth.users set email = 'tenant1-new@test.local' where id = :'tenant_id';
+select tests.assert((select email from public.profiles where id = :'tenant_id') = 'tenant1-new@test.local', 'email kept in sync');
 select tests.assert((select role from public.profiles where id = :'owner_id') = 'owner', 'owner role honoured');
 select tests.assert(exists (select 1 from public.owner_profiles where user_id = :'owner_id' and business_name = 'Ravi PG'), 'owner profile created');
 select tests.assert((select role from public.profiles where id = :'hacker_id') = 'tenant', 'admin role from sign-up metadata is downgraded to tenant');
@@ -18,6 +21,7 @@ select tests.assert((select role from public.profiles where id = :'hacker_id') =
 select tests.login(:'tenant_id');
 select tests.expect_error(format('update public.profiles set role = ''admin'' where id = %L', :'tenant_id'), '42501', 'self promotion');
 select tests.expect_error(format('update public.profiles set is_active = false where id = %L', :'tenant_id'), '42501', 'self deactivate');
+select tests.expect_error(format('update public.profiles set email = ''x@y.z'' where id = %L', :'tenant_id'), '42501', 'user edits email copy');
 update public.profiles set first_name = 'Asha K' where id = :'tenant_id';
 select tests.assert((select first_name from public.profiles where id = :'tenant_id') = 'Asha K', 'user can edit own name');
 

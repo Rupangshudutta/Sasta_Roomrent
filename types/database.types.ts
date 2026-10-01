@@ -245,13 +245,13 @@ isOneToOne: true
                   ]
                 },"profiles": {
                   Row: {
-                    "avatar_url": string | null,"created_at": string,"first_name": string,"id": string,"is_active": boolean,"last_name": string,"phone": string | null,"role": Database["public"]['Enums']["user_role"],"updated_at": string
+                    "avatar_url": string | null,"created_at": string,"email": string | null,"first_name": string,"id": string,"is_active": boolean,"last_name": string,"phone": string | null,"role": Database["public"]['Enums']["user_role"],"updated_at": string
                   }
                   Insert: {
-                    "avatar_url"?: string | null,"created_at"?: string,"first_name": string,"id": string,"is_active"?: boolean,"last_name"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"updated_at"?: string
+                    "avatar_url"?: string | null,"created_at"?: string,"email"?: string | null,"first_name": string,"id": string,"is_active"?: boolean,"last_name"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"updated_at"?: string
                   }
                   Update: {
-                    "avatar_url"?: string | null,"created_at"?: string,"first_name"?: string,"id"?: string,"is_active"?: boolean,"last_name"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"updated_at"?: string
+                    "avatar_url"?: string | null,"created_at"?: string,"email"?: string | null,"first_name"?: string,"id"?: string,"is_active"?: boolean,"last_name"?: string,"phone"?: string | null,"role"?: Database["public"]['Enums']["user_role"],"updated_at"?: string
                   }
                   Relationships: [
                     

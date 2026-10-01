@@ -32,10 +32,43 @@ jobs:
       - run: npm run format:check
       - run: npm run test
 
+  database:
+    name: Migrations, RLS and lifecycle tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations + seed and run SQL tests on plain Postgres
+        run: bash scripts/db/test.sh
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      - name: Generated types are up to date
+        run: |
+          npm run db:types
+          git diff --exit-code -- types/database.types.ts || {
+            echo "::error::types/database.types.ts is stale. Run 'npm run db:test && npm run db:types' and commit."; exit 1; }
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sasta_room_test
+
   build-and-e2e:
     name: Build and end-to-end tests
     runs-on: ubuntu-latest
-    needs: quality
+    needs: [quality, database]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

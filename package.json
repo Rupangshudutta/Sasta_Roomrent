@@ -12,21 +12,26 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test",
-    "db:types": "supabase gen types typescript --local --schema public > types/database.types.ts",
-    "prepare": "echo skip"
+    "db:types": "supabase gen types typescript --db-url \"${DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/sasta_room_test}\" --schema public > types/database.types.ts",
+    "prepare": "echo skip",
+    "db:test": "bash scripts/db/test.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.49.0",
     "next": "^16.3.8",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "server-only": "^0.0.1",
+    "tailwind-merge": "^3.7.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

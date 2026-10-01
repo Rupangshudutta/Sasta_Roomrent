@@ -43,7 +43,7 @@ types/          database.types.ts (generated)      docs/        prototype + ADRs
 ## Next.js 16 specifics
 
 - `proxy.ts` replaced `middleware.ts` (Node runtime). `cookies()`, `headers()`, `params`,
-  `searchParams` are async. Typed routes are on (`typedRoutes: true`).
+  `searchParams` are async. Typed routes are OFF until launch hardening (re-enable once all routes exist).
 - Read `node_modules/next/dist/docs/` before using an API you are not sure about.
 
 ## Git

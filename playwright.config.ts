@@ -31,7 +31,9 @@ export default defineConfig({
     ? undefined
     : {
         command: "npm run start",
-        url: `${baseURL}/api/health`,
+        // Readiness is the home page, not /api/health: health deliberately returns 503 when
+        // the database is unreachable, which Playwright would treat as "not ready".
+        url: `${baseURL}/`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
       },

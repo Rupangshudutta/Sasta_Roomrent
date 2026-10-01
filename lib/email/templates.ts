@@ -85,3 +85,89 @@ export function accountStatusEmail(input: {
     text: `${subject}\n${input.reason ?? ""}\n${input.contactUrl}\n`,
   };
 }
+
+export function bookingRequestedEmail(input: {
+  ownerName: string;
+  tenantName: string;
+  title: string;
+  moveIn: string;
+  months: number;
+  total: string;
+  url: string;
+}): Template {
+  const subject = `New booking request for ${input.title}`;
+  return {
+    subject,
+    html: layout(
+      "New booking request",
+      `<p>Hi ${escapeHtml(input.ownerName)},</p>
+       <p><strong>${escapeHtml(input.tenantName)}</strong> wants to move into <strong>${escapeHtml(input.title)}</strong>
+       from <strong>${escapeHtml(input.moveIn)}</strong> for <strong>${input.months} month${input.months === 1 ? "" : "s"}</strong>
+       (estimated ${escapeHtml(input.total)} including deposit).</p>
+       <p>Their phone and email are on the request. Accept to share your contact details with them, or decline with a note.</p>`,
+      { label: "Review the request", href: input.url },
+    ),
+    text: `Hi ${input.ownerName},\n\n${input.tenantName} requested "${input.title}" from ${input.moveIn} for ${input.months} month(s).\nReview: ${input.url}\n`,
+  };
+}
+
+export function bookingDecisionEmail(input: {
+  tenantName: string;
+  title: string;
+  decision: "accept" | "reject" | "activate" | "complete";
+  note: string | null;
+  ownerPhone: string | null;
+  url: string;
+}): Template {
+  const headlines = {
+    accept: "Your request was accepted",
+    reject: "Your request was declined",
+    activate: "Your stay is now active",
+    complete: "Your stay is complete",
+  } as const;
+  const subject = `${headlines[input.decision]}: ${input.title}`;
+  const body =
+    input.decision === "accept"
+      ? `<p>The owner accepted your request for <strong>${escapeHtml(input.title)}</strong>.</p>
+         ${input.ownerPhone ? `<p>You can call them on <strong>${escapeHtml(input.ownerPhone)}</strong>. Full contact details are on your request page.</p>` : ""}
+         <p>Agree the move-in details directly, and remember: never pay a deposit before visiting the property.</p>`
+      : input.decision === "reject"
+        ? `<p>The owner could not accept your request for <strong>${escapeHtml(input.title)}</strong> this time.</p>
+           <p>There are plenty of other verified rooms; your saved searches and favourites are waiting.</p>`
+        : input.decision === "activate"
+          ? `<p>Welcome home! The owner marked your stay at <strong>${escapeHtml(input.title)}</strong> as started.</p>`
+          : `<p>Your stay at <strong>${escapeHtml(input.title)}</strong> is marked complete. A short review helps the next tenant.</p>`;
+  return {
+    subject,
+    html: layout(
+      headlines[input.decision],
+      `<p>Hi ${escapeHtml(input.tenantName)},</p>${body}${input.note ? `<p style="background:#f8f9fa;border-radius:12px;padding:12px 14px"><strong>Note from the owner:</strong> ${escapeHtml(input.note)}</p>` : ""}`,
+      {
+        label: input.decision === "complete" ? "Leave a review" : "Open your request",
+        href: input.url,
+      },
+    ),
+    text: `${headlines[input.decision]}: ${input.title}\n${input.note ?? ""}\n${input.url}\n`,
+  };
+}
+
+export function bookingCancelledEmail(input: {
+  name: string;
+  title: string;
+  byOwner: boolean;
+  reason: string | null;
+  url: string;
+}): Template {
+  const subject = `Booking cancelled: ${input.title}`;
+  return {
+    subject,
+    html: layout(
+      "Booking cancelled",
+      `<p>Hi ${escapeHtml(input.name)},</p>
+       <p>The booking for <strong>${escapeHtml(input.title)}</strong> was cancelled by the ${input.byOwner ? "owner" : "tenant"}.</p>
+       ${input.reason ? `<p style="background:#f8f9fa;border-radius:12px;padding:12px 14px"><strong>Reason:</strong> ${escapeHtml(input.reason)}</p>` : ""}`,
+      { label: "View details", href: input.url },
+    ),
+    text: `${subject}\n${input.reason ?? ""}\n${input.url}\n`,
+  };
+}

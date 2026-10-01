@@ -364,6 +364,12 @@ isOneToOne: false
       foreignKeyName: "reviews_booking_id_fkey"
       columns: ["booking_id"]
 isOneToOne: false
+      referencedRelation: "booking_party_names"
+      referencedColumns: ["booking_id"]
+    },{
+      foreignKeyName: "reviews_booking_id_fkey"
+      columns: ["booking_id"]
+isOneToOne: false
       referencedRelation: "bookings"
       referencedColumns: ["id"]
     },{
@@ -389,7 +395,14 @@ isOneToOne: false
                 }
           }
           Views: {
-            "city_listing_stats": {
+            "booking_party_names": {
+                  Row: {
+                    "booking_id": string | null,"owner_first_name": string | null,"owner_last_name": string | null,"tenant_first_name": string | null,"tenant_last_name": string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"city_listing_stats": {
                   Row: {
                     "avg_rating": number | null,"city_id": number | null,"image_url": string | null,"listing_count": number | null,"min_rent": number | null,"name": string | null,"slug": string | null,"sort_order": number | null,"state": string | null
                   }

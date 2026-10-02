@@ -40,10 +40,25 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
    and redeploy. Test with Razorpay's test cards, then swap to live keys after KYC.
 5. **Email**: verify your sending domain in Resend, set `EMAIL_FROM="Sasta Room <no-reply@yourdomain>"`.
    Until then emails are skipped and logged as `email.skipped`.
-6. **Netlify**: production branch `main`, deploy previews on `Rupangshu-Dev`. Build command and headers
+6. **Netlify functions region**: the Supabase project runs in Tokyo (`ap-northeast-1`). Netlify
+   functions default to the US, which adds a trans-Pacific round trip to every database query
+   on every page. In Netlify → Project configuration → Build & deploy → Functions region, pick
+   the region closest to Tokyo your plan offers, then redeploy. This is the single biggest
+   page-speed lever.
+7. **Netlify**: production branch `main`, deploy previews on `Rupangshu-Dev`. Build command and headers
    (HSTS, CSP, frame-ancestors) come from `netlify.toml`.
-7. **Cloudflare** (optional, custom domain): proxy on, SSL "Full (strict)", respect origin cache headers,
+8. **Cloudflare** (optional, custom domain): proxy on, SSL "Full (strict)", respect origin cache headers,
    add a page rule to bypass cache for `/api/*`, `/dashboard*`, `/owner*`, `/admin*`.
+
+### Current state of the live database (2026-10-02)
+
+- Migrations 0001-0018 applied and recorded in `supabase_migrations.schema_migrations`, so
+  `db-migrate.yml` will only apply newer files.
+- Admin account: `admin@sastaroomrent.netlify.app` (password handed over privately; change it
+  after first sign-in from the admin profile). This mailbox does not receive mail, so add your
+  own address as a second admin before relying on password reset.
+- 56 sample listings with photos: see `supabase/demo/README.md`, removable with
+  `scripts/db/remove-demo-data.sql`.
 
 ## 3. Release procedure
 

@@ -1,8 +1,9 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient, PUBLIC_DATA_TAG } from "@/lib/supabase/public";
 import type { Database } from "@/types/database.types";
 
 export type ListingCard = Pick<
@@ -33,30 +34,53 @@ export const listingCardSelect = `
 
 /**
  * Featured listings for the home page: admin-featured first, then the newest
- * approved ones, up to `limit`. RLS already restricts this to approved rows.
+ * approved ones. The same for every visitor, so shared across requests for a
+ * minute; errors throw inside the cached function so they are never cached.
  */
 export const getFeaturedListings = cache(async (limit = 6): Promise<ListingCard[]> => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("properties")
-    .select(listingCardSelect)
-    .eq("status", "approved")
-    .order("is_featured", { ascending: false })
-    .order("approved_at", { ascending: false })
-    .limit(limit);
-  if (error) {
-    console.error("listings.getFeaturedListings failed", { code: error.code });
+  try {
+    return await featuredListings(limit);
+  } catch (error) {
+    console.error("listings.getFeaturedListings failed", {
+      code: (error as { code?: string }).code ?? "unknown",
+    });
     return [];
   }
-  return data as unknown as ListingCard[];
 });
 
+const featuredListings = unstable_cache(
+  async (limit: number): Promise<ListingCard[]> => {
+    const { data, error } = await createPublicClient()
+      .from("properties")
+      .select(listingCardSelect)
+      .eq("status", "approved")
+      .order("is_featured", { ascending: false })
+      .order("approved_at", { ascending: false })
+      .limit(limit);
+    if (error) throw Object.assign(new Error("featured listings failed"), { code: error.code });
+    return data as unknown as ListingCard[];
+  },
+  ["listings", "featured"],
+  { revalidate: 60, tags: [PUBLIC_DATA_TAG] },
+);
+
 export const getApprovedListingCount = cache(async (): Promise<number> => {
-  const supabase = await createClient();
-  const { count, error } = await supabase
-    .from("properties")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "approved");
-  if (error) return 0;
-  return count ?? 0;
+  try {
+    return await approvedListingCount();
+  } catch {
+    return 0;
+  }
 });
+
+const approvedListingCount = unstable_cache(
+  async (): Promise<number> => {
+    const { count, error } = await createPublicClient()
+      .from("properties")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "approved");
+    if (error) throw new Error("listing count failed");
+    return count ?? 0;
+  },
+  ["listings", "approved-count"],
+  { revalidate: 60, tags: [PUBLIC_DATA_TAG] },
+);

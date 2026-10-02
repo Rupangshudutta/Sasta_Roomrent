@@ -36,10 +36,13 @@ test.describe("search", () => {
     await expect(details.getByRole("radio", { name: "Anyone" })).toBeVisible();
   });
 
-  test("unknown listing id shows the 404 page", async ({ page }) => {
-    const response = await page.goto("/properties/00000000-0000-4000-8000-000000000000");
-    expect(response?.status()).toBe(404);
+  test("unknown listing id shows the 404 page and is not indexable", async ({ page }) => {
+    // The listing page streams behind a loading skeleton, so the status is already 200
+    // when the lookup fails; Next marks the streamed not-found page noindex instead
+    // (documented "soft 404" behaviour, see app/(public)/loading.tsx).
+    await page.goto("/properties/00000000-0000-4000-8000-000000000000");
     await expect(page.getByText("Oops! Page Not Found")).toBeVisible();
+    await expect(page.locator('meta[name="robots"][content*="noindex"]').first()).toBeAttached();
   });
 
   test("saved rooms requires sign in", async ({ page }) => {

@@ -30,11 +30,13 @@ export default async function RequestBookingPage({
         ? "Owner accounts cannot send booking requests. Sign in with a tenant account."
         : user.role === "admin"
           ? "Admin accounts cannot send booking requests."
-          : listing.status !== "approved"
-            ? "This listing is not live."
-            : listing.available_rooms <= 0
-              ? "No rooms are available right now."
-              : null;
+          : listing.is_demo
+            ? "This is a sample listing and does not accept booking requests."
+            : listing.status !== "approved"
+              ? "This listing is not live."
+              : listing.available_rooms <= 0
+                ? "No rooms are available right now."
+                : null;
 
   const existing = blocked ? null : await getOpenRequestFor(listing.id);
 

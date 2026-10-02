@@ -75,6 +75,12 @@ export default async function ListingDetailPage({ params }: PageProps<"/properti
           This listing is not live ({listing.status}). Only you and our team can see this page.
         </Alert>
       ) : null}
+      {listing.is_demo ? (
+        <Alert tone="info" title="Sample listing" className="mb-6">
+          This is an example of how listings look on Sasta Room. The room is not available to rent
+          and does not accept booking requests.
+        </Alert>
+      ) : null}
 
       <nav aria-label="Breadcrumb" className="text-muted mb-4 text-sm">
         <Link href="/properties" className="hover:text-primary">
@@ -241,6 +247,10 @@ export default async function ListingDetailPage({ params }: PageProps<"/properti
                 <ButtonLink href={`/owner/properties/${listing.id}`} variant="outline" fullWidth>
                   Manage this listing
                 </ButtonLink>
+              ) : listing.is_demo ? (
+                <p className="rounded-card-sm bg-surface text-muted px-3 py-2 text-center text-sm">
+                  Sample listing, not available to book
+                </p>
               ) : listing.available_rooms > 0 && isLive ? (
                 <ButtonLink href={requestHref} size="lg" fullWidth>
                   Request to book

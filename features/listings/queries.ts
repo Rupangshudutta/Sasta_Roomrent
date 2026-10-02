@@ -17,6 +17,7 @@ export type ListingCard = Pick<
   | "furnishing"
   | "gender_preference"
   | "is_featured"
+  | "is_demo"
 > & {
   city: { name: string; slug: string } | null;
   photos: { storage_path: string; is_primary: boolean; sort_order: number }[];
@@ -24,7 +25,7 @@ export type ListingCard = Pick<
 };
 
 export const listingCardSelect = `
-  id, title, property_type, rent_amount, locality, rating_avg, rating_count, furnishing, gender_preference, is_featured,
+  id, title, property_type, rent_amount, locality, rating_avg, rating_count, furnishing, gender_preference, is_featured, is_demo,
   city:cities ( name, slug ),
   photos:property_photos ( storage_path, is_primary, sort_order ),
   amenities:property_amenities ( amenity:amenities ( slug, label, icon ) )

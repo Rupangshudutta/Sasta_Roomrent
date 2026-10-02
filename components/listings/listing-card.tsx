@@ -65,8 +65,19 @@ export function ListingCard({
             No photo yet
           </div>
         )}
-        <span className="rounded-pill bg-primary absolute top-3 left-3 px-3 py-1 text-xs font-semibold text-white">
-          {propertyTypeShortLabels[listing.property_type]}
+        <span className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+          <span className="rounded-pill bg-primary px-3 py-1 text-xs font-semibold text-white">
+            {propertyTypeShortLabels[listing.property_type]}
+          </span>
+          {listing.is_demo ? (
+            // Sample listings must never pass for real rooms (see migration 0018).
+            <span
+              className="rounded-pill bg-ink/80 px-3 py-1 text-xs font-semibold text-white"
+              title="Sample listing to show how Sasta Room works. Not available to rent."
+            >
+              Sample
+            </span>
+          ) : null}
         </span>
         {favorite ? (
           <span className="absolute top-3 right-3">

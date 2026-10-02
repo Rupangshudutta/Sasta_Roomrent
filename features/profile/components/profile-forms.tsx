@@ -1,34 +1,25 @@
 "use client";
 
-import { useActionState } from "react";
-
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField, SelectField, TextareaField } from "@/components/ui/field";
-import { businessTypeOptions, experienceOptions } from "@/features/auth/schema";
+import { PasswordField } from "@/components/ui/password-field";
+import { businessTypeOptions, experienceOptions, passwordRules } from "@/features/auth/schema";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import {
-  changePasswordAction,
-  updateOwnerProfileAction,
-  updateProfileAction,
-  type ProfileResult,
-} from "../actions";
+import { changePasswordAction, updateOwnerProfileAction, updateProfileAction } from "../actions";
+import { changePasswordSchema, ownerProfileSchema, profileSchema } from "../schema";
 
 type Base = { firstName: string; lastName: string; phone: string | null; email: string | null };
 
 export function ProfileForm({ profile }: { profile: Base }) {
-  const [state, formAction, pending] = useActionState<ProfileResult | undefined, FormData>(
-    updateProfileAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(updateProfileAction, {
+    schema: profileSchema,
+  });
   return (
-    <form action={formAction} className="space-y-5" noValidate>
-      {state ? (
-        <Alert tone={state.ok ? "success" : "error"}>
-          {state.ok ? state.message : state.message}
-        </Alert>
-      ) : null}
+    <form {...formProps} className="space-y-5">
+      {state?.ok ? <Alert tone="success">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <div className="grid gap-5 sm:grid-cols-2">
         <InputField
           id="firstName"
@@ -59,7 +50,7 @@ export function ProfileForm({ profile }: { profile: Base }) {
           label="Mobile number"
           type="tel"
           required
-          inputMode="numeric"
+          inputMode="tel"
           defaultValue={profile.phone ?? ""}
           autoComplete="tel-national"
           errors={errors?.phone}
@@ -81,14 +72,13 @@ type OwnerExtra = {
 };
 
 export function OwnerProfileForm({ profile, owner }: { profile: Base; owner: OwnerExtra }) {
-  const [state, formAction, pending] = useActionState<ProfileResult | undefined, FormData>(
-    updateOwnerProfileAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(updateOwnerProfileAction, {
+    schema: ownerProfileSchema,
+  });
   return (
-    <form action={formAction} className="space-y-5" noValidate>
-      {state ? <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert> : null}
+    <form {...formProps} className="space-y-5">
+      {state?.ok ? <Alert tone="success">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <div className="grid gap-5 sm:grid-cols-2">
         <InputField
           id="firstName"
@@ -117,7 +107,7 @@ export function OwnerProfileForm({ profile, owner }: { profile: Base; owner: Own
           label="Mobile number"
           type="tel"
           required
-          inputMode="numeric"
+          inputMode="tel"
           defaultValue={profile.phone ?? ""}
           errors={errors?.phone}
         />
@@ -170,28 +160,26 @@ export function OwnerProfileForm({ profile, owner }: { profile: Base; owner: Own
 }
 
 export function ChangePasswordForm() {
-  const [state, formAction, pending] = useActionState<ProfileResult | undefined, FormData>(
-    changePasswordAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(changePasswordAction, {
+    schema: changePasswordSchema,
+    resetOnSuccess: true,
+  });
   return (
-    <form action={formAction} className="space-y-5" noValidate>
-      {state ? <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert> : null}
+    <form {...formProps} className="space-y-5">
+      {state?.ok ? <Alert tone="success">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <div className="grid gap-5 sm:grid-cols-2">
-        <InputField
+        <PasswordField
           id="password"
           label="New password"
-          type="password"
           required
           autoComplete="new-password"
-          hint="8+ characters with upper, lower, number and symbol"
+          requirements={passwordRules}
           errors={errors?.password}
         />
-        <InputField
+        <PasswordField
           id="confirmPassword"
           label="Confirm new password"
-          type="password"
           required
           autoComplete="new-password"
           errors={errors?.confirmPassword}

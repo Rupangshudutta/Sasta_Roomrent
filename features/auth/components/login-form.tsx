@@ -1,45 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField } from "@/components/ui/field";
+import { PasswordField } from "@/components/ui/password-field";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { loginAction, type LoginResult } from "../actions";
+import { loginAction } from "../actions";
+import { loginSchema } from "../schema";
 
 export function LoginForm({ next, notice }: { next?: string; notice?: string }) {
-  const [state, formAction, pending] = useActionState<LoginResult | undefined, FormData>(
-    loginAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { pending, errors, formError, formProps } = useFormAction(loginAction, {
+    schema: loginSchema,
+  });
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form {...formProps} className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold">Sign In</h1>
         <p className="text-muted mt-1 text-sm">Welcome back. Enter your details to continue.</p>
       </div>
 
       {notice ? <Alert tone="success">{notice}</Alert> : null}
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
 
       <input type="hidden" name="next" value={next ?? ""} />
       <InputField
         id="email"
         label="Email address"
         type="email"
+        inputMode="email"
         required
         autoComplete="email"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
         errors={errors?.email}
       />
       <div className="space-y-1.5">
-        <InputField
+        <PasswordField
           id="password"
           label="Password"
-          type="password"
           required
           autoComplete="current-password"
           errors={errors?.password}

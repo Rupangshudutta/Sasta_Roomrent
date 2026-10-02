@@ -1,25 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
-
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField } from "@/components/ui/field";
+import { PasswordField } from "@/components/ui/password-field";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import {
-  forgotPasswordAction,
-  resetPasswordAction,
-  type ForgotPasswordResult,
-  type ResetPasswordResult,
-} from "../actions";
+import { forgotPasswordAction, resetPasswordAction } from "../actions";
+import { forgotPasswordSchema, passwordRules, resetPasswordSchema } from "../schema";
 
 export function ForgotPasswordForm() {
-  const [state, formAction, pending] = useActionState<ForgotPasswordResult | undefined, FormData>(
-    forgotPasswordAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(forgotPasswordAction, {
+    schema: forgotPasswordSchema,
+  });
 
   if (state?.ok) {
     return (
@@ -40,20 +34,24 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form {...formProps} className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold">Reset your password</h1>
         <p className="text-muted mt-1 text-sm">
           Enter your email and we will send you a reset link.
         </p>
       </div>
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <InputField
         id="email"
         label="Email address"
         type="email"
+        inputMode="email"
         required
         autoComplete="email"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
         errors={errors?.email}
       />
       <Button type="submit" fullWidth loading={pending}>
@@ -70,33 +68,28 @@ export function ForgotPasswordForm() {
 }
 
 export function ResetPasswordForm() {
-  const [state, formAction, pending] = useActionState<ResetPasswordResult | undefined, FormData>(
-    resetPasswordAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { pending, errors, formError, formProps } = useFormAction(resetPasswordAction, {
+    schema: resetPasswordSchema,
+  });
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form {...formProps} className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold">Choose a new password</h1>
-        <p className="text-muted mt-1 text-sm">
-          Use 8+ characters with upper, lower, number and symbol.
-        </p>
+        <p className="text-muted mt-1 text-sm">Pick something you have not used on another site.</p>
       </div>
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
-      <InputField
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
+      <PasswordField
         id="password"
         label="New password"
-        type="password"
         required
         autoComplete="new-password"
+        requirements={passwordRules}
         errors={errors?.password}
       />
-      <InputField
+      <PasswordField
         id="confirmPassword"
         label="Confirm new password"
-        type="password"
         required
         autoComplete="new-password"
         errors={errors?.confirmPassword}

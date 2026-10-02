@@ -15,7 +15,7 @@ test.describe("owner listing flow (live)", () => {
   test("create a draft, upload a photo, submit for review, withdraw, delete", async ({ page }) => {
     await page.goto("/login");
     await page.getByLabel("Email address").fill(email!);
-    await page.getByLabel("Password").fill(password!);
+    await page.locator("#password").fill(password!);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/owner/);
 

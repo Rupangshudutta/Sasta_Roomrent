@@ -1,32 +1,25 @@
 "use client";
 
 import { XCircle } from "lucide-react";
-import { useActionState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TextareaField } from "@/components/ui/field";
-import type { ActionResult } from "@/lib/actions/result";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
 import { rejectListingAction } from "../actions";
 
 export function RejectListingForm({ listingId }: { listingId: string }) {
-  const [state, formAction, pending] = useActionState<
-    ActionResult<undefined> | undefined,
-    FormData
-  >(rejectListingAction, undefined);
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(rejectListingAction);
 
   if (state?.ok) {
     return <Alert tone="success">{state.message}</Alert>;
   }
 
   return (
-    <form action={formAction} className="space-y-3" noValidate>
+    <form {...formProps} className="space-y-3">
       <input type="hidden" name="listingId" value={listingId} />
-      {state && !state.ok && !state.fieldErrors ? (
-        <Alert tone="error">{state.message}</Alert>
-      ) : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <TextareaField
         id="reason"
         label="Reason sent to the owner"

@@ -1,7 +1,6 @@
 "use client";
 
 import { Save, Send } from "lucide-react";
-import { useActionState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -10,8 +9,10 @@ import { InputField, SelectField, TextareaField } from "@/components/ui/field";
 import type { Amenity, City } from "@/features/catalog/queries";
 import type { OwnerListing } from "@/features/listings/owner-queries";
 import { furnishingLabels, genderPreferenceLabels, propertyTypeLabels } from "@/lib/config/site";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { createListingAction, updateListingAction, type ListingSaveResult } from "../owner-actions";
+import { createListingAction, updateListingAction } from "../owner-actions";
+import { listingFormSchema } from "../schema";
 
 type ListingFormProps = {
   cities: City[];
@@ -30,19 +31,17 @@ const toOptions = (record: Record<string, string>) =>
  */
 export function ListingForm({ cities, amenities, listing }: ListingFormProps) {
   const action = listing ? updateListingAction.bind(null, listing.id) : createListingAction;
-  const [state, formAction, pending] = useActionState<ListingSaveResult | undefined, FormData>(
-    action,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { pending, errors, formError, formProps } = useFormAction(action, {
+    schema: listingFormSchema,
+  });
   const selectedAmenities = new Set(
     listing?.amenities.map((a) => a.amenity?.slug).filter(Boolean) ?? [],
   );
   const canSubmitForReview = !listing || ["draft", "rejected", "inactive"].includes(listing.status);
 
   return (
-    <form action={formAction} className="space-y-6" noValidate>
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+    <form {...formProps} className="space-y-6">
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
 
       <Card>
         <CardHeader title="Basics" description="What are you listing?" />
@@ -284,7 +283,7 @@ export function ListingForm({ cities, amenities, listing }: ListingFormProps) {
             id="contactPhone"
             label="Contact number"
             type="tel"
-            inputMode="numeric"
+            inputMode="tel"
             required
             defaultValue={listing?.contact_phone}
             placeholder="98765 43210"
@@ -294,7 +293,7 @@ export function ListingForm({ cities, amenities, listing }: ListingFormProps) {
             id="altContactPhone"
             label="Alternative contact"
             type="tel"
-            inputMode="numeric"
+            inputMode="tel"
             defaultValue={listing?.alt_contact_phone ?? ""}
             placeholder="Optional"
             errors={errors?.altContactPhone}

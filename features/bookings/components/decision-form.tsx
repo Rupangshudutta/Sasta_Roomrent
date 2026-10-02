@@ -1,13 +1,14 @@
 "use client";
 
 import { Check, DoorOpen, Flag, X } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { BookingStatus } from "@/features/bookings/queries";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { decideBookingAction, type DecideBookingResult } from "../actions";
+import { decideBookingAction } from "../actions";
 import type { BookingDecision } from "../schema";
 
 type Props = { bookingId: string; status: BookingStatus; audience: "owner" | "tenant" };
@@ -58,17 +59,14 @@ const labels: Record<
 export function DecisionForm({ bookingId, status, audience }: Props) {
   const decisions = available(status, audience);
   const [chosen, setChosen] = useState<BookingDecision | null>(null);
-  const [state, formAction, pending] = useActionState<DecideBookingResult | undefined, FormData>(
-    decideBookingAction,
-    undefined,
-  );
+  const { state, pending, formError, formProps } = useFormAction(decideBookingAction);
 
   if (decisions.length === 0) return null;
   if (state?.ok) return <Alert tone="success">{state.message}</Alert>;
 
   return (
     <div className="space-y-3">
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       {chosen === null ? (
         <div className="flex flex-wrap gap-2">
           {decisions.map((d) => {
@@ -82,7 +80,7 @@ export function DecisionForm({ bookingId, status, audience }: Props) {
         </div>
       ) : (
         <form
-          action={formAction}
+          {...formProps}
           className="rounded-card-sm border-border bg-surface space-y-3 border p-4"
         >
           <input type="hidden" name="bookingId" value={bookingId} />

@@ -15,19 +15,75 @@ export const emailSchema = z
   .max(254, "Email is too long")
   .pipe(z.email("Enter a valid email address"));
 
+// Accepts what people actually type or autofill on phones: spaces, dashes, a +91 / 91
+// country code or a leading 0 trunk prefix. All of them normalise to the 10-digit number.
 export const indianPhoneSchema = z
   .string()
-  .transform((v) => v.replace(/\D/g, "").replace(/^(91)(?=\d{10}$)/, ""))
+  .transform((v) =>
+    v
+      .replace(/\D/g, "")
+      .replace(/^(91)(?=\d{10}$)/, "")
+      .replace(/^0(?=\d{10}$)/, ""),
+  )
   .pipe(z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"));
 
+export type PasswordRule = {
+  id: string;
+  /** Shown in the live checklist under the field. */
+  label: string;
+  /** Returned as the validation error when the rule fails. */
+  message: string;
+  test: (value: string) => boolean;
+};
+
+/**
+ * Single source of truth for password strength. The zod schema below and the
+ * live checklist in the sign-up form both read this list, so the rules the user
+ * sees can never drift from the rules the server enforces.
+ */
+export const passwordRules: readonly PasswordRule[] = [
+  {
+    id: "length",
+    label: "At least 8 characters",
+    message: "Use at least 8 characters",
+    test: (v) => v.length >= 8,
+  },
+  {
+    id: "upper",
+    label: "One uppercase letter (A-Z)",
+    message: "Include an uppercase letter",
+    test: (v) => /[A-Z]/.test(v),
+  },
+  {
+    id: "lower",
+    label: "One lowercase letter (a-z)",
+    message: "Include a lowercase letter",
+    test: (v) => /[a-z]/.test(v),
+  },
+  {
+    id: "digit",
+    label: "One number (0-9)",
+    message: "Include a number",
+    test: (v) => /\d/.test(v),
+  },
+  {
+    id: "symbol",
+    label: "One symbol, e.g. @ # ! -",
+    message: "Include a symbol such as @ # ! -",
+    test: (v) => /[^A-Za-z0-9]/.test(v),
+  },
+];
+
+// superRefine reports EVERY failing rule, not just the first, so the user can fix
+// them all in one go. 72 is bcrypt's input limit (Supabase Auth hashes with bcrypt).
 export const passwordSchema = z
   .string()
-  .min(8, "Use at least 8 characters")
   .max(72, "Use at most 72 characters")
-  .regex(/[a-z]/, "Include a lowercase letter")
-  .regex(/[A-Z]/, "Include an uppercase letter")
-  .regex(/\d/, "Include a number")
-  .regex(/[^A-Za-z0-9]/, "Include a symbol");
+  .superRefine((value, ctx) => {
+    for (const rule of passwordRules) {
+      if (!rule.test(value)) ctx.addIssue({ code: "custom", message: rule.message });
+    }
+  });
 
 const nameSchema = z
   .string()

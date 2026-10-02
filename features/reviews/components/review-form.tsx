@@ -1,14 +1,16 @@
 "use client";
 
 import { Star } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField, TextareaField } from "@/components/ui/field";
 import { cn } from "@/lib/utils/cn";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { saveReviewAction, type ReviewResult } from "../actions";
+import { saveReviewAction } from "../actions";
+import { reviewSchema } from "../schema";
 
 type Props = {
   bookingId: string;
@@ -16,19 +18,17 @@ type Props = {
 };
 
 export function ReviewForm({ bookingId, existing }: Props) {
-  const [state, formAction, pending] = useActionState<ReviewResult | undefined, FormData>(
-    saveReviewAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { pending, errors, formError, formProps } = useFormAction(saveReviewAction, {
+    schema: reviewSchema,
+  });
   const [rating, setRating] = useState(existing?.rating ?? 0);
   const [hover, setHover] = useState(0);
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form {...formProps} className="space-y-5">
       <input type="hidden" name="bookingId" value={bookingId} />
       <input type="hidden" name="rating" value={rating || ""} />
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
 
       <fieldset>
         <legend className="text-sm font-medium">

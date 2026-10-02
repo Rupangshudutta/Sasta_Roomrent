@@ -1,21 +1,19 @@
 "use client";
 
 import { Send } from "lucide-react";
-import { useActionState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField, SelectField, TextareaField } from "@/components/ui/field";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { sendContactMessageAction, type ContactResult } from "../actions";
-import { contactInterestOptions } from "../schema";
+import { sendContactMessageAction } from "../actions";
+import { contactInterestOptions, contactMessageSchema } from "../schema";
 
 export function ContactForm() {
-  const [state, formAction, pending] = useActionState<ContactResult | undefined, FormData>(
-    sendContactMessageAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { state, pending, errors, formError, formProps } = useFormAction(sendContactMessageAction, {
+    schema: contactMessageSchema,
+  });
 
   if (state?.ok) {
     return (
@@ -27,8 +25,8 @@ export function ContactForm() {
   }
 
   return (
-    <form id="contactForm" action={formAction} className="space-y-5" noValidate>
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+    <form id="contactForm" {...formProps} className="space-y-5">
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
       <div className="grid gap-5 sm:grid-cols-2">
         <InputField
           id="name"

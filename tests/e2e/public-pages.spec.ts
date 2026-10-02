@@ -29,11 +29,11 @@ test.describe("public pages", () => {
     await expect(page).toHaveURL(/\/properties\?q=Koramangala&type=pg/);
   });
 
-  test("contact form validates server-side and keeps the honeypot hidden", async ({ page }) => {
+  test("contact form validates before sending and keeps the honeypot hidden", async ({ page }) => {
     await page.goto("/contact");
     await expect(page.locator("#website")).toBeHidden();
     await page.getByRole("button", { name: "Send Message" }).click();
-    await expect(page.getByText("Please fix the highlighted fields.")).toBeVisible();
+    await expect(page.getByText(/Please fix \d+ fields highlighted below\./)).toBeVisible();
     await expect(page.getByText("Enter your name")).toBeVisible();
   });
 

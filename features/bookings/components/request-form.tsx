@@ -1,15 +1,16 @@
 "use client";
 
 import { Send } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { InputField, TextareaField } from "@/components/ui/field";
 import { formatInr } from "@/lib/utils/format";
+import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { requestBookingAction, type RequestBookingResult } from "../actions";
-import { estimateTotal, todayIst } from "../schema";
+import { requestBookingAction } from "../actions";
+import { estimateTotal, todayIst, requestBookingSchema } from "../schema";
 
 type Props = {
   propertyId: string;
@@ -25,20 +26,18 @@ type Props = {
  * taken by the database trigger when the row is inserted.
  */
 export function RequestForm({ propertyId, rent, deposit, minLeaseMonths, availableFrom }: Props) {
-  const [state, formAction, pending] = useActionState<RequestBookingResult | undefined, FormData>(
-    requestBookingAction,
-    undefined,
-  );
-  const errors = state && !state.ok ? state.fieldErrors : undefined;
+  const { pending, errors, formError, formProps } = useFormAction(requestBookingAction, {
+    schema: requestBookingSchema,
+  });
   const [months, setMonths] = useState(minLeaseMonths);
 
   const today = todayIst();
   const defaultDate = availableFrom && availableFrom > today ? availableFrom : today;
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form {...formProps} className="space-y-5">
       <input type="hidden" name="propertyId" value={propertyId} />
-      {state && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+      {formError ? <Alert tone="error">{formError}</Alert> : null}
 
       <div className="grid gap-5 sm:grid-cols-2">
         <InputField

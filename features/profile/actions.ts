@@ -61,17 +61,27 @@ export async function updateOwnerProfileAction(
     const mapped = mapDatabaseError(profileError, "profile.update");
     return fail(mapped.code, mapped.message);
   }
-  const { error: ownerError } = await supabase.from("owner_profiles").upsert(
-    {
-      user_id: user.id,
-      business_name: v.businessName,
-      business_type: v.businessType,
-      experience: v.experience || null,
-      primary_location: v.primaryLocation || null,
-      about: v.about || null,
-    },
-    { onConflict: "user_id" },
-  );
+  // Update first, insert only if the row is missing (e.g. an account promoted to owner
+  // later). Not an upsert: PostgREST's merge upsert also SETs user_id, and end users
+  // deliberately have no UPDATE privilege on that column.
+  const details = {
+    business_name: v.businessName,
+    business_type: v.businessType,
+    experience: v.experience || null,
+    primary_location: v.primaryLocation || null,
+    about: v.about || null,
+  };
+  const { data: updated, error: updateError } = await supabase
+    .from("owner_profiles")
+    .update(details)
+    .eq("user_id", user.id)
+    .select("user_id");
+  let ownerError = updateError;
+  if (!ownerError && (updated?.length ?? 0) === 0) {
+    ({ error: ownerError } = await supabase
+      .from("owner_profiles")
+      .insert({ user_id: user.id, ...details }));
+  }
   if (ownerError) {
     const mapped = mapDatabaseError(ownerError, "ownerProfile.update");
     return fail(mapped.code, mapped.message);

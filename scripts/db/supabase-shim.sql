@@ -81,3 +81,10 @@ end $$;
 
 alter table storage.objects enable row level security;
 grant all on storage.objects, storage.buckets to anon, authenticated, service_role;
+
+-- Supabase grants every privilege on objects that `postgres` creates in `public` to the
+-- API roles through default privileges. Mirror that here so CI sees the same effective
+-- grants as production; migration 0017 is what turns them back into deny-by-default.
+alter default privileges for role postgres in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges for role postgres in schema public grant all on sequences to anon, authenticated, service_role;
+alter default privileges for role postgres in schema public grant all on functions to anon, authenticated, service_role;

@@ -29,6 +29,15 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
 1. **Supabase Auth → URL configuration**: Site URL `https://sastaroomrent.netlify.app`; redirect URLs
    `https://sastaroomrent.netlify.app/auth/confirm`, `https://sastaroomrent.netlify.app/auth/callback`,
    and `https://*--sastaroomrent.netlify.app/auth/**` for deploy previews. Enable email confirmations.
+   **Custom SMTP is required before anyone can sign up**: Authentication → Emails → SMTP Settings
+   (e.g. Resend: host `smtp.resend.com`, port 465, user `resend`, password = API key, sender on your
+   verified domain), then raise Authentication → Rate Limits → emails per hour. Supabase's built-in
+   sender only delivers to members of the project's team, and Auth rolls a sign-up back when the
+   confirmation email cannot be sent, so without SMTP no tenant or owner account is ever created
+   (the form says the confirmation email could not be sent; log event `auth.register confirmation_email_failed`).
+   Optional: point the templates at `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
+   (recovery: `type=recovery&next=/reset-password`) so links also work when opened on another device;
+   `/auth/confirm` accepts both that and the default link format.
 2. **Migrations**: add the three GitHub secrets above, then run the `db-migrate` workflow
    (Actions → Database migrate → Run workflow). It applies `supabase/migrations/*` and the seed.
 3. **Admin account**: register normally with the admin's email, confirm it, then run
@@ -45,8 +54,11 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
    on every page. In Netlify → Project configuration → Build & deploy → Functions region, pick
    the region closest to Tokyo your plan offers, then redeploy. This is the single biggest
    page-speed lever.
-7. **Netlify**: production branch `main`, deploy previews on `Rupangshu-Dev`. Build command and headers
-   (HSTS, CSP, frame-ancestors) come from `netlify.toml`.
+7. **Netlify**: production currently builds `Rupangshu-Dev` (checked 2026-10-23); `main` still holds
+   the legacy app, so release it (section 3) before switching production to `main`. Build command and
+   headers (HSTS, CSP, frame-ancestors) come from `netlify.toml`. The scheduled function
+   `netlify/functions/keep-database-awake.mts` reads Supabase daily on the production deploy so the
+   free-tier project is not paused for inactivity; delete it after moving to a paid plan.
 8. **Cloudflare** (optional, custom domain): proxy on, SSL "Full (strict)", respect origin cache headers,
    add a page rule to bypass cache for `/api/*`, `/dashboard*`, `/owner*`, `/admin*`.
 
@@ -59,6 +71,13 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
   own address as a second admin before relying on password reset.
 - 56 sample listings with photos: see `supabase/demo/README.md`, removable with
   `scripts/db/remove-demo-data.sql`.
+- 2026-10-22 18:07 → 2026-10-23 11:15 UTC: the free-tier project was paused for inactivity and every
+  sign-in and sign-up failed until it was restored by hand. Nothing kept it busy: `smoke.yml` is not
+  on the default branch (`main`), and GitHub only runs schedules from there. The keep-alive function
+  (step 7) covers this now.
+- As of 2026-10-23 no account has been created through the sign-up form; all 13 users were created
+  by script. Sign-up needs custom SMTP (step 1).
+- Migration 0019 (owner experience from sign-up) applied 2026-10-23.
 
 ## 3. Release procedure
 
@@ -67,7 +86,7 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
 git fetch origin && git checkout main && git merge --ff-only origin/Rupangshu-Dev && git push origin main
 ```
 
-Netlify builds `main`; the `Production smoke` workflow (Actions → run manually, or every 6 hours) probes
+Netlify builds the production branch (step 7); the `Production smoke` workflow (Actions → run manually, or every 6 hours) probes
 health, search, sitemap and security headers. A failing health check returns 503 and names the capability.
 
 ## 4. Rollback
@@ -79,14 +98,17 @@ health, search, sitemap and security headers. A failing health check returns 503
 
 ## 5. Day-one playbook
 
-| Signal                                | Where                                              | Action                                                                                       |
-| ------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `status: degraded` from `/api/health` | smoke workflow / uptime monitor                    | Check the named capability's env var in Netlify, redeploy                                    |
-| `rate_limit.exceeded` log spikes      | Netlify function logs (JSON lines, filter `event`) | Normal under attack; raise limits in `lib/security/rate-limit.ts` only if real users are hit |
-| `payments.webhook invalid signature`  | function logs                                      | Webhook secret mismatch between Razorpay and Netlify                                         |
-| `email.failed`                        | function logs                                      | Resend key/domain issue; user requests are unaffected                                        |
-| Listing stuck in `pending`            | `/admin/listings`                                  | Admin approves/rejects; owner is notified and emailed                                        |
-| User locked out                       | `/admin/users`                                     | Reactivate via the row action (audited)                                                      |
+| Signal                                                                                       | Where                                              | Action                                                                                                             |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `status: degraded` from `/api/health`                                                        | smoke workflow / uptime monitor                    | Check the named capability's env var in Netlify, redeploy                                                          |
+| `rate_limit.exceeded` log spikes                                                             | Netlify function logs (JSON lines, filter `event`) | Normal under attack; raise limits in `lib/security/rate-limit.ts` only if real users are hit                       |
+| `payments.webhook invalid signature`                                                         | function logs                                      | Webhook secret mismatch between Razorpay and Netlify                                                               |
+| `email.failed`                                                                               | function logs                                      | Resend key/domain issue; user requests are unaffected                                                              |
+| `auth.register confirmation_email_failed`                                                    | function logs                                      | Supabase Auth could not send the confirmation email, so no account was created: set up or fix custom SMTP (step 1) |
+| `auth.login failed` / `auth.register failed` with `status` 0 or ≥ 500, or `keepalive.failed` | function logs                                      | Supabase is unreachable: check the project is not paused (Dashboard → Restore project) and status.supabase.com     |
+| `auth.login profile_missing`                                                                 | function logs                                      | An auth user has no `profiles` row; check `handle_new_user()` and the profiles grants                              |
+| Listing stuck in `pending`                                                                   | `/admin/listings`                                  | Admin approves/rejects; owner is notified and emailed                                                              |
+| User locked out                                                                              | `/admin/users`                                     | Reactivate via the row action (audited)                                                                            |
 
 Housekeeping: call `select public.purge_rate_limits();` weekly (Supabase cron or a scheduled workflow) to drop
 stale counters.

@@ -2,7 +2,7 @@
 begin;
 
 select tests.create_user('tenant1@test.local', '{"first_name":"Asha","last_name":"Rao","phone":"9876543210"}') as id \gset tenant_
-select tests.create_user('owner1@test.local', '{"role":"owner","first_name":"Ravi","business_name":"Ravi PG","business_type":"individual"}') as id \gset owner_
+select tests.create_user('owner1@test.local', '{"role":"owner","first_name":"Ravi","business_name":"Ravi PG","business_type":"individual","experience":"1-3"}') as id \gset owner_
 select tests.create_user('hacker@test.local', '{"role":"admin","first_name":"Mallory"}') as id \gset hacker_
 select tests.create_user('admin@test.local', '{"first_name":"Admin"}') as id \gset admin_
 update public.profiles set role = 'admin' where id = :'admin_id';
@@ -15,6 +15,7 @@ update auth.users set email = 'tenant1-new@test.local' where id = :'tenant_id';
 select tests.assert((select email from public.profiles where id = :'tenant_id') = 'tenant1-new@test.local', 'email kept in sync');
 select tests.assert((select role from public.profiles where id = :'owner_id') = 'owner', 'owner role honoured');
 select tests.assert(exists (select 1 from public.owner_profiles where user_id = :'owner_id' and business_name = 'Ravi PG'), 'owner profile created');
+select tests.assert((select experience from public.owner_profiles where user_id = :'owner_id') = '1-3', 'owner experience copied from metadata');
 select tests.assert((select role from public.profiles where id = :'hacker_id') = 'tenant', 'admin role from sign-up metadata is downgraded to tenant');
 
 -- role lock: a user cannot promote themselves
@@ -45,5 +46,9 @@ select tests.anon();
 select tests.assert((select count(*) from public.profiles) = 0, 'anon sees no profiles');
 select tests.assert((select count(*) from public.cities) >= 7, 'anon can read cities');
 select tests.logout();
+
+-- an out-of-range experience value is dropped, not a failed sign-up
+select tests.create_user('owner2@test.local', '{"role":"owner","first_name":"Meera","experience":"20 years"}') as id \gset owner2_
+select tests.assert(exists (select 1 from public.owner_profiles where user_id = :'owner2_id' and experience is null), 'invalid experience stored as null');
 
 rollback;

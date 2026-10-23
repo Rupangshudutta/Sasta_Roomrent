@@ -7,9 +7,11 @@ import { redirect } from "next/navigation";
 import { fail, formDataToObject, fromZodError, ok, type ActionResult } from "@/lib/actions/result";
 import { getCurrentUser, homePathForRole } from "@/lib/auth/session";
 import { publicEnv } from "@/lib/config/public-env";
+import { logger } from "@/lib/logging/logger";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, rateLimitedMessage, rateLimitRules } from "@/lib/security/rate-limit";
 
+import { mapSignInError, mapSignUpError } from "./errors";
 import {
   forgotPasswordSchema,
   loginSchema,
@@ -20,7 +22,7 @@ import {
 
 /**
  * Auth Server Actions. Each one: parse → call Supabase Auth → map errors to a
- * user-facing message → redirect or return an ActionResult.
+ * user-facing message (./errors.ts) → redirect or return an ActionResult.
  *
  * Note on `redirect()`: it works by throwing a special error, so it must be
  * called outside try/catch blocks that would swallow it.
@@ -58,23 +60,8 @@ export async function registerAction(
   });
 
   if (error) {
-    if (error.code === "user_already_exists" || /already registered/i.test(error.message)) {
-      return fail(
-        "conflict",
-        "An account with this email already exists. Try signing in instead.",
-        {
-          email: ["Already registered"],
-        },
-      );
-    }
-    if (error.code === "weak_password") {
-      return fail("validation", error.message, { password: [error.message] });
-    }
-    if (error.status === 429) {
-      return fail("rate_limited", "Too many attempts. Please wait a minute and try again.");
-    }
-    console.error("auth.register failed", { code: error.code, status: error.status });
-    return fail("upstream", "We could not create your account right now. Please try again.");
+    const mapped = mapSignUpError(error);
+    return fail(mapped.code, mapped.message, mapped.fieldErrors);
   }
 
   // Supabase returns an empty identities array when the email is already taken
@@ -109,21 +96,15 @@ export async function loginAction(
   });
 
   if (error) {
-    if (error.code === "email_not_confirmed") {
-      return fail(
-        "forbidden",
-        "Please confirm your email first. Check your inbox for the confirmation link.",
-      );
-    }
-    if (error.status === 429) {
-      return fail("rate_limited", "Too many attempts. Please wait a minute and try again.");
-    }
-    // Same message for wrong email and wrong password: do not reveal which accounts exist.
-    return fail("unauthenticated", "Incorrect email or password.");
+    const mapped = mapSignInError(error);
+    return fail(mapped.code, mapped.message, mapped.fieldErrors);
   }
 
   const user = await getCurrentUser();
   if (!user) {
+    // Auth accepted the password but no profile row could be read: a missing
+    // handle_new_user() row or a failed profiles query. Never expected, so log it.
+    logger.error("auth.login profile_missing");
     await supabase.auth.signOut();
     return fail("unknown", "Your account is not fully set up. Please contact support.");
   }

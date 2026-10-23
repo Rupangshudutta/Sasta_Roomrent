@@ -11,7 +11,15 @@ import { useFormAction } from "@/lib/forms/use-form-action";
 import { loginAction } from "../actions";
 import { loginSchema } from "../schema";
 
-export function LoginForm({ next, notice }: { next?: string; notice?: string }) {
+export function LoginForm({
+  next,
+  notice,
+  linkError,
+}: {
+  next?: string;
+  notice?: string;
+  linkError?: string;
+}) {
   const { pending, errors, formError, formProps } = useFormAction(loginAction, {
     schema: loginSchema,
   });
@@ -24,6 +32,7 @@ export function LoginForm({ next, notice }: { next?: string; notice?: string }) 
       </div>
 
       {notice ? <Alert tone="success">{notice}</Alert> : null}
+      {linkError && !formError ? <Alert tone="error">{linkError}</Alert> : null}
       {formError ? <Alert tone="error">{formError}</Alert> : null}
 
       <input type="hidden" name="next" value={next ?? ""} />

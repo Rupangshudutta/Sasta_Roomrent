@@ -96,6 +96,23 @@ test.describe("auth pages", () => {
     await expect(page.getByLabel("Email address")).toHaveValue("someone@example.com");
   });
 
+  test("an email link without a token explains itself on the login page", async ({ page }) => {
+    await page.goto("/auth/confirm");
+    await expect(page).toHaveURL(/\/login\?error=invalid_link/);
+    await expect(page.getByText(/That link is incomplete/)).toBeVisible();
+  });
+
+  test("a link Supabase rejected as expired lands on a clear message", async ({ page }) => {
+    await page.goto("/auth/confirm?error=access_denied&error_code=otp_expired");
+    await expect(page).toHaveURL(/\/login\?error=expired_link/);
+    await expect(page.getByText(/That link has expired or was already used/)).toBeVisible();
+  });
+
+  test("an expired password-reset link returns to forgot-password", async ({ page }) => {
+    await page.goto("/auth/confirm?next=/reset-password&error_code=otp_expired");
+    await expect(page).toHaveURL(/\/forgot-password\?expired=1/);
+  });
+
   test("login rejects an invalid email before contacting the auth server", async ({ page }) => {
     await page.goto("/login");
     await page.getByLabel("Email address").fill("not-an-email");

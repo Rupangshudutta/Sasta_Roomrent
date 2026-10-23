@@ -25,6 +25,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       : params.reset === "1"
         ? "Password updated. Sign in with your new password."
         : undefined;
+  // Set by /auth/confirm when an email link cannot be used.
+  const linkError =
+    params.error === "expired_link"
+      ? "That link has expired or was already used. If you confirmed your email, sign in below; otherwise register again with the same email to get a new link."
+      : params.error === "invalid_link"
+        ? "That link is incomplete. Open it again from the email, or sign in below."
+        : undefined;
 
   const user = await getCurrentUser();
   // `next` is validated same-origin by safeNextPath; typedRoutes cannot check runtime strings.
@@ -32,7 +39,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <AuthShell heading="Welcome Back!" bullets={bullets}>
-      <LoginForm next={next || undefined} notice={notice} />
+      <LoginForm next={next || undefined} notice={notice} linkError={linkError} />
     </AuthShell>
   );
 }

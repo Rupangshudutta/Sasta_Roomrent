@@ -8,12 +8,11 @@ import { useRef, useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import type { PhotoRow } from "@/features/listings/owner-queries";
-import { compressImage } from "@/lib/images/compress-image";
-import { createClient } from "@/lib/supabase/client";
-import { PROPERTY_PHOTOS_BUCKET, propertyPhotoUrl } from "@/lib/supabase/storage";
+import { propertyPhotoUrl } from "@/lib/supabase/storage";
 
-import { deletePhotoAction, registerPhotoAction, setPrimaryPhotoAction } from "../owner-actions";
+import { deletePhotoAction, setPrimaryPhotoAction } from "../owner-actions";
 import { photoRules } from "../schema";
+import { uploadListingPhotos } from "../upload-photo";
 
 type PhotoManagerProps = {
   propertyId: string;
@@ -30,10 +29,9 @@ type UploadItem = {
 };
 
 /**
- * Upload flow: pick → validate → compress in the browser → upload straight to
- * Supabase Storage (RLS checks the owner/property path) → register the row via
- * a Server Action → refresh. Each file is independent, so one bad file never
- * blocks the others (unlike the prototype, which uploaded skipped files anyway).
+ * Upload flow (../upload-photo.ts): pick → validate → compress in the browser →
+ * upload straight to Supabase Storage → register the row → refresh. Files go one
+ * at a time, and one bad file never blocks the others.
  */
 export function PhotoManager({ propertyId, ownerId, photos, maxPhotos }: PhotoManagerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,56 +59,19 @@ export function PhotoManager({ propertyId, ownerId, photos, maxPhotos }: PhotoMa
       );
       return;
     }
-    const supabase = createClient();
+    const items = files.map((file) => ({
+      id: crypto.randomUUID(),
+      name: file.name,
+      status: "compressing" as const,
+    }));
+    setUploads((current) => [...current, ...items]);
 
-    await Promise.all(
-      files.map(async (file) => {
-        const id = crypto.randomUUID();
-        setUploads((items) => [...items, { id, name: file.name, status: "compressing" }]);
-
-        if (!(photoRules.acceptedTypes as readonly string[]).includes(file.type)) {
-          updateItem(id, { status: "error", error: "Only JPG, PNG or WebP images are allowed." });
-          return;
-        }
-        if (file.size > photoRules.maxSourceBytes) {
-          updateItem(id, { status: "error", error: "Each photo must be under 5 MB." });
-          return;
-        }
-
-        const compressed = await compressImage(file, {
-          maxEdge: photoRules.maxEdge,
-          targetBytes: photoRules.targetBytes,
-        });
-        const ext = compressed.compressed ? "jpg" : extensionFor(file.type);
-        const storagePath = `${ownerId}/${propertyId}/${id}.${ext}`;
-
-        updateItem(id, { status: "uploading" });
-        const { error: uploadError } = await supabase.storage
-          .from(PROPERTY_PHOTOS_BUCKET)
-          .upload(storagePath, compressed.blob, {
-            contentType: compressed.compressed ? "image/jpeg" : file.type,
-            cacheControl: "31536000",
-            upsert: false,
-          });
-        if (uploadError) {
-          updateItem(id, { status: "error", error: friendlyStorageError(uploadError.message) });
-          return;
-        }
-
-        const result = await registerPhotoAction({
-          propertyId,
-          storagePath,
-          width: compressed.width || 1,
-          height: compressed.height || 1,
-          bytes: compressed.bytes,
-        });
-        if (!result.ok) {
-          updateItem(id, { status: "error", error: result.message });
-          return;
-        }
-        updateItem(id, { status: "done" });
-      }),
-    );
+    await uploadListingPhotos(files, { ownerId, propertyId }, (index, phase) => {
+      const id = items[index]!.id;
+      if (phase === "uploading") updateItem(id, { status: "uploading" });
+      else if (phase.ok) updateItem(id, { status: "done" });
+      else updateItem(id, { status: "error", error: phase.error });
+    });
 
     startTransition(() => {
       router.refresh();
@@ -244,18 +205,4 @@ export function PhotoManager({ propertyId, ownerId, photos, maxPhotos }: PhotoMa
       </p>
     </div>
   );
-}
-
-function extensionFor(type: string) {
-  if (type === "image/png") return "png";
-  if (type === "image/webp") return "webp";
-  return "jpg";
-}
-
-function friendlyStorageError(message: string) {
-  if (/row-level security|policy|unauthorized|403/i.test(message))
-    return "You are not allowed to upload to this listing.";
-  if (/exceeded|size/i.test(message)) return "The file is too large.";
-  if (/mime|type/i.test(message)) return "Unsupported image type.";
-  return "Upload failed. Please try again.";
 }

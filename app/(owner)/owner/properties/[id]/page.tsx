@@ -33,14 +33,29 @@ export default async function OwnerListingPage({
   if (!listing || !user) notFound();
 
   const meta = listingStatusMeta[listing.status];
+  // Set by the new-listing form when some picked photos failed to upload.
+  const photosFailed =
+    typeof query.photosFailed === "string" && /^\d{1,2}$/.test(query.photosFailed)
+      ? Number(query.photosFailed)
+      : 0;
 
   return (
     <section className="space-y-6">
       {query.created === "1" ? (
         <Alert tone="success" title="Listing saved">
           {listing.status === "pending"
-            ? "It is in review. Add photos below so our team can approve it faster."
-            : "Now add photos, then submit it for review."}
+            ? listing.photos.length > 0
+              ? "It is in review. We usually approve within 24-48 hours."
+              : "It is in review. Add photos below so our team can approve it faster."
+            : listing.photos.length > 0
+              ? "Submit it for review when you are ready."
+              : "Now add photos, then submit it for review."}
+        </Alert>
+      ) : null}
+      {photosFailed > 0 ? (
+        <Alert tone="error">
+          {photosFailed === 1 ? "1 photo" : `${photosFailed} photos`} could not be uploaded. Add{" "}
+          {photosFailed === 1 ? "it" : "them"} again below.
         </Alert>
       ) : null}
       {query.saved === "1" ? <Alert tone="success">Changes saved.</Alert> : null}

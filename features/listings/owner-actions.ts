@@ -27,7 +27,8 @@ import {
  * form messages, and revalidate the pages that show the changed data.
  */
 
-export type ListingSaveResult = ActionResult<{ id: string }>;
+/** `ownerId` is returned so the new-listing form can upload photos into `owner/listing/`. */
+export type ListingSaveResult = ActionResult<{ id: string; ownerId: string }>;
 
 async function requireOwner() {
   const user = await getCurrentUser();
@@ -114,6 +115,9 @@ export async function createListingAction(
   }
 
   revalidateListing(data.id);
+  // Photos chosen in the form are uploaded by the browser once the listing
+  // exists (storage paths need its id), and the form navigates afterwards.
+  if (formData.get("withPhotos") === "1") return ok({ id: data.id, ownerId: user.id });
   redirect(`/owner/properties/${data.id}?created=1#photos`);
 }
 

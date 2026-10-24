@@ -1,6 +1,10 @@
 "use client";
 
-import { Save, Send } from "lucide-react";
+import { ImagePlus, Save, Send, Star, UploadCloud, X } from "lucide-react";
+import type { Route } from "next";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -11,14 +15,19 @@ import type { OwnerListing } from "@/features/listings/owner-queries";
 import { furnishingLabels, genderPreferenceLabels, propertyTypeLabels } from "@/lib/config/site";
 import { useFormAction } from "@/lib/forms/use-form-action";
 
-import { createListingAction, updateListingAction } from "../owner-actions";
-import { listingFormSchema } from "../schema";
+import { createListingAction, updateListingAction, type ListingSaveResult } from "../owner-actions";
+import { listingFormSchema, photoRules } from "../schema";
+import { photoFileError, uploadListingPhotos } from "../upload-photo";
 
 type ListingFormProps = {
   cities: City[];
   amenities: Amenity[];
   listing?: OwnerListing;
+  /** Photo limit for the new-listing form (platform_settings.max_photos_per_listing). */
+  maxPhotos?: number;
 };
+
+type PickedPhoto = { file: File; previewUrl: string };
 
 const toOptions = (record: Record<string, string>) =>
   Object.entries(record).map(([value, label]) => ({ value, label }));
@@ -28,12 +37,76 @@ const toOptions = (record: Record<string, string>) =>
  * "Add New Property" screen plus the fields it lacked (furnishing, state,
  * pincode, maintenance, available-from, minimum lease). Two submit buttons set
  * `intent` so the same form can save a draft or submit for review.
+ *
+ * New listings can pick photos in the form. Storage paths need the listing id,
+ * so the photos upload after the action creates the listing and returns it; the
+ * form then navigates to the listing. Edits manage photos on the listing page.
  */
-export function ListingForm({ cities, amenities, listing }: ListingFormProps) {
-  const action = listing ? updateListingAction.bind(null, listing.id) : createListingAction;
+export function ListingForm({
+  cities,
+  amenities,
+  listing,
+  maxPhotos = photoRules.maxFiles,
+}: ListingFormProps) {
+  const router = useRouter();
+  const [photos, setPhotos] = useState<PickedPhoto[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
+  // Create, then upload the picked photos, then open the listing. Running the
+  // uploads inside the action keeps `pending` true throughout, so the buttons
+  // stay disabled and a second click cannot create a duplicate listing.
+  async function createWithPhotos(prev: ListingSaveResult | undefined, formData: FormData) {
+    const result = await createListingAction(prev, formData);
+    if (!result.ok) return result;
+    const { id, ownerId } = result.data;
+    const files = photos.map((p) => p.file);
+    const results = await uploadListingPhotos(
+      files,
+      { ownerId, propertyId: id },
+      (index, phase) => {
+        if (phase === "uploading")
+          setUploadStatus(`Uploading photo ${index + 1} of ${files.length}…`);
+      },
+    );
+    photos.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    const failed = results.filter((r) => !r.ok).length;
+    const query = failed > 0 ? `?created=1&photosFailed=${failed}` : "?created=1";
+    router.push(`/owner/properties/${id}${query}#photos` as Route);
+    return result;
+  }
+
+  const action = listing ? updateListingAction.bind(null, listing.id) : createWithPhotos;
   const { pending, errors, formError, formProps } = useFormAction(action, {
     schema: listingFormSchema,
   });
+
+  function addPhotos(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    const incoming = Array.from(fileList);
+    const room = maxPhotos - photos.length;
+    const rejected = incoming.find((file) => photoFileError(file));
+    const accepted = incoming.filter((file) => !photoFileError(file)).slice(0, room);
+    setPhotoError(
+      rejected
+        ? `${rejected.name}: ${photoFileError(rejected)}`
+        : incoming.length > room
+          ? `Only ${maxPhotos} photos are allowed; the extra ones were left out.`
+          : null,
+    );
+    setPhotos((current) => [
+      ...current,
+      ...accepted.map((file) => ({ file, previewUrl: URL.createObjectURL(file) })),
+    ]);
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((current) => {
+      const removed = current[index];
+      if (removed) URL.revokeObjectURL(removed.previewUrl);
+      return current.filter((_, i) => i !== index);
+    });
+  }
   const selectedAmenities = new Set(
     listing?.amenities.map((a) => a.amenity?.slug).filter(Boolean) ?? [],
   );
@@ -300,6 +373,93 @@ export function ListingForm({ cities, amenities, listing }: ListingFormProps) {
           />
         </CardBody>
       </Card>
+
+      {!listing ? (
+        <Card>
+          <CardHeader
+            title="Photos"
+            description={`Add up to ${maxPhotos}. The first one is the cover. Listings with 3+ photos get far more requests.`}
+          />
+          <CardBody className="space-y-4">
+            {photoError ? <Alert tone="error">{photoError}</Alert> : null}
+            {photos.length > 0 ? (
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                {photos.map((photo, index) => (
+                  <li
+                    key={photo.previewUrl}
+                    className="rounded-card-sm border-border bg-surface relative aspect-[4/3] overflow-hidden border"
+                  >
+                    <Image
+                      src={photo.previewUrl}
+                      alt={index === 0 ? "Cover photo" : `Photo ${index + 1}`}
+                      fill
+                      sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+                      className="object-cover"
+                    />
+                    {index === 0 ? (
+                      <span className="rounded-pill bg-primary absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-white">
+                        <Star className="h-3 w-3 fill-current" aria-hidden /> Cover
+                      </span>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      disabled={pending}
+                      aria-label={`Remove ${photo.file.name}`}
+                      className="text-ink hover:text-danger absolute top-2 right-2 rounded-full bg-white/90 p-1 shadow"
+                    >
+                      <X className="h-4 w-4" aria-hidden />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            <label
+              className={`rounded-card flex flex-col items-center justify-center gap-2 border-2 border-dashed px-6 py-8 text-center transition ${
+                photos.length >= maxPhotos || pending
+                  ? "border-border bg-surface cursor-not-allowed opacity-60"
+                  : "border-primary/40 bg-primary/5 hover:border-primary cursor-pointer"
+              }`}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (!pending) addPhotos(e.dataTransfer.files);
+              }}
+            >
+              <UploadCloud className="text-primary h-8 w-8" aria-hidden />
+              <span className="font-semibold">
+                {photos.length === 0 ? "Add property photos" : "Add more photos"}
+              </span>
+              <span className="text-muted text-sm">
+                Click or drag and drop. JPG, PNG or WebP, up to 5 MB each. They upload when you
+                save.
+              </span>
+              <span className="rounded-pill bg-primary inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white">
+                <ImagePlus className="h-4 w-4" aria-hidden /> Choose photos
+              </span>
+              {/* No `name`: files are uploaded by the browser after the listing exists. */}
+              <input
+                type="file"
+                accept={photoRules.acceptedTypes.join(",")}
+                multiple
+                disabled={photos.length >= maxPhotos || pending}
+                className="sr-only"
+                onChange={(e) => {
+                  addPhotos(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <input type="hidden" name="withPhotos" value={photos.length > 0 ? "1" : ""} />
+          </CardBody>
+        </Card>
+      ) : null}
+
+      {pending && uploadStatus ? (
+        <p className="text-muted text-right text-sm" aria-live="polite">
+          {uploadStatus}
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <Button type="submit" name="intent" value="draft" variant="outline" loading={pending}>

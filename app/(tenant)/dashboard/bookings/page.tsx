@@ -30,8 +30,8 @@ export default async function TenantBookingsPage({
   const raw = await searchParams;
   const tab = tabs.find((t) => t.value === raw.status)?.value ?? "open";
   const [bookings, counts] = await Promise.all([
-    getMyBookings(tab === "all" ? undefined : tab),
-    getMyBookingCounts(),
+    getMyBookings("tenant", tab === "all" ? undefined : tab),
+    getMyBookingCounts("tenant"),
   ]);
   const names = await getPartyNames(bookings.map((b) => b.id));
 

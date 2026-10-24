@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 
+import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
@@ -27,8 +28,11 @@ export type OwnerReview = Pick<
 
 /** Visible reviews on the owner's listings (owner reads them through the public policy). */
 export const getOwnerRecentReviews = cache(async (limit = 5): Promise<OwnerReview[]> => {
+  const user = await getCurrentUser();
+  if (!user) return [];
   const supabase = await createClient();
-  const { data: mine } = await supabase.from("properties").select("id");
+  // Filter by owner: RLS also lets every signed-in user read approved listings.
+  const { data: mine } = await supabase.from("properties").select("id").eq("owner_id", user.id);
   const ids = (mine ?? []).map((p) => p.id);
   if (ids.length === 0) return [];
   const { data } = await supabase

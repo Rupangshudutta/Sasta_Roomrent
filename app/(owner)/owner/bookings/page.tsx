@@ -26,8 +26,8 @@ export default async function OwnerBookingsPage({ searchParams }: PageProps<"/ow
   const raw = await searchParams;
   const tab = tabs.find((t) => t.value === raw.status)?.value ?? "pending";
   const [bookings, counts] = await Promise.all([
-    getMyBookings(tab === "all" ? undefined : tab),
-    getMyBookingCounts(),
+    getMyBookings("owner", tab === "all" ? undefined : tab),
+    getMyBookingCounts("owner"),
   ]);
   const names = await getPartyNames(bookings.map((b) => b.id));
 

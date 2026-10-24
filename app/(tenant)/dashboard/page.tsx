@@ -18,10 +18,10 @@ export const metadata: Metadata = { title: "Dashboard" };
 export default async function TenantDashboardPage() {
   const [user, counts, favorites, unread, recent, activity] = await Promise.all([
     getCurrentUser(),
-    getMyBookingCounts(),
+    getMyBookingCounts("tenant"),
     getFavoriteIds(),
     getUnreadNotificationCount(),
-    getMyBookings("open"),
+    getMyBookings("tenant", "open"),
     getNotifications(5),
   ]);
   const names = await getPartyNames(recent.slice(0, 3).map((b) => b.id));

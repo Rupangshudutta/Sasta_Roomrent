@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 
+import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
@@ -27,13 +28,31 @@ const bookingSelect = `
     city:cities ( name ), photos:property_photos ( storage_path, is_primary, sort_order ) )
 ` as const;
 
-/** RLS scopes this to the caller: tenants see their requests, owners see requests on their listings. */
+/**
+ * Which side of a booking a page shows: requests the user made as a tenant, or
+ * requests received on their listings as an owner. RLS returns both (and an
+ * admin sees every booking), so each area must say which one it wants.
+ */
+export type BookingParty = "tenant" | "owner";
+
+async function partyFilter(party: BookingParty) {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  return {
+    column: party === "owner" ? ("owner_id" as const) : ("tenant_id" as const),
+    id: user.id,
+  };
+}
+
 export const getMyBookings = cache(
-  async (status?: BookingStatus | "open"): Promise<BookingWithProperty[]> => {
+  async (party: BookingParty, status?: BookingStatus | "open"): Promise<BookingWithProperty[]> => {
+    const filter = await partyFilter(party);
+    if (!filter) return [];
     const supabase = await createClient();
     let query = supabase
       .from("bookings")
       .select(bookingSelect)
+      .eq(filter.column, filter.id)
       .order("created_at", { ascending: false });
     if (status === "open") query = query.in("status", ["pending", "accepted", "active"]);
     else if (status) query = query.eq("status", status);
@@ -94,9 +113,12 @@ export const getBookingContacts = cache(async (bookingId: string): Promise<Booki
 });
 
 export const getMyBookingCounts = cache(
-  async (): Promise<Record<BookingStatus, number> & { total: number }> => {
+  async (party: BookingParty): Promise<Record<BookingStatus, number> & { total: number }> => {
+    const filter = await partyFilter(party);
     const supabase = await createClient();
-    const { data } = await supabase.from("bookings").select("status");
+    const { data } = filter
+      ? await supabase.from("bookings").select("status").eq(filter.column, filter.id)
+      : { data: [] };
     const counts = {
       pending: 0,
       accepted: 0,

@@ -22,7 +22,7 @@ export default async function OwnerDashboardPage() {
     getCurrentUser(),
     getOwnerListingCounts(),
     getOwnerPendingRequestCount(),
-    getMyBookings("pending"),
+    getMyBookings("owner", "pending"),
     getOwnerRecentReviews(5),
   ]);
   const names = await getPartyNames(pending.slice(0, 5).map((b) => b.id));

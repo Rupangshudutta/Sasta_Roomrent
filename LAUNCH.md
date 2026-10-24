@@ -28,19 +28,22 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
 
 1. **Supabase Auth → URL configuration**: Site URL `https://sastaroomrent.netlify.app`; redirect URLs
    `https://sastaroomrent.netlify.app/auth/confirm`, `https://sastaroomrent.netlify.app/auth/callback`,
-   and `https://*--sastaroomrent.netlify.app/auth/**` for deploy previews. Enable email confirmations.
-   **Custom SMTP is required before anyone can sign up**: Authentication → Emails → SMTP Settings
-   (e.g. Resend: host `smtp.resend.com`, port 465, user `resend`, password = API key, sender on your
-   verified domain), then raise Authentication → Rate Limits → emails per hour. Supabase's built-in
-   sender only delivers to members of the project's team, and Auth rolls a sign-up back when the
-   confirmation email cannot be sent, so without SMTP no tenant or owner account is ever created
-   (the form says the confirmation email could not be sent; log event `auth.register confirmation_email_failed`).
-   Optional: point the templates at `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
-   (recovery: `type=recovery&next=/reset-password`) so links also work when opened on another device;
-   `/auth/confirm` accepts both that and the default link format.
+   and `https://*--sastaroomrent.netlify.app/auth/**` for deploy previews.
+   **Turn email confirmation off (product decision, 2026-10-24)**: Authentication → Sign In / Providers →
+   Email → turn off "Confirm email". Sign-up then returns a session and `registerAction` sends the
+   user straight to their dashboard; no email is sent. Trade-off: an address is never proven to belong
+   to the person who typed it. If it is ever switched back on, Supabase's built-in sender only
+   delivers to members of the project's team (a few per hour) and rolls the sign-up back when the
+   email cannot be sent (log event `auth.register confirmation_email_failed`), so custom SMTP comes first.
+   **Custom SMTP is still needed for password reset** to reach ordinary users: Authentication → Emails →
+   SMTP Settings (e.g. Resend: host `smtp.resend.com`, port 465, user `resend`, password = API key,
+   sender on your verified domain). Optional: point the templates at
+   `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email` (recovery:
+   `type=recovery&next=/reset-password`) so links also work on another device; `/auth/confirm`
+   accepts both that and the default link format.
 2. **Migrations**: add the three GitHub secrets above, then run the `db-migrate` workflow
    (Actions → Database migrate → Run workflow). It applies `supabase/migrations/*` and the seed.
-3. **Admin account**: register normally with the admin's email, confirm it, then run
+3. **Admin account**: register normally with the admin's email, then run
    `scripts/db/promote-admin.sh <email>` against the production database (needs the DB password locally).
    Sign-up can never choose the admin role.
 4. **Razorpay** (when ready): create test-mode keys; add a webhook pointing at
@@ -75,8 +78,10 @@ Secrets are never written here or in chat: they go straight into GitHub and Netl
   sign-in and sign-up failed until it was restored by hand. Nothing kept it busy: `smoke.yml` is not
   on the default branch (`main`), and GitHub only runs schedules from there. The keep-alive function
   (step 7) covers this now.
-- As of 2026-10-23 no account has been created through the sign-up form; all 13 users were created
-  by script. Sign-up needs custom SMTP (step 1).
+- 2026-10-23: the first form sign-up (a tenant) was created, but the built-in sender's confirmation
+  email never arrived. 2026-10-24: decided to turn email confirmation off (step 1); that account was
+  confirmed by hand. Accounts created while confirmation is on stay unconfirmed until confirmed the same way
+  (`update auth.users set email_confirmed_at = now() where id = …`).
 - Migration 0019 (owner experience from sign-up) applied 2026-10-23.
 
 ## 3. Release procedure
@@ -98,17 +103,17 @@ health, search, sitemap and security headers. A failing health check returns 503
 
 ## 5. Day-one playbook
 
-| Signal                                                                                       | Where                                              | Action                                                                                                             |
-| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `status: degraded` from `/api/health`                                                        | smoke workflow / uptime monitor                    | Check the named capability's env var in Netlify, redeploy                                                          |
-| `rate_limit.exceeded` log spikes                                                             | Netlify function logs (JSON lines, filter `event`) | Normal under attack; raise limits in `lib/security/rate-limit.ts` only if real users are hit                       |
-| `payments.webhook invalid signature`                                                         | function logs                                      | Webhook secret mismatch between Razorpay and Netlify                                                               |
-| `email.failed`                                                                               | function logs                                      | Resend key/domain issue; user requests are unaffected                                                              |
-| `auth.register confirmation_email_failed`                                                    | function logs                                      | Supabase Auth could not send the confirmation email, so no account was created: set up or fix custom SMTP (step 1) |
-| `auth.login failed` / `auth.register failed` with `status` 0 or ≥ 500, or `keepalive.failed` | function logs                                      | Supabase is unreachable: check the project is not paused (Dashboard → Restore project) and status.supabase.com     |
-| `auth.login profile_missing`                                                                 | function logs                                      | An auth user has no `profiles` row; check `handle_new_user()` and the profiles grants                              |
-| Listing stuck in `pending`                                                                   | `/admin/listings`                                  | Admin approves/rejects; owner is notified and emailed                                                              |
-| User locked out                                                                              | `/admin/users`                                     | Reactivate via the row action (audited)                                                                            |
+| Signal                                                                                       | Where                                              | Action                                                                                                                       |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `status: degraded` from `/api/health`                                                        | smoke workflow / uptime monitor                    | Check the named capability's env var in Netlify, redeploy                                                                    |
+| `rate_limit.exceeded` log spikes                                                             | Netlify function logs (JSON lines, filter `event`) | Normal under attack; raise limits in `lib/security/rate-limit.ts` only if real users are hit                                 |
+| `payments.webhook invalid signature`                                                         | function logs                                      | Webhook secret mismatch between Razorpay and Netlify                                                                         |
+| `email.failed`                                                                               | function logs                                      | Resend key/domain issue; user requests are unaffected                                                                        |
+| `auth.register confirmation_email_failed`                                                    | function logs                                      | "Confirm email" is on and the email could not be sent, so no account was created: turn it off or set up custom SMTP (step 1) |
+| `auth.login failed` / `auth.register failed` with `status` 0 or ≥ 500, or `keepalive.failed` | function logs                                      | Supabase is unreachable: check the project is not paused (Dashboard → Restore project) and status.supabase.com               |
+| `auth.login profile_missing`                                                                 | function logs                                      | An auth user has no `profiles` row; check `handle_new_user()` and the profiles grants                                        |
+| Listing stuck in `pending`                                                                   | `/admin/listings`                                  | Admin approves/rejects; owner is notified and emailed                                                                        |
+| User locked out                                                                              | `/admin/users`                                     | Reactivate via the row action (audited)                                                                                      |
 
 Housekeeping: call `select public.purge_rate_limits();` weekly (Supabase cron or a scheduled workflow) to drop
 stale counters.

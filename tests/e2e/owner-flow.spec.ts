@@ -22,10 +22,12 @@ test.describe("owner listing flow (live)", () => {
     await page.goto("/owner/properties/new");
     const title = `E2E room ${Date.now()}`;
     await page.getByLabel("Listing title").fill(title);
-    await page.getByLabel("Property type").selectOption("single_room");
+    await page.getByRole("combobox", { name: "Property type" }).click();
+    await page.getByRole("option", { name: "Single Room" }).click();
     await page.getByLabel("Monthly rent").fill("8500");
     await page.getByLabel("Address line 1").fill("12 Test Street, 2nd floor");
-    await page.getByLabel("City").selectOption({ index: 1 });
+    await page.getByRole("combobox", { name: "City" }).click();
+    await page.getByRole("option").nth(1).click();
     await page.getByLabel("Area / locality").fill("Koramangala");
     await page.getByLabel("State").fill("Karnataka");
     await page.getByLabel("Pincode").fill("560034");

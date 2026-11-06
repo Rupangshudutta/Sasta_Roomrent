@@ -1,6 +1,7 @@
 import { SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
+import { Select } from "@/components/ui/dropdown";
 import type { Amenity, City } from "@/features/catalog/queries";
 import {
   furnishingLabels,
@@ -61,14 +62,17 @@ export function FilterPanel({ filter, cities, amenities, idPrefix }: Props) {
         <label htmlFor={id("city")} className="sr-only">
           City
         </label>
-        <select id={id("city")} name="city" defaultValue={filter.city} className={input}>
-          <option value="">All cities</option>
-          {cities.map((c) => (
-            <option key={c.id} value={c.slug}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <Select
+          id={id("city")}
+          label="City"
+          name="city"
+          defaultValue={filter.city}
+          options={[
+            { value: "", label: "All cities" },
+            ...cities.map((c) => ({ value: c.slug, label: c.name })),
+          ]}
+          className="px-3 py-2 sm:text-sm"
+        />
       </Section>
 
       <Section title="Monthly rent (₹)">

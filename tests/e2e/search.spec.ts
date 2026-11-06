@@ -20,6 +20,7 @@ test.describe("search", () => {
   test("applying filters round-trips through the URL", async ({ page }) => {
     await page.goto("/properties");
     const sidebar = page.locator("aside").first();
+    await sidebar.getByRole("button", { name: "Custom Range" }).click();
     await sidebar.getByLabel("Minimum rent").fill("8000");
     await sidebar.getByRole("checkbox", { name: "Flat" }).check();
     await sidebar.getByRole("button", { name: "Apply Filters" }).click();
@@ -27,12 +28,24 @@ test.describe("search", () => {
     await expect(page).toHaveURL(/type=flat/);
   });
 
+  test("a rent chip filters through the URL", async ({ page }) => {
+    await page.goto("/properties");
+    const sidebar = page.locator("aside").first();
+    await sidebar.getByRole("button", { name: "₹5K – ₹10K" }).click();
+    await sidebar.getByRole("button", { name: "Apply Filters" }).click();
+    await expect(page).toHaveURL(/minRent=5000/);
+    await expect(page).toHaveURL(/maxRent=10000/);
+    await expect(
+      page.locator("aside").first().getByRole("button", { name: "₹5K – ₹10K" }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
   test("mobile filter panel contains the full filter set", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/properties");
     const details = page.locator("details").first();
     await details.locator("summary").click();
-    await expect(details.getByLabel("Maximum rent")).toBeVisible();
+    await expect(details.getByRole("button", { name: "Custom Range" })).toBeVisible();
     await expect(details.getByRole("radio", { name: "Anyone" })).toBeVisible();
   });
 

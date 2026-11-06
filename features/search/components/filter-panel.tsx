@@ -10,6 +10,7 @@ import {
 } from "@/lib/config/site";
 
 import { countActiveFilters, type SearchFilter } from "../schema";
+import { RentRangeFilter } from "./rent-range-filter";
 
 type Props = {
   filter: SearchFilter;
@@ -76,36 +77,7 @@ export function FilterPanel({ filter, cities, amenities, idPrefix }: Props) {
       </Section>
 
       <Section title="Monthly rent (₹)">
-        <div className="grid grid-cols-2 gap-2">
-          <label className="sr-only" htmlFor={id("min")}>
-            Minimum rent
-          </label>
-          <input
-            id={id("min")}
-            name="minRent"
-            type="number"
-            min={0}
-            step={500}
-            inputMode="numeric"
-            placeholder="Min"
-            defaultValue={filter.minRent ?? ""}
-            className={input}
-          />
-          <label className="sr-only" htmlFor={id("max")}>
-            Maximum rent
-          </label>
-          <input
-            id={id("max")}
-            name="maxRent"
-            type="number"
-            min={0}
-            step={500}
-            inputMode="numeric"
-            placeholder="Max"
-            defaultValue={filter.maxRent ?? ""}
-            className={input}
-          />
-        </div>
+        <RentRangeFilter idPrefix={idPrefix} minRent={filter.minRent} maxRent={filter.maxRent} />
       </Section>
 
       <Section title="Property type">

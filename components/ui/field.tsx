@@ -1,11 +1,12 @@
-import type {
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
-} from "react";
+import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils/cn";
+
+import { controlClass } from "./control-class";
+import { Select } from "./dropdown";
+import type { DropdownOption } from "./dropdown-options";
+
+export { controlClass };
 
 /**
  * Form field primitives. Each control is wired for accessibility by default:
@@ -57,11 +58,6 @@ export function FieldShell({
   );
 }
 
-// text-base (16px) below the sm breakpoint: iOS Safari zooms the page into any
-// focused input whose font is smaller than 16px, which shifts the layout on phones.
-export const controlClass =
-  "w-full rounded-card-sm border border-border bg-white px-3.5 py-2.5 text-base sm:text-sm text-ink placeholder:text-muted/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-danger disabled:bg-surface";
-
 export function describedBy(id: string, errors?: string[], hint?: string) {
   if (errors?.length) return `${id}-error`;
   if (hint) return `${id}-hint`;
@@ -102,11 +98,13 @@ export function InputField({
   );
 }
 
-type SelectFieldProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "id"> &
-  Omit<FieldShellProps, "children"> & {
-    options: ReadonlyArray<{ value: string; label: string }>;
-    placeholder?: string;
-  };
+type SelectFieldProps = Omit<FieldShellProps, "children"> & {
+  name?: string;
+  options: readonly DropdownOption[];
+  defaultValue?: string | number | null;
+  placeholder?: string;
+  disabled?: boolean;
+};
 
 export function SelectField({
   id,
@@ -115,9 +113,11 @@ export function SelectField({
   errors,
   required,
   className,
+  name,
   options,
+  defaultValue,
   placeholder,
-  ...props
+  disabled,
 }: SelectFieldProps) {
   return (
     <FieldShell
@@ -128,22 +128,18 @@ export function SelectField({
       required={required}
       className={className}
     >
-      <select
+      <Select
         id={id}
-        name={props.name ?? id}
+        label={label}
+        name={name ?? id}
+        options={options}
+        defaultValue={defaultValue}
+        placeholder={placeholder}
         required={required}
+        disabled={disabled}
         aria-invalid={errors?.length ? true : undefined}
         aria-describedby={describedBy(id, errors, hint)}
-        className={controlClass}
-        {...props}
-      >
-        {placeholder ? <option value="">{placeholder}</option> : null}
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      />
     </FieldShell>
   );
 }

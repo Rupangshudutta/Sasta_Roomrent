@@ -24,9 +24,34 @@ test.describe("public pages", () => {
   test("home search box submits to /properties with the chosen filters", async ({ page }) => {
     await page.goto("/");
     await page.getByLabel("Location").fill("Koramangala");
-    await page.getByLabel("Property type").selectOption("pg");
-    await page.getByRole("button", { name: "Search" }).click();
+    await page.getByRole("combobox", { name: "Property type" }).click();
+    await page.getByRole("option", { name: "PG (Paying Guest)" }).click();
+    await page.getByRole("button", { name: "Search", exact: true }).click();
     await expect(page).toHaveURL(/\/properties\?q=Koramangala&type=pg/);
+  });
+
+  test("home search dropdowns work from the keyboard", async ({ page }) => {
+    await page.goto("/");
+    const type = page.getByRole("combobox", { name: "Property type" });
+    await type.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("listbox", { name: "Property type" })).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(type).toHaveText("PG (Paying Guest)");
+    await expect(page.getByRole("listbox")).toHaveCount(0);
+
+    await type.focus();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toHaveCount(0);
+    await expect(type).toHaveText("PG (Paying Guest)");
+
+    const location = page.getByRole("combobox", { name: "Location" });
+    await location.fill("Somewhere with no suggestions");
+    await expect(page.getByRole("listbox")).toHaveCount(0);
+    await page.getByRole("button", { name: "Clear location" }).click();
+    await expect(location).toHaveValue("");
   });
 
   test("contact form validates before sending and keeps the honeypot hidden", async ({ page }) => {

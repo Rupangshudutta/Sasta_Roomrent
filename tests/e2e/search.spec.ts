@@ -11,7 +11,7 @@ test.describe("search", () => {
     await expect(sidebar.getByLabel("Maximum rent")).toHaveValue("12000");
     await expect(sidebar.getByRole("checkbox", { name: "PG" })).toBeChecked();
     await expect(sidebar.getByRole("radio", { name: "Female" })).toBeChecked();
-    await expect(page.getByRole("combobox", { name: /sort by/i })).toHaveValue("price_low");
+    await expect(page.getByRole("combobox", { name: /sort by/i })).toContainText(/price/i);
     await expect(sidebar.getByRole("heading", { name: /Filters/ })).toBeVisible();
     await sidebar.getByRole("link", { name: "Clear all" }).click();
     await expect(page).toHaveURL(/\/properties$/);

@@ -1,12 +1,13 @@
 import type { Route } from "next";
-import { Eye, Handshake, Home, Map, Search } from "lucide-react";
+import { Eye, Handshake, Home, Map, MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { SectionTitle } from "@/components/layout/section-title";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { getActiveCities } from "@/features/catalog/queries";
+import { Autocomplete, Select } from "@/components/ui/dropdown";
+import { getActiveCities, getPopularLocalityStats } from "@/features/catalog/queries";
 import { getFeaturedListings } from "@/features/listings/queries";
 import {
   propertyTypeLabels,
@@ -45,8 +46,27 @@ const steps = [
   },
 ] as const;
 
+const typeOptions = [
+  { value: "", label: "All Types" },
+  ...Object.entries(propertyTypeLabels).map(([value, label]) => ({ value, label })),
+];
+
 export default async function HomePage() {
-  const [featured, cities] = await Promise.all([getFeaturedListings(6), getActiveCities()]);
+  const [featured, cities, localities] = await Promise.all([
+    getFeaturedListings(6),
+    getActiveCities(),
+    getPopularLocalityStats(),
+  ]);
+
+  const locationOptions = [
+    ...cities.map((city) => ({ value: city.name, label: city.name, description: city.state })),
+    ...localities.flatMap(({ name, city_id: cityId }) => {
+      const city = cities.find(({ id }) => id === cityId);
+      return name && city
+        ? [{ value: name, label: name, description: `${city.name}, ${city.state}` }]
+        : [];
+    }),
+  ];
 
   return (
     <>
@@ -82,35 +102,25 @@ export default async function HomePage() {
           <label className="sr-only" htmlFor="home-q">
             Location
           </label>
-          <input
+          <Autocomplete
             id="home-q"
+            label="Location"
             name="q"
-            type="search"
             placeholder="Enter city, area, or landmark"
-            list="home-cities"
-            className="rounded-card-sm border-border text-ink placeholder:text-muted focus:border-primary focus:ring-primary/20 h-12 border px-4 text-sm focus:ring-2 focus:outline-none"
+            options={locationOptions}
+            optionIcon={<MapPin className="h-5 w-5" aria-hidden />}
+            className="h-12 px-4"
           />
-          <datalist id="home-cities">
-            {cities.map((city) => (
-              <option key={city.id} value={city.name} />
-            ))}
-          </datalist>
           <label className="sr-only" htmlFor="home-type">
             Property type
           </label>
-          <select
+          <Select
             id="home-type"
+            label="Property type"
             name="type"
-            defaultValue=""
-            className="rounded-card-sm border-border text-ink focus:border-primary focus:ring-primary/20 h-12 border px-3 text-sm focus:ring-2 focus:outline-none"
-          >
-            <option value="">All Types</option>
-            {Object.entries(propertyTypeLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            options={typeOptions}
+            className="h-12 px-4"
+          />
           <Button type="submit" size="lg" className="rounded-card-sm h-12">
             <Search className="h-4 w-4" aria-hidden />
             Search
